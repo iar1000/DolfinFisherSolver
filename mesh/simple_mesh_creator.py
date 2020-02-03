@@ -18,4 +18,6 @@ def box_mesh(w, l, d, res):
     file = HDF5File(MPI.comm_world, path, 'w')
     file.write(mesh, "/mesh")
 
-rect_mesh(100, 100, 200)
+# generate standart test meshes
+rect_mesh(100, 100, 100)
+box_mesh(100,100,100, 100)

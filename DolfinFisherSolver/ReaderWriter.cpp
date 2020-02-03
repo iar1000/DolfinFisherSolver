@@ -127,5 +127,13 @@ void ReaderWriter::createRunInfo(std::string subfolder, std::string filename){
 }
 
 void ReaderWriter::addComponent(std::string details){
+	/*
+	std::stringstream ss(details);
+	std::string line;
+	std::getline(ss, line);
+	if(rank_ == 0){
+		std::cout << "added component to ReaderWriter (" << line << ")" << std::endl;
+	}
+	*/
 	components_.push_back(details);
 }

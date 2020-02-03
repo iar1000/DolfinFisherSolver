@@ -18,17 +18,34 @@ std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> get_101on101_
 
 	// init valuemaps to form pattern
 	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> vm_w = Eigen::MatrixXd::Ones(101, 101);
-	vm_w.block<40, 101>(7, 0) = Eigen::MatrixXd::Zero(40, 101);
-	vm_w.block<40, 101>(54, 0) = Eigen::MatrixXd::Zero(40, 101);
+	vm_w.block<50, 101>(0, 0) = Eigen::MatrixXd::Zero(40, 101);
 
 	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> vm_g = Eigen::MatrixXd::Zero(101, 101);
-	vm_g.block<40, 101>(7, 0) = Eigen::MatrixXd::Ones(40, 101);
-	vm_g.block<40, 101>(54, 0) = Eigen::MatrixXd::Ones(40, 101);
+	vm_g.block<50, 101>(0, 0) = Eigen::MatrixXd::Ones(40, 101);
 
 	vm.push_back(vm_w);
 	vm.push_back(vm_g);
 	return vm;
 };
+
+// create test value map for box-100on100on100-res100.h test mesh
+std::vector<std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>> get_101on101on101_test_cm(){
+	std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> vm_w;
+	std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> vm_g;
+
+	for(int i = 0; i < 101; i++){
+		auto ok = get_101on101_test_cm();
+		vm_w.push_back(ok[0]);
+		vm_g.push_back(ok[1]);
+	}
+
+	std::vector<std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>> vm;
+	vm.push_back(vm_w);
+	vm.push_back(vm_g);
+
+	return vm;
+}
+
 
 int main(int argc, char* argv[]){
 
@@ -91,20 +108,38 @@ int main(int argc, char* argv[]){
 		InitializerCircle dummy(cx, cy, radius, value);
 		putput.addComponent(dummy.asString());
 	}
-	if(dimensions == 3){
+	else if(dimensions == 3){
 		initialCondition = std::make_shared<InitializerSphere>(cx, cy, cz, radius, value);
 		// make dummy variable to print
 		InitializerSphere dummy(cx, cy, cz, radius, value);
 		putput.addComponent(dummy.asString());
 	}
+	else{
+		return 0;
+	}
 
 	// create diffusion tensor
-	std::shared_ptr<TensorConstant> DConstant = std::make_shared<TensorConstant>(rank, Dw);
-	std::shared_ptr<TensorSpatial2D> DSpatial2D = std::make_shared<TensorSpatial2D>(rank, Dw, Dg, get_101on101_test_cm());
-	putput.addComponent(DSpatial2D->asString());
+	//std::shared_ptr<TensorConstant> DConstant = std::make_shared<TensorConstant>(rank, Dw);
+	std::shared_ptr<TensorSpatial2D> DSpatial2D;
+	std::shared_ptr<TensorSpatial3D> DSpatial3D;
+	std::shared_ptr<dolfin::Expression> D;
+	if(dimensions == 2){
+		DSpatial2D = std::make_shared<TensorSpatial2D>(rank, Dw, Dg, get_101on101_test_cm());
+		putput.addComponent(DSpatial2D->asString());
+		D = DSpatial2D;
+	}
+	else if(dimensions == 3){
+		DSpatial3D = std::make_shared<TensorSpatial3D>(rank, Dw, Dg, get_101on101on101_test_cm());
+		putput.addComponent(DSpatial3D->asString());
+		D = DSpatial3D;
+	}
+	else{
+		return 0;
+	}
+
 
 	// create pde problem
-	std::shared_ptr<ReactionDiffusionProblem> problem = std::make_shared<ReactionDiffusionProblem>(rank, mesh, DSpatial2D, rho, dt);
+	std::shared_ptr<ReactionDiffusionProblem> problem = std::make_shared<ReactionDiffusionProblem>(rank, mesh, D, rho, dt);
 	putput.addComponent(problem->asString());
 
 	// create solver
