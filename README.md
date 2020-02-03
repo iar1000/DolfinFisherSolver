@@ -4,7 +4,7 @@
 Following packages have been used during developement of this software:
 
 Ubuntu (18.04): OS  
-CMake (3.15.3): Compilation process   
+CMake (minimum 3.5): Compilation process   
 FEniCS (2019.1): Automated solution of Differential Equations ([Installation guide](https://fenics.readthedocs.io/en/latest/installation.html))
 
 #### ETH Euler cluster
