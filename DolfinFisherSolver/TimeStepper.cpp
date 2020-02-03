@@ -252,7 +252,7 @@ void TimeStepper::constTime_timestepping(int verbose, RuntimeTracker *tracker, s
 
 void TimeStepper::adaptiveTime_timestepping(int verbose, RuntimeTracker *tracker, std::shared_ptr<dolfin::Expression> initializer, std::shared_ptr<dolfin::File> output, int framesPerTimeUnit, double tdt)
 {
-
+	std::cout << "adaptive timestepping not implemented yet" << std::endl;
 }
 
 
