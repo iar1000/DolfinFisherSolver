@@ -1,0 +1,22 @@
+# Folders ###########
+#####################
+build/*
+bin/*
+output/*
+scaling-tests/
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.d
+
+# Logs and databases #
+######################
+*.log
+*.sql
+*.sqlite
