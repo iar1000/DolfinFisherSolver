@@ -10,7 +10,8 @@ FEniCS (2019.1): Automated solution of Differential Equations ([Installation gui
 #### ETH Euler cluster
 To run the simulation on the Euler cluster, load following modules via the commands:
 `env2lmod`  
-`module load gcc/6.3.0 cmake/3.5.2 openmpi/3.0.1 fenics/2019.1.0`
+`module load gcc/6.3.0 cmake/3.15.3 openmpi/3.0.1 fenics/2019.1.0`
+
 
 #### build FisherSolver
 1. clone this repo to local machine
