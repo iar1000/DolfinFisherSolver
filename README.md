@@ -27,7 +27,7 @@ To build the simulation on the Euler cluster, load following modules via the com
  
 **Note**: The parameters in the "FisherSolver.config" file must be instantiated there. Otherwise some inputs are missing and the behavior is undefined. Try to work with feasible values, otherwise the behavior is again undefined
 
- **Euler**: `bsub -N -W 24:00 -n 48 -R fullnode << runFisherSolver.sh -n 48`
+ **Euler**: `bsub -N -W 24:00 -n 48 -R fullnode < runFisherSolver.sh -n 48 -ofo "not-default-name"
 
 
 ### Tensors
