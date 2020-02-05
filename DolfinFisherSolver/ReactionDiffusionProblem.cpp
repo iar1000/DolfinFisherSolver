@@ -49,7 +49,7 @@ void ReactionDiffusionProblem::F(dolfin::GenericVector& b, const dolfin::Generic
 	dolfin::assemble(b, *F_);
 	auto end = std::chrono::system_clock::now();
 	auto duration = end - start;
-	std::cout << "assemble F: " << duration.count() / 60 << std::endl;
+	std::cout << "assemble F: " << (duration.count() / 60) << std::endl;
 };
 
 void ReactionDiffusionProblem::J(dolfin::GenericMatrix& A, const dolfin::GenericVector& x){
@@ -57,7 +57,7 @@ void ReactionDiffusionProblem::J(dolfin::GenericMatrix& A, const dolfin::Generic
 	dolfin::assemble(A, *J_);
 	auto end = std::chrono::system_clock::now();
 	auto duration = end - start;
-	std::cout << "assemble J: " << duration.count() / 60 << std::endl;
+	std::cout << "assemble J: " << (duration.count() / 60) << std::endl;
 };
 
 std::pair<std::shared_ptr<dolfin::Function>, std::shared_ptr<dolfin::Function>> ReactionDiffusionProblem::getUs(){

@@ -91,18 +91,14 @@ int main(int argc, char* argv[]){
 
 	// mesh read-in
 	std::shared_ptr<dolfin::Mesh> mesh = std::make_shared<dolfin::Mesh>();
-	std::cout << "1" << std::endl;
 	std::pair<bool, int> meshInfo = putput.loadMesh(mesh, meshName);
-	std::cout << "2" << std::endl;
 	int dimensions = 0;
-	std::cout << "3" << std::endl;
 	if(meshInfo.first){	// check if mesh loaded successful
 		dimensions = meshInfo.second;
 	}
 	else{
 		return 0;
 	}
-	std::cout << "4" << std::endl;
 
 	// create initial condition
 	std::shared_ptr<dolfin::Expression> initialCondition;
