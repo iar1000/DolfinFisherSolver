@@ -45,19 +45,17 @@ ReactionDiffusionProblem::ReactionDiffusionProblem(int rank, std::shared_ptr<dol
 };
 
 void ReactionDiffusionProblem::F(dolfin::GenericVector& b, const dolfin::GenericVector& x){
-	auto start = std::chrono::system_clock::now();
+	auto start = std::chrono::steady_clock::now();
 	dolfin::assemble(b, *F_);
-	auto end = std::chrono::system_clock::now();
-	auto duration = end - start;
-	std::cout << "assemble F: " << (duration.count() / 60) << std::endl;
+	auto end = std::chrono::steady_clock::now();
+	std::cout << "assemble F: " << std::chrono::duration_cast<std::chrono::seconds>(end - start).count() << std::endl;
 };
 
 void ReactionDiffusionProblem::J(dolfin::GenericMatrix& A, const dolfin::GenericVector& x){
-	auto start = std::chrono::system_clock::now();
+	auto start = std::chrono::steady_clock::now();
 	dolfin::assemble(A, *J_);
-	auto end = std::chrono::system_clock::now();
-	auto duration = end - start;
-	std::cout << "assemble J: " << (duration.count() / 60) << std::endl;
+	auto end = std::chrono::steady_clock::now();
+	std::cout << "assemble J: " << std::chrono::duration_cast<std::chrono::seconds>(end - start).count() << std::endl;
 };
 
 std::pair<std::shared_ptr<dolfin::Function>, std::shared_ptr<dolfin::Function>> ReactionDiffusionProblem::getUs(){
