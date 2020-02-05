@@ -1,4 +1,5 @@
 
+#include <chrono>
 
 #include "ReactionDiffusionProblem.h"
 #include "VariationalReactionDiffusion2D.h"
@@ -44,11 +45,19 @@ ReactionDiffusionProblem::ReactionDiffusionProblem(int rank, std::shared_ptr<dol
 };
 
 void ReactionDiffusionProblem::F(dolfin::GenericVector& b, const dolfin::GenericVector& x){
+	auto start = std::chrono::system_clock::now();
 	dolfin::assemble(b, *F_);
+	auto end = std::chrono::system_clock::now();
+	auto duration = end - start;
+	std::cout << "assemble F: " << duration.count() / 60 << std::endl;
 };
 
 void ReactionDiffusionProblem::J(dolfin::GenericMatrix& A, const dolfin::GenericVector& x){
+	auto start = std::chrono::system_clock::now();
 	dolfin::assemble(A, *J_);
+	auto end = std::chrono::system_clock::now();
+	auto duration = end - start;
+	std::cout << "assemble J: " << duration.count() / 60 << std::endl;
 };
 
 std::pair<std::shared_ptr<dolfin::Function>, std::shared_ptr<dolfin::Function>> ReactionDiffusionProblem::getUs(){
