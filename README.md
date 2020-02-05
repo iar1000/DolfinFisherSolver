@@ -27,7 +27,8 @@ To build the simulation on the Euler cluster, load following modules via the com
  
 **Note**: The parameters in the "FisherSolver.config" file must be instantiated there. Otherwise some inputs are missing and the behavior is undefined. Try to work with feasible values, otherwise the behavior is again undefined
 
- **Euler**: `bsub -N -W 24:00 -n 48 -R fullnode < runFisherSolver.sh -n 48 -ofo "not-default-name"`
+ **Euler**: ` bsub -N -W 00:30 -R "rusage[scratch=10000, mem=12800]" -n 10 ./runFisherSolver.sh -n 10 -ofo "ten-cores"`  
+ There can be used a maximum of 128000 MB of memory, therefore mem = 128000MB / n  
 
 
 ### Tensors
