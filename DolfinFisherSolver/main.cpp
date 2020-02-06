@@ -80,6 +80,7 @@ int main(int argc, char* argv[]){
 	double Dw = atof(argv[16]);
 	double Dg = atof(argv[17]);
 	double rho = atof(argv[18]);
+	// @TODO: add theta value
 	// other
 	///////////////////////////////////
 	int verbose = atoi(argv[19]);
@@ -139,7 +140,7 @@ int main(int argc, char* argv[]){
 
 
 	// create pde problem
-	std::shared_ptr<ReactionDiffusionProblem> problem = std::make_shared<ReactionDiffusionProblem>(rank, mesh, D, rho, dt);
+	std::shared_ptr<ReactionDiffusionProblem> problem = std::make_shared<ReactionDiffusionProblem>(rank, mesh, D, rho, dt, 1);
 	putput.addComponent(problem->asString());
 
 	// create solver

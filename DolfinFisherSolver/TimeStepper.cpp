@@ -1,5 +1,7 @@
 
 #include "TimeStepper.h"
+#include "L2Error2D.h"
+
 
 // class RuntimeInformation
 ///////////////////////////////
@@ -192,8 +194,8 @@ void TimeStepper::constTime_timestepping(int verbose, RuntimeTracker *tracker, s
 	int frameNumber = 0;
 	// get and initialize concentration function
 	auto us = problem_->getUs();
-	std::shared_ptr<dolfin::Function> u0 = us.first;
-	std::shared_ptr<dolfin::Function> u = us.second;
+	std::shared_ptr<dolfin::Function> u0 = us.at(0);
+	std::shared_ptr<dolfin::Function> u = us.at(1);
 	*u0 = *initializer;
 	*u =  *initializer;
 
@@ -216,7 +218,7 @@ void TimeStepper::constTime_timestepping(int verbose, RuntimeTracker *tracker, s
 		int solverIterations = results.first;
 		bool converged = results.second;
 		double residual = solver_->residual();
-		tracker->addIterationData(t, dt, converged, solverIterations, residual);
+		//tracker->addIterationData(t, dt, converged, solverIterations, residual);
 
 		// check convergence
 		if(!converged){
@@ -250,9 +252,131 @@ void TimeStepper::constTime_timestepping(int verbose, RuntimeTracker *tracker, s
 	if(rank_ == 0){ std::cout << "finished" << std::endl << std::endl; }
 }
 
-void TimeStepper::adaptiveTime_timestepping(int verbose, RuntimeTracker *tracker, std::shared_ptr<dolfin::Expression> initializer, std::shared_ptr<dolfin::File> output, int framesPerTimeUnit, double tdt)
+void TimeStepper::adaptiveTime_timestepping(int verbose, RuntimeTracker *tracker, std::shared_ptr<dolfin::Expression> initializer, std::shared_ptr<dolfin::File> output, int frameDuration, double tdt)
 {
-	std::cout << "adaptive timestepping not implemented yet" << std::endl;
+	/*
+	 * u_n (V)
+	 * u_n_low(V)
+	 * u_n_high(V)
+	 *
+	 * solver_low(u_n, u_n_low)
+	 * solver_low -> t, dt
+	 *
+	 * solver_high_1(u_n, u_n_high)
+	 * solver_high_1 -> t, dt/2
+	 *
+	 * solver_high_2(u_n_high, u_n_high)
+	 * solver_high_2 -> t+dt, dt/2
+	 *
+	 * est = compute_est(u_n_low, u_n_high)
+	 * dt_new = ...
+	 */
+
+	// set timestepping and helper variables
+	double t = 0;
+	double dt = tdt;		// current timestep
+	double dtNew = tdt;		// next timestep size
+	int frameNumber = 0;
+	// get pointers to problem variables
+	auto us = problem_->getUs();
+	std::shared_ptr<dolfin::Function> u0_p = us.at(0);
+	std::shared_ptr<dolfin::Function> u_p = us.at(1);
+	std::shared_ptr<dolfin::Function> u_low = us.at(2);
+	auto dt_p = problem_->getDt();
+	// initialize L2-Norm functional and helpers for timestep adaption
+	double tol = 1;
+	double safety = 0.9;
+	std::shared_ptr<dolfin::Mesh> mesh = problem_->getMesh();
+	L2Error2D::Functional M(mesh, u_low, u_p);
+	double p = 1;
+	if(problem_->getTheta() == 0.5){ p = 2; };
+	// initialize concentration function
+	*u0_p = *initializer; 		// problem u^n concentration
+	*u_p =  *initializer;		// problem u^{n+1} concentration
+	*u_low = *initializer;	// temporary concentration
+
+	if(rank_ == 0){ std::cout << "running..." << std::endl << std::endl; }
+	int progress = 0;			// progress in %
+	double onePercent = T_/100; // one % of the whole progress
+
+	*output << std::pair<const dolfin::Function*, double>( u_p.get() , t); 	// save initial state of the system
+	while(t < T_){
+		tracker->newIteration();
+
+		// solve problems and track time/results
+		tracker->startTime();
+
+		// prepare and run low precision run
+		*dt_p = dt;
+		auto results = solver_->solve(*problem_, *u_p->vector());
+		int solverIterations = results.first;
+		bool converged = results.second;
+		double residual = solver_->residual();
+		tracker->addIterationData(t, dt, converged, solverIterations, residual);
+		// u_temp_p holds low end condition
+		*u_low->vector() = *u_p->vector();
+
+		// prepare and run high precision run
+		*dt_p = dt/2;
+		// compute first half of timestep
+		results = solver_->solve(*problem_, *u_p->vector());
+		// update initial condition to halftime result
+		*u0_p->vector() = *u_p->vector();
+		// compute second half of timestep
+		results = solver_->solve(*problem_, *u_p->vector());
+		// u_p holds high end condition
+
+		// calculate richardson extrapolation nabla
+		double errorSqr = dolfin::assemble(M);
+		double error = sqrt(errorSqr);
+		double nabla = error / (pow(2.0,p) - 1);
+		double fac = pow((safety * tol / nabla), (1/p));
+		dtNew = fac * dt;
+		if(nabla > tol){
+			std::cout << "BAD DT: adapted timestep from " << dt << " to " << dtNew << std::endl;
+			dt = dtNew;	// update to smaller timestep
+			continue; // don't update t, repeat with smaller timestep
+		}
+
+		// prepare next iteration
+		std::cout << "GOOD DT: adapted timestep from " << dt << " to " << dtNew << std::endl;
+		t += dt;
+		dt = dtNew;	// update to bigger timestep
+		*u0_p->vector() = *u_p->vector(); //@Which solver iteration values are used?
+
+		tracker->endTime();
+
+
+		// check convergence
+		if(!converged){
+			// finalize this iteration and quit
+			tracker->endIteration();
+			break;
+		}
+
+		// write frame
+		if(t > frameNumber * frameDuration){
+			*output << std::pair<const dolfin::Function*, double>( u_p.get() , t);
+			frameNumber++;
+
+			if(rank_ == 0 && verbose > 2){ // verbose level 3
+				std::cout << "writing system state to output..." << std::endl << std::endl;
+			}
+		}
+
+		// print
+		if(rank_ == 0 && verbose > 1 && t >= progress * onePercent){  // verbose level 2
+			std::cout << "simulation status: [" << progress << "/100]%" << std::endl;
+			progress++;
+		}
+
+		// finalize this iteration
+		tracker->endIteration();
+	}
+	*output << std::pair<const dolfin::Function*, double>( u_p.get() , t);  	// save final state of the system
+
+	if(rank_ == 0){ std::cout << "finished" << std::endl << std::endl; }
+
 }
 
 
