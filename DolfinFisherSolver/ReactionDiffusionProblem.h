@@ -13,6 +13,7 @@ class ReactionDiffusionProblem : public dolfin::NonlinearProblem, PrintableCompo
 	 std::shared_ptr<dolfin::Constant> rho_;	// reaction coefficient
 	 std::shared_ptr<dolfin::Expression> D_; 	// diffusion tensor
 	 std::shared_ptr<dolfin::Constant> dt_;		// initial size of time-step
+	 int rank_;
 
 public:
 	ReactionDiffusionProblem(int rank, std::shared_ptr<dolfin::Mesh> mesh, std::shared_ptr<dolfin::Expression> D, double rho, double dt);

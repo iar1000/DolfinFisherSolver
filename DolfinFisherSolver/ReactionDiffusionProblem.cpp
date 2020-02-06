@@ -7,6 +7,7 @@
 
 ReactionDiffusionProblem::ReactionDiffusionProblem(int rank, std::shared_ptr<dolfin::Mesh> mesh, std::shared_ptr<dolfin::Expression> D, double rho, double dt)
 {
+	rank_ = rank;
 	// create function space, non-linear function F and it's Jacobian J from variational problem definition
 	// automatically determine dimensionality of the mesh
 	std::shared_ptr<dolfin::FunctionSpace> V;
@@ -48,14 +49,18 @@ void ReactionDiffusionProblem::F(dolfin::GenericVector& b, const dolfin::Generic
 	auto start = std::chrono::steady_clock::now();
 	dolfin::assemble(b, *F_);
 	auto end = std::chrono::steady_clock::now();
-	std::cout << "assemble F: " << std::chrono::duration_cast<std::chrono::seconds>(end - start).count() << std::endl;
+	if(rank_ == 0){
+		std::cout << "assemble F: " << std::chrono::duration_cast<std::chrono::seconds>(end - start).count() << std::endl;
+	}
 };
 
 void ReactionDiffusionProblem::J(dolfin::GenericMatrix& A, const dolfin::GenericVector& x){
 	auto start = std::chrono::steady_clock::now();
 	dolfin::assemble(A, *J_);
 	auto end = std::chrono::steady_clock::now();
-	std::cout << "assemble J: " << std::chrono::duration_cast<std::chrono::seconds>(end - start).count() << std::endl;
+	if(rank_ == 0){
+		std::cout << "assemble J: " << std::chrono::duration_cast<std::chrono::seconds>(end - start).count() << std::endl;
+	}
 };
 
 std::pair<std::shared_ptr<dolfin::Function>, std::shared_ptr<dolfin::Function>> ReactionDiffusionProblem::getUs(){
