@@ -83,7 +83,7 @@ private:
 	void constTime_timestepping(int verbose, RuntimeTracker *tracker, std::shared_ptr<dolfin::Expression> initializer, std::shared_ptr<dolfin::File> output, double frameDuration, double tdt);
 	// perform timestepping with adaptive dt
 	// return if T is reached or convergence with dt_min_ still failes
-	void adaptiveTime_timestepping(int verbose, RuntimeTracker *tracker, std::shared_ptr<dolfin::Expression> initializer, std::shared_ptr<dolfin::File> output, int framesPerTimeUnit, double tdt);
+	void adaptiveTime_timestepping(int verbose, RuntimeTracker *tracker, std::shared_ptr<dolfin::Expression> initializer, std::shared_ptr<dolfin::File> output, double frameDuration, double tdt);
 
 };
 

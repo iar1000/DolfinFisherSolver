@@ -69,14 +69,8 @@ void RuntimeTracker::stopTracking(){
 }
 // tracking iteration
 void RuntimeTracker::newIteration(){
-	if(!inIteration_){
-		inIteration_ = true;
-		currIteration_ = Iteration();
-	}
-	else{
-		std::cout << "WARNING: seems like last iteration hasn't been ended properly" << std::endl <<
-				"	undefined behavior" << std::endl;
-	}
+	inIteration_ = true;
+	currIteration_ = Iteration();
 }
 void RuntimeTracker::endIteration(){
 	if(inIteration_){
@@ -252,7 +246,7 @@ void TimeStepper::constTime_timestepping(int verbose, RuntimeTracker *tracker, s
 	if(rank_ == 0){ std::cout << "finished" << std::endl << std::endl; }
 }
 
-void TimeStepper::adaptiveTime_timestepping(int verbose, RuntimeTracker *tracker, std::shared_ptr<dolfin::Expression> initializer, std::shared_ptr<dolfin::File> output, int frameDuration, double tdt)
+void TimeStepper::adaptiveTime_timestepping(int verbose, RuntimeTracker *tracker, std::shared_ptr<dolfin::Expression> initializer, std::shared_ptr<dolfin::File> output, double frameDuration, double tdt)
 {
 	/*
 	 * u_n (V)
@@ -284,7 +278,7 @@ void TimeStepper::adaptiveTime_timestepping(int verbose, RuntimeTracker *tracker
 	std::shared_ptr<dolfin::Function> u_low = us.at(2);
 	auto dt_p = problem_->getDt();
 	// initialize L2-Norm functional and helpers for timestep adaption
-	double tol = 1;
+	double tol = 10e-8;
 	double safety = 0.9;
 	std::shared_ptr<dolfin::Mesh> mesh = problem_->getMesh();
 	L2Error2D::Functional M(mesh, u_low, u_p);
@@ -333,13 +327,14 @@ void TimeStepper::adaptiveTime_timestepping(int verbose, RuntimeTracker *tracker
 		double fac = pow((safety * tol / nabla), (1/p));
 		dtNew = fac * dt;
 		if(nabla > tol){
-			std::cout << "BAD DT: adapted timestep from " << dt << " to " << dtNew << std::endl;
+			if(rank_ == 0 && verbose > 2){	// verbose level 3
+				std::cout << "new timestep= " << dtNew << " (" << dt << ")" << std::endl;
+			}
 			dt = dtNew;	// update to smaller timestep
 			continue; // don't update t, repeat with smaller timestep
 		}
 
 		// prepare next iteration
-		std::cout << "GOOD DT: adapted timestep from " << dt << " to " << dtNew << std::endl;
 		t += dt;
 		dt = dtNew;	// update to bigger timestep
 		*u0_p->vector() = *u_p->vector(); //@Which solver iteration values are used?
@@ -360,7 +355,7 @@ void TimeStepper::adaptiveTime_timestepping(int verbose, RuntimeTracker *tracker
 			frameNumber++;
 
 			if(rank_ == 0 && verbose > 2){ // verbose level 3
-				std::cout << "writing system state to output..." << std::endl << std::endl;
+				std::cout <<"writing system state to output..." << std::endl << std::endl;
 			}
 		}
 

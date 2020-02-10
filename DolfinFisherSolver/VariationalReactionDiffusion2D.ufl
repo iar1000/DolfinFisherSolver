@@ -11,8 +11,14 @@ v = TestFunction(V) 		# test function
 
 dt = Constant(cell)		# size of time-step
 rho = Constant(cell)	# reaction coefficient
-D = Coefficient(V) 			# diffusion tensor
+D = Coefficient(V) 		# diffusion tensor
+theta = Constant(cell)	# discretization variable
 
 # Problem formulation and it's Jacobian
-F = ((u - u0) / dt) * v * dx + D * dot(grad(u), grad(v)) * dx + rho * u * (1 - u) * v * dx
+F = ((u - u0) / dt) * v * dx \
+	+ theta * D * dot(grad(u), grad(v)) * dx \
+	+ (1 - theta) * D * dot(grad(u0), grad(v)) * dx \
+	- theta * rho * u * (1 - u) * v * dx \
+	- (1 - theta) * rho * u0 * (1 - u0) * v * dx
+	
 J = derivative(F, u)

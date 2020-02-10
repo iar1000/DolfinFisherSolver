@@ -4665,6 +4665,199 @@ public:
 
   const std::vector<bool> & enabled_coefficients() const final override
   {
+static const std::vector<bool> enabled({true, true, true, true, true, true});
+return enabled;
+  }
+
+  void tabulate_tensor(double * A,
+                       const double * const * w,
+                       const double * coordinate_dofs,
+                       int cell_orientation) const final override
+  {
+    // This function was generated using 'uflacs' representation
+    // with the following integrals metadata:
+    // 
+    // num_cells:         None
+    // optimize:          True
+    // precision:         16
+    // quadrature_degree: 6
+    // quadrature_rule:   'default'
+    // representation:    'uflacs'
+    // 
+    // and the following integral 0 metadata:
+    // 
+    // estimated_polynomial_degree: 6
+    // optimize:                    True
+    // precision:                   16
+    // quadrature_degree:           6
+    // quadrature_rule:             'default'
+    // representation:              'uflacs'
+    // Quadrature rules
+    alignas(32) static const double weights12[12] = { 0.0254224531851035, 0.0254224531851035, 0.0254224531851035, 0.0583931378631895, 0.0583931378631895, 0.0583931378631895, 0.041425537809187, 0.041425537809187, 0.041425537809187, 0.041425537809187, 0.041425537809187, 0.041425537809187 };
+    // Precomputed values of basis functions and precomputations
+    // FE* dimensions: [entities][points][dofs]
+    // PI* dimensions: [entities][dofs][dofs] or [entities][dofs]
+    // PM* dimensions: [entities][dofs][dofs]
+    alignas(32) static const double FE17_C0_D01_Q12[1][12][5] =
+        { { { 0.7476439420339869, -0.7476439420339919, 3.49528788406797, 0.0, -3.495287884067985 },
+            { 0.7476439420339871, 2.495287884067987, 0.2523560579659911, -3.242931826101968, -0.2523560579660048 },
+            { -2.495287884067988, -0.7476439420339919, 0.2523560579659987, 3.242931826101983, -0.2523560579660069 },
+            { 0.002853019316351374, -0.002853019316358951, 2.005706038632703, 0.0, -2.005706038632718 },
+            { 0.002853019316351124, 1.005706038632718, 0.9971469806836263, -1.008559057949063, -0.9971469806836398 },
+            { -1.005706038632725, -0.002853019316358951, 0.9971469806836285, 1.008559057949089, -0.9971469806836404 },
+            { 0.7874198006207315, 0.2414098041351413, 2.546009996485582, -1.028829604755866, -2.546009996485598 },
+            { -0.2414098041351444, -0.7874198006207355, 2.546009996485584, 1.028829604755886, -2.546009996485598 },
+            { 0.7874198006207311, 1.546009996485598, 1.241409804135125, -2.333429797106322, -1.24140980413514 },
+            { -1.5460099964856, -0.7874198006207355, 1.24140980413513, 2.333429797106341, -1.24140980413514 },
+            { -0.2414098041351454, 1.546009996485598, 0.2125801993792495, -1.304600192350448, -0.2125801993792619 },
+            { -1.546009996485601, 0.2414098041351415, 0.2125801993792523, 1.304600192350464, -0.2125801993792628 } } };
+    alignas(32) static const double FE17_C0_D10_Q12[1][12][5] =
+        { { { 0.7476439420339946, 2.495287884067984, 0.2523560579660068, -0.2523560579660068, -3.242931826101978 },
+            { 0.7476439420339918, -0.7476439420339926, 3.495287884067978, -3.495287884067978, 0.0 },
+            { -2.495287884067984, -0.7476439420339951, 0.2523560579660068, -0.2523560579660068, 3.242931826101979 },
+            { 0.002853019316357411, 1.005706038632716, 0.9971469806836379, -0.9971469806836379, -1.008559057949074 },
+            { 0.002853019316356509, -0.002853019316360395, 2.005706038632713, -2.005706038632713, 0.0 },
+            { -1.00570603863272, -0.002853019316361435, 0.9971469806836379, -0.9971469806836379, 1.008559057949081 },
+            { 0.7874198006207378, 1.546009996485596, 1.241409804135138, -1.241409804135138, -2.333429797106334 },
+            { -0.2414098041351379, 1.546009996485596, 0.2125801993792628, -0.2125801993792628, -1.304600192350458 },
+            { 0.7874198006207369, 0.2414098041351405, 2.546009996485592, -2.546009996485592, -1.028829604755878 },
+            { -1.546009996485595, 0.2414098041351381, 0.2125801993792628, -0.2125801993792628, 1.304600192350457 },
+            { -0.241409804135141, -0.7874198006207374, 2.546009996485592, -2.546009996485592, 1.028829604755878 },
+            { -1.546009996485597, -0.7874198006207385, 1.241409804135138, -1.241409804135138, 2.333429797106335 } } };
+    alignas(32) static const double FE17_C0_Q12[1][12][6] =
+        { { { -0.05512856699248412, 0.6533077030470594, -0.05512856699248411, 0.2205142679699365, 0.01592089499803576, 0.2205142679699365 },
+            { -0.05512856699248404, -0.05512856699248404, 0.6533077030470598, 0.2205142679699363, 0.2205142679699363, 0.0159208949980358 },
+            { 0.6533077030470595, -0.05512856699248411, -0.05512856699248411, 0.0159208949980358, 0.2205142679699365, 0.2205142679699365 },
+            { -0.1249989825350975, 0.001430579517788765, -0.1249989825350975, 0.4999959301403892, 0.2485755252716258, 0.4999959301403912 },
+            { -0.1249989825350975, -0.1249989825350976, 0.001430579517788869, 0.4999959301403891, 0.4999959301403912, 0.2485755252716258 },
+            { 0.001430579517789861, -0.1249989825350975, -0.1249989825350975, 0.2485755252716248, 0.4999959301403902, 0.4999959301403902 },
+            { -0.04749625719880008, 0.173768363654174, -0.1177151633084291, 0.7901604427658229, 0.06597478591860537, 0.1353078281686269 },
+            { -0.1177151633084291, 0.1737683636541741, -0.04749625719879999, 0.1353078281686267, 0.0659747859186052, 0.7901604427658231 },
+            { -0.0474962571988, -0.1177151633084292, 0.1737683636541741, 0.790160442765823, 0.1353078281686268, 0.06597478591860526 },
+            { 0.1737683636541741, -0.1177151633084292, -0.04749625719879999, 0.06597478591860521, 0.1353078281686267, 0.7901604427658231 },
+            { -0.1177151633084291, -0.04749625719880003, 0.1737683636541741, 0.1353078281686268, 0.790160442765823, 0.06597478591860526 },
+            { 0.1737683636541741, -0.04749625719880009, -0.1177151633084291, 0.06597478591860535, 0.7901604427658229, 0.1353078281686269 } } };
+    alignas(32) static const double FE3_C0_D01_Q12[1][1][2] = { { { -1.0, 1.0 } } };
+    // Unstructured piecewise computations
+    const double J_c0 = coordinate_dofs[0] * FE3_C0_D01_Q12[0][0][0] + coordinate_dofs[2] * FE3_C0_D01_Q12[0][0][1];
+    const double J_c3 = coordinate_dofs[1] * FE3_C0_D01_Q12[0][0][0] + coordinate_dofs[5] * FE3_C0_D01_Q12[0][0][1];
+    const double J_c1 = coordinate_dofs[0] * FE3_C0_D01_Q12[0][0][0] + coordinate_dofs[4] * FE3_C0_D01_Q12[0][0][1];
+    const double J_c2 = coordinate_dofs[1] * FE3_C0_D01_Q12[0][0][0] + coordinate_dofs[3] * FE3_C0_D01_Q12[0][0][1];
+    alignas(32) double sp[10];
+    sp[0] = (1 + -1 * w[5][0]) * w[3][0];
+    sp[1] = w[3][0] * w[5][0];
+    sp[2] = J_c0 * J_c3;
+    sp[3] = J_c1 * J_c2;
+    sp[4] = sp[2] + -1 * sp[3];
+    sp[5] = J_c0 / sp[4];
+    sp[6] = -1 * J_c1 / sp[4];
+    sp[7] = J_c3 / sp[4];
+    sp[8] = -1 * J_c2 / sp[4];
+    sp[9] = std::abs(sp[4]);
+    alignas(32) double BF0[6] = {};
+    alignas(32) double BF1[5] = {};
+    alignas(32) double BF2[5] = {};
+    for (int iq = 0; iq < 12; ++iq)
+    {
+        // Quadrature loop body setup (num_points=12)
+        // Unstructured varying computations for num_points=12
+        double w0 = 0.0;
+        for (int ic = 0; ic < 6; ++ic)
+            w0 += w[0][ic] * FE17_C0_Q12[0][iq][ic];
+        double w1 = 0.0;
+        for (int ic = 0; ic < 6; ++ic)
+            w1 += w[1][ic] * FE17_C0_Q12[0][iq][ic];
+        const double w0_d1 = w[0][0] * FE17_C0_D01_Q12[0][iq][0] + w[0][2] * FE17_C0_D01_Q12[0][iq][1] + w[0][3] * FE17_C0_D01_Q12[0][iq][2] + w[0][4] * FE17_C0_D01_Q12[0][iq][3] + w[0][5] * FE17_C0_D01_Q12[0][iq][4];
+        const double w0_d0 = w[0][0] * FE17_C0_D10_Q12[0][iq][0] + w[0][1] * FE17_C0_D10_Q12[0][iq][1] + w[0][3] * FE17_C0_D10_Q12[0][iq][2] + w[0][4] * FE17_C0_D10_Q12[0][iq][3] + w[0][5] * FE17_C0_D10_Q12[0][iq][4];
+        double w4 = 0.0;
+        for (int ic = 0; ic < 6; ++ic)
+            w4 += w[4][ic] * FE17_C0_Q12[0][iq][ic];
+        const double w1_d1 = w[1][0] * FE17_C0_D01_Q12[0][iq][0] + w[1][2] * FE17_C0_D01_Q12[0][iq][1] + w[1][3] * FE17_C0_D01_Q12[0][iq][2] + w[1][4] * FE17_C0_D01_Q12[0][iq][3] + w[1][5] * FE17_C0_D01_Q12[0][iq][4];
+        const double w1_d0 = w[1][0] * FE17_C0_D10_Q12[0][iq][0] + w[1][1] * FE17_C0_D10_Q12[0][iq][1] + w[1][3] * FE17_C0_D10_Q12[0][iq][2] + w[1][4] * FE17_C0_D10_Q12[0][iq][3] + w[1][5] * FE17_C0_D10_Q12[0][iq][4];
+        alignas(32) double sv12[43];
+        sv12[0] = sp[0] * w0;
+        sv12[1] = (1 + -1 * w0) * sv12[0];
+        sv12[2] = sp[1] * w1;
+        sv12[3] = (1 + -1 * w1) * sv12[2];
+        sv12[4] = -1 * sv12[1] + -1 * sv12[3];
+        sv12[5] = -1 * w0 + w1;
+        sv12[6] = sv12[5] / w[2][0];
+        sv12[7] = sv12[4] + sv12[6];
+        sv12[8] = w0_d1 * sp[5];
+        sv12[9] = w0_d0 * sp[6];
+        sv12[10] = sv12[8] + sv12[9];
+        sv12[11] = sv12[10] * sp[5];
+        sv12[12] = sv12[10] * sp[6];
+        sv12[13] = w0_d0 * sp[7];
+        sv12[14] = w0_d1 * sp[8];
+        sv12[15] = sv12[13] + sv12[14];
+        sv12[16] = sv12[15] * sp[8];
+        sv12[17] = sv12[15] * sp[7];
+        sv12[18] = sv12[11] + sv12[16];
+        sv12[19] = sv12[17] + sv12[12];
+        sv12[20] = (1 + -1 * w[5][0]) * w4;
+        sv12[21] = sv12[18] * sv12[20];
+        sv12[22] = sv12[19] * sv12[20];
+        sv12[23] = w1_d1 * sp[5];
+        sv12[24] = w1_d0 * sp[6];
+        sv12[25] = sv12[23] + sv12[24];
+        sv12[26] = sv12[25] * sp[5];
+        sv12[27] = sv12[25] * sp[6];
+        sv12[28] = w1_d0 * sp[7];
+        sv12[29] = w1_d1 * sp[8];
+        sv12[30] = sv12[28] + sv12[29];
+        sv12[31] = sv12[30] * sp[8];
+        sv12[32] = sv12[30] * sp[7];
+        sv12[33] = sv12[26] + sv12[31];
+        sv12[34] = sv12[32] + sv12[27];
+        sv12[35] = w4 * w[5][0];
+        sv12[36] = sv12[33] * sv12[35];
+        sv12[37] = sv12[34] * sv12[35];
+        sv12[38] = sv12[21] + sv12[36];
+        sv12[39] = sv12[22] + sv12[37];
+        sv12[40] = sv12[7] * sp[9];
+        sv12[41] = sv12[38] * sp[9];
+        sv12[42] = sv12[39] * sp[9];
+        const double fw0 = sv12[40] * weights12[iq];
+        for (int i = 0; i < 6; ++i)
+            BF0[i] += fw0 * FE17_C0_Q12[0][iq][i];
+        const double fw1 = sv12[42] * weights12[iq];
+        for (int i = 0; i < 5; ++i)
+            BF1[i] += fw1 * FE17_C0_D10_Q12[0][iq][i];
+        const double fw2 = sv12[41] * weights12[iq];
+        for (int i = 0; i < 5; ++i)
+            BF2[i] += fw2 * FE17_C0_D01_Q12[0][iq][i];
+    }
+    std::fill(A, A + 6, 0.0);
+    static const int DM0[5] = { 0, 1, 3, 4, 5 };
+    static const int DM1[5] = { 0, 2, 3, 4, 5 };
+    for (int i = 0; i < 6; ++i)
+        A[i] += BF0[i];
+    for (int i = 0; i < 5; ++i)
+        A[DM0[i]] += BF1[i];
+    for (int i = 0; i < 5; ++i)
+        A[DM1[i]] += BF2[i];
+  }
+
+};
+
+
+class variationalreactiondiffusion2d_cell_integral_1_otherwise: public ufc::cell_integral
+{
+public:
+
+  variationalreactiondiffusion2d_cell_integral_1_otherwise() : ufc::cell_integral()
+  {
+
+  }
+
+  ~variationalreactiondiffusion2d_cell_integral_1_otherwise() override
+  {
+
+  }
+
+  const std::vector<bool> & enabled_coefficients() const final override
+  {
 static const std::vector<bool> enabled({true, true, true, true, true});
 return enabled;
   }
@@ -4698,7 +4891,7 @@ return enabled;
     // FE* dimensions: [entities][points][dofs]
     // PI* dimensions: [entities][dofs][dofs] or [entities][dofs]
     // PM* dimensions: [entities][dofs][dofs]
-    alignas(32) static const double FE14_C0_D01_Q12[1][12][5] =
+    alignas(32) static const double FE15_C0_D01_Q12[1][12][5] =
         { { { 0.7476439420339869, -0.7476439420339919, 3.49528788406797, 0.0, -3.495287884067985 },
             { 0.7476439420339871, 2.495287884067987, 0.2523560579659911, -3.242931826101968, -0.2523560579660048 },
             { -2.495287884067988, -0.7476439420339919, 0.2523560579659987, 3.242931826101983, -0.2523560579660069 },
@@ -4711,7 +4904,7 @@ return enabled;
             { -1.5460099964856, -0.7874198006207355, 1.24140980413513, 2.333429797106341, -1.24140980413514 },
             { -0.2414098041351454, 1.546009996485598, 0.2125801993792495, -1.304600192350448, -0.2125801993792619 },
             { -1.546009996485601, 0.2414098041351415, 0.2125801993792523, 1.304600192350464, -0.2125801993792628 } } };
-    alignas(32) static const double FE14_C0_D10_Q12[1][12][5] =
+    alignas(32) static const double FE15_C0_D10_Q12[1][12][5] =
         { { { 0.7476439420339946, 2.495287884067984, 0.2523560579660068, -0.2523560579660068, -3.242931826101978 },
             { 0.7476439420339918, -0.7476439420339926, 3.495287884067978, -3.495287884067978, 0.0 },
             { -2.495287884067984, -0.7476439420339951, 0.2523560579660068, -0.2523560579660068, 3.242931826101979 },
@@ -4724,7 +4917,7 @@ return enabled;
             { -1.546009996485595, 0.2414098041351381, 0.2125801993792628, -0.2125801993792628, 1.304600192350457 },
             { -0.241409804135141, -0.7874198006207374, 2.546009996485592, -2.546009996485592, 1.028829604755878 },
             { -1.546009996485597, -0.7874198006207385, 1.241409804135138, -1.241409804135138, 2.333429797106335 } } };
-    alignas(32) static const double FE14_C0_Q12[1][12][6] =
+    alignas(32) static const double FE15_C0_Q12[1][12][6] =
         { { { -0.05512856699248412, 0.6533077030470594, -0.05512856699248411, 0.2205142679699365, 0.01592089499803576, 0.2205142679699365 },
             { -0.05512856699248404, -0.05512856699248404, 0.6533077030470598, 0.2205142679699363, 0.2205142679699363, 0.0159208949980358 },
             { 0.6533077030470595, -0.05512856699248411, -0.05512856699248411, 0.0159208949980358, 0.2205142679699365, 0.2205142679699365 },
@@ -4743,192 +4936,25 @@ return enabled;
     const double J_c3 = coordinate_dofs[1] * FE3_C0_D01_Q12[0][0][0] + coordinate_dofs[5] * FE3_C0_D01_Q12[0][0][1];
     const double J_c1 = coordinate_dofs[0] * FE3_C0_D01_Q12[0][0][0] + coordinate_dofs[4] * FE3_C0_D01_Q12[0][0][1];
     const double J_c2 = coordinate_dofs[1] * FE3_C0_D01_Q12[0][0][0] + coordinate_dofs[3] * FE3_C0_D01_Q12[0][0][1];
-    alignas(32) double sp[8];
-    sp[0] = J_c0 * J_c3;
-    sp[1] = J_c1 * J_c2;
-    sp[2] = sp[0] + -1 * sp[1];
-    sp[3] = J_c0 / sp[2];
-    sp[4] = -1 * J_c1 / sp[2];
-    sp[5] = J_c3 / sp[2];
-    sp[6] = -1 * J_c2 / sp[2];
-    sp[7] = std::abs(sp[2]);
-    alignas(32) double BF0[6] = {};
-    alignas(32) double BF1[5] = {};
-    alignas(32) double BF2[5] = {};
-    for (int iq = 0; iq < 12; ++iq)
-    {
-        // Quadrature loop body setup (num_points=12)
-        // Unstructured varying computations for num_points=12
-        double w1 = 0.0;
-        for (int ic = 0; ic < 6; ++ic)
-            w1 += w[1][ic] * FE14_C0_Q12[0][iq][ic];
-        double w0 = 0.0;
-        for (int ic = 0; ic < 6; ++ic)
-            w0 += w[0][ic] * FE14_C0_Q12[0][iq][ic];
-        const double w1_d1 = w[1][0] * FE14_C0_D01_Q12[0][iq][0] + w[1][2] * FE14_C0_D01_Q12[0][iq][1] + w[1][3] * FE14_C0_D01_Q12[0][iq][2] + w[1][4] * FE14_C0_D01_Q12[0][iq][3] + w[1][5] * FE14_C0_D01_Q12[0][iq][4];
-        const double w1_d0 = w[1][0] * FE14_C0_D10_Q12[0][iq][0] + w[1][1] * FE14_C0_D10_Q12[0][iq][1] + w[1][3] * FE14_C0_D10_Q12[0][iq][2] + w[1][4] * FE14_C0_D10_Q12[0][iq][3] + w[1][5] * FE14_C0_D10_Q12[0][iq][4];
-        double w4 = 0.0;
-        for (int ic = 0; ic < 6; ++ic)
-            w4 += w[4][ic] * FE14_C0_Q12[0][iq][ic];
-        alignas(32) double sv12[22];
-        sv12[0] = w1 * w[3][0];
-        sv12[1] = (1 + -1 * w1) * sv12[0];
-        sv12[2] = -1 * w0 + w1;
-        sv12[3] = sv12[2] / w[2][0];
-        sv12[4] = sv12[1] + sv12[3];
-        sv12[5] = w1_d1 * sp[3];
-        sv12[6] = w1_d0 * sp[4];
-        sv12[7] = sv12[5] + sv12[6];
-        sv12[8] = sv12[7] * sp[3];
-        sv12[9] = sv12[7] * sp[4];
-        sv12[10] = w1_d0 * sp[5];
-        sv12[11] = w1_d1 * sp[6];
-        sv12[12] = sv12[10] + sv12[11];
-        sv12[13] = sv12[12] * sp[6];
-        sv12[14] = sv12[12] * sp[5];
-        sv12[15] = sv12[8] + sv12[13];
-        sv12[16] = sv12[14] + sv12[9];
-        sv12[17] = sv12[15] * w4;
-        sv12[18] = sv12[16] * w4;
-        sv12[19] = sv12[4] * sp[7];
-        sv12[20] = sv12[17] * sp[7];
-        sv12[21] = sv12[18] * sp[7];
-        const double fw0 = sv12[19] * weights12[iq];
-        for (int i = 0; i < 6; ++i)
-            BF0[i] += fw0 * FE14_C0_Q12[0][iq][i];
-        const double fw1 = sv12[21] * weights12[iq];
-        for (int i = 0; i < 5; ++i)
-            BF1[i] += fw1 * FE14_C0_D10_Q12[0][iq][i];
-        const double fw2 = sv12[20] * weights12[iq];
-        for (int i = 0; i < 5; ++i)
-            BF2[i] += fw2 * FE14_C0_D01_Q12[0][iq][i];
-    }
-    std::fill(A, A + 6, 0.0);
-    static const int DM0[5] = { 0, 1, 3, 4, 5 };
-    static const int DM1[5] = { 0, 2, 3, 4, 5 };
-    for (int i = 0; i < 6; ++i)
-        A[i] += BF0[i];
-    for (int i = 0; i < 5; ++i)
-        A[DM0[i]] += BF1[i];
-    for (int i = 0; i < 5; ++i)
-        A[DM1[i]] += BF2[i];
-  }
-
-};
-
-
-class variationalreactiondiffusion2d_cell_integral_1_otherwise: public ufc::cell_integral
-{
-public:
-
-  variationalreactiondiffusion2d_cell_integral_1_otherwise() : ufc::cell_integral()
-  {
-
-  }
-
-  ~variationalreactiondiffusion2d_cell_integral_1_otherwise() override
-  {
-
-  }
-
-  const std::vector<bool> & enabled_coefficients() const final override
-  {
-static const std::vector<bool> enabled({true, true, true, true});
-return enabled;
-  }
-
-  void tabulate_tensor(double * A,
-                       const double * const * w,
-                       const double * coordinate_dofs,
-                       int cell_orientation) const final override
-  {
-    // This function was generated using 'uflacs' representation
-    // with the following integrals metadata:
-    // 
-    // num_cells:         None
-    // optimize:          True
-    // precision:         16
-    // quadrature_degree: 6
-    // quadrature_rule:   'default'
-    // representation:    'uflacs'
-    // 
-    // and the following integral 0 metadata:
-    // 
-    // estimated_polynomial_degree: 6
-    // optimize:                    True
-    // precision:                   16
-    // quadrature_degree:           6
-    // quadrature_rule:             'default'
-    // representation:              'uflacs'
-    // Quadrature rules
-    alignas(32) static const double weights12[12] = { 0.0254224531851035, 0.0254224531851035, 0.0254224531851035, 0.0583931378631895, 0.0583931378631895, 0.0583931378631895, 0.041425537809187, 0.041425537809187, 0.041425537809187, 0.041425537809187, 0.041425537809187, 0.041425537809187 };
-    // Precomputed values of basis functions and precomputations
-    // FE* dimensions: [entities][points][dofs]
-    // PI* dimensions: [entities][dofs][dofs] or [entities][dofs]
-    // PM* dimensions: [entities][dofs][dofs]
-    alignas(32) static const double FE14_C0_D01_Q12[1][12][5] =
-        { { { 0.7476439420339869, -0.7476439420339919, 3.49528788406797, 0.0, -3.495287884067985 },
-            { 0.7476439420339871, 2.495287884067987, 0.2523560579659911, -3.242931826101968, -0.2523560579660048 },
-            { -2.495287884067988, -0.7476439420339919, 0.2523560579659987, 3.242931826101983, -0.2523560579660069 },
-            { 0.002853019316351374, -0.002853019316358951, 2.005706038632703, 0.0, -2.005706038632718 },
-            { 0.002853019316351124, 1.005706038632718, 0.9971469806836263, -1.008559057949063, -0.9971469806836398 },
-            { -1.005706038632725, -0.002853019316358951, 0.9971469806836285, 1.008559057949089, -0.9971469806836404 },
-            { 0.7874198006207315, 0.2414098041351413, 2.546009996485582, -1.028829604755866, -2.546009996485598 },
-            { -0.2414098041351444, -0.7874198006207355, 2.546009996485584, 1.028829604755886, -2.546009996485598 },
-            { 0.7874198006207311, 1.546009996485598, 1.241409804135125, -2.333429797106322, -1.24140980413514 },
-            { -1.5460099964856, -0.7874198006207355, 1.24140980413513, 2.333429797106341, -1.24140980413514 },
-            { -0.2414098041351454, 1.546009996485598, 0.2125801993792495, -1.304600192350448, -0.2125801993792619 },
-            { -1.546009996485601, 0.2414098041351415, 0.2125801993792523, 1.304600192350464, -0.2125801993792628 } } };
-    alignas(32) static const double FE14_C0_D10_Q12[1][12][5] =
-        { { { 0.7476439420339946, 2.495287884067984, 0.2523560579660068, -0.2523560579660068, -3.242931826101978 },
-            { 0.7476439420339918, -0.7476439420339926, 3.495287884067978, -3.495287884067978, 0.0 },
-            { -2.495287884067984, -0.7476439420339951, 0.2523560579660068, -0.2523560579660068, 3.242931826101979 },
-            { 0.002853019316357411, 1.005706038632716, 0.9971469806836379, -0.9971469806836379, -1.008559057949074 },
-            { 0.002853019316356509, -0.002853019316360395, 2.005706038632713, -2.005706038632713, 0.0 },
-            { -1.00570603863272, -0.002853019316361435, 0.9971469806836379, -0.9971469806836379, 1.008559057949081 },
-            { 0.7874198006207378, 1.546009996485596, 1.241409804135138, -1.241409804135138, -2.333429797106334 },
-            { -0.2414098041351379, 1.546009996485596, 0.2125801993792628, -0.2125801993792628, -1.304600192350458 },
-            { 0.7874198006207369, 0.2414098041351405, 2.546009996485592, -2.546009996485592, -1.028829604755878 },
-            { -1.546009996485595, 0.2414098041351381, 0.2125801993792628, -0.2125801993792628, 1.304600192350457 },
-            { -0.241409804135141, -0.7874198006207374, 2.546009996485592, -2.546009996485592, 1.028829604755878 },
-            { -1.546009996485597, -0.7874198006207385, 1.241409804135138, -1.241409804135138, 2.333429797106335 } } };
-    alignas(32) static const double FE14_C0_Q12[1][12][6] =
-        { { { -0.05512856699248412, 0.6533077030470594, -0.05512856699248411, 0.2205142679699365, 0.01592089499803576, 0.2205142679699365 },
-            { -0.05512856699248404, -0.05512856699248404, 0.6533077030470598, 0.2205142679699363, 0.2205142679699363, 0.0159208949980358 },
-            { 0.6533077030470595, -0.05512856699248411, -0.05512856699248411, 0.0159208949980358, 0.2205142679699365, 0.2205142679699365 },
-            { -0.1249989825350975, 0.001430579517788765, -0.1249989825350975, 0.4999959301403892, 0.2485755252716258, 0.4999959301403912 },
-            { -0.1249989825350975, -0.1249989825350976, 0.001430579517788869, 0.4999959301403891, 0.4999959301403912, 0.2485755252716258 },
-            { 0.001430579517789861, -0.1249989825350975, -0.1249989825350975, 0.2485755252716248, 0.4999959301403902, 0.4999959301403902 },
-            { -0.04749625719880008, 0.173768363654174, -0.1177151633084291, 0.7901604427658229, 0.06597478591860537, 0.1353078281686269 },
-            { -0.1177151633084291, 0.1737683636541741, -0.04749625719879999, 0.1353078281686267, 0.0659747859186052, 0.7901604427658231 },
-            { -0.0474962571988, -0.1177151633084292, 0.1737683636541741, 0.790160442765823, 0.1353078281686268, 0.06597478591860526 },
-            { 0.1737683636541741, -0.1177151633084292, -0.04749625719879999, 0.06597478591860521, 0.1353078281686267, 0.7901604427658231 },
-            { -0.1177151633084291, -0.04749625719880003, 0.1737683636541741, 0.1353078281686268, 0.790160442765823, 0.06597478591860526 },
-            { 0.1737683636541741, -0.04749625719880009, -0.1177151633084291, 0.06597478591860535, 0.7901604427658229, 0.1353078281686269 } } };
-    alignas(32) static const double FE3_C0_D01_Q12[1][1][2] = { { { -1.0, 1.0 } } };
-    // Unstructured piecewise computations
-    const double J_c0 = coordinate_dofs[0] * FE3_C0_D01_Q12[0][0][0] + coordinate_dofs[2] * FE3_C0_D01_Q12[0][0][1];
-    const double J_c3 = coordinate_dofs[1] * FE3_C0_D01_Q12[0][0][0] + coordinate_dofs[5] * FE3_C0_D01_Q12[0][0][1];
-    const double J_c1 = coordinate_dofs[0] * FE3_C0_D01_Q12[0][0][0] + coordinate_dofs[4] * FE3_C0_D01_Q12[0][0][1];
-    const double J_c2 = coordinate_dofs[1] * FE3_C0_D01_Q12[0][0][0] + coordinate_dofs[3] * FE3_C0_D01_Q12[0][0][1];
-    alignas(32) double sp[17];
-    sp[0] = J_c0 * J_c3;
-    sp[1] = J_c1 * J_c2;
-    sp[2] = sp[0] + -1 * sp[1];
-    sp[3] = J_c0 / sp[2];
-    sp[4] = -1 * J_c1 / sp[2];
-    sp[5] = sp[3] * sp[3];
-    sp[6] = sp[3] * sp[4];
-    sp[7] = sp[4] * sp[4];
-    sp[8] = J_c3 / sp[2];
-    sp[9] = -1 * J_c2 / sp[2];
-    sp[10] = sp[9] * sp[9];
-    sp[11] = sp[8] * sp[9];
-    sp[12] = sp[8] * sp[8];
-    sp[13] = sp[5] + sp[10];
+    alignas(32) double sp[18];
+    sp[0] = w[2][0] * w[4][0];
+    sp[1] = J_c0 * J_c3;
+    sp[2] = J_c1 * J_c2;
+    sp[3] = sp[1] + -1 * sp[2];
+    sp[4] = J_c0 / sp[3];
+    sp[5] = -1 * J_c1 / sp[3];
+    sp[6] = sp[4] * sp[4];
+    sp[7] = sp[4] * sp[5];
+    sp[8] = sp[5] * sp[5];
+    sp[9] = J_c3 / sp[3];
+    sp[10] = -1 * J_c2 / sp[3];
+    sp[11] = sp[10] * sp[10];
+    sp[12] = sp[9] * sp[10];
+    sp[13] = sp[9] * sp[9];
     sp[14] = sp[6] + sp[11];
-    sp[15] = sp[12] + sp[7];
-    sp[16] = std::abs(sp[2]);
+    sp[15] = sp[7] + sp[12];
+    sp[16] = sp[13] + sp[8];
+    sp[17] = std::abs(sp[3]);
     alignas(32) double BF0[6][6] = {};
     alignas(32) double BF1[5][5] = {};
     alignas(32) double BF2[5][5] = {};
@@ -4940,56 +4966,57 @@ return enabled;
         // Unstructured varying computations for num_points=12
         double w0 = 0.0;
         for (int ic = 0; ic < 6; ++ic)
-            w0 += w[0][ic] * FE14_C0_Q12[0][iq][ic];
+            w0 += w[0][ic] * FE15_C0_Q12[0][iq][ic];
         double w3 = 0.0;
         for (int ic = 0; ic < 6; ++ic)
-            w3 += w[3][ic] * FE14_C0_Q12[0][iq][ic];
-        alignas(32) double sv12[11];
-        sv12[0] = (1 + -1 * w0) * w[2][0];
-        sv12[1] = w0 * w[2][0];
+            w3 += w[3][ic] * FE15_C0_Q12[0][iq][ic];
+        alignas(32) double sv12[12];
+        sv12[0] = (1 + -1 * w0) * sp[0];
+        sv12[1] = sp[0] * w0;
         sv12[2] = -1.0 * sv12[1] + sv12[0];
-        sv12[3] = sv12[2] + 1.0 / w[1][0];
-        sv12[4] = sp[13] * w3;
-        sv12[5] = sp[14] * w3;
-        sv12[6] = sp[15] * w3;
-        sv12[7] = sv12[3] * sp[16];
-        sv12[8] = sv12[4] * sp[16];
-        sv12[9] = sv12[5] * sp[16];
-        sv12[10] = sv12[6] * sp[16];
-        const double fw0 = sv12[7] * weights12[iq];
+        sv12[3] = -1 * sv12[2] + 1.0 / w[1][0];
+        sv12[4] = w3 * w[4][0];
+        sv12[5] = sp[14] * sv12[4];
+        sv12[6] = sp[15] * sv12[4];
+        sv12[7] = sp[16] * sv12[4];
+        sv12[8] = sv12[3] * sp[17];
+        sv12[9] = sv12[5] * sp[17];
+        sv12[10] = sv12[6] * sp[17];
+        sv12[11] = sv12[7] * sp[17];
+        const double fw0 = sv12[8] * weights12[iq];
         alignas(32) double TF0[6];
         for (int i = 0; i < 6; ++i)
-            TF0[i] = fw0 * FE14_C0_Q12[0][iq][i];
+            TF0[i] = fw0 * FE15_C0_Q12[0][iq][i];
         for (int i = 0; i < 6; ++i)
             for (int j = 0; j < 6; ++j)
-                BF0[i][j] += TF0[i] * FE14_C0_Q12[0][iq][j];
-        const double fw1 = sv12[10] * weights12[iq];
+                BF0[i][j] += TF0[i] * FE15_C0_Q12[0][iq][j];
+        const double fw1 = sv12[11] * weights12[iq];
         alignas(32) double TF1[5];
         for (int i = 0; i < 5; ++i)
-            TF1[i] = fw1 * FE14_C0_D10_Q12[0][iq][i];
+            TF1[i] = fw1 * FE15_C0_D10_Q12[0][iq][i];
         for (int i = 0; i < 5; ++i)
             for (int j = 0; j < 5; ++j)
-                BF1[i][j] += TF1[i] * FE14_C0_D10_Q12[0][iq][j];
-        const double fw2 = sv12[9] * weights12[iq];
+                BF1[i][j] += TF1[i] * FE15_C0_D10_Q12[0][iq][j];
+        const double fw2 = sv12[10] * weights12[iq];
         alignas(32) double TF2[5];
         for (int i = 0; i < 5; ++i)
-            TF2[i] = fw2 * FE14_C0_D10_Q12[0][iq][i];
+            TF2[i] = fw2 * FE15_C0_D10_Q12[0][iq][i];
         for (int i = 0; i < 5; ++i)
             for (int j = 0; j < 5; ++j)
-                BF2[i][j] += TF2[i] * FE14_C0_D01_Q12[0][iq][j];
+                BF2[i][j] += TF2[i] * FE15_C0_D01_Q12[0][iq][j];
         alignas(32) double TF3[5];
         for (int i = 0; i < 5; ++i)
-            TF3[i] = fw2 * FE14_C0_D01_Q12[0][iq][i];
+            TF3[i] = fw2 * FE15_C0_D01_Q12[0][iq][i];
         for (int i = 0; i < 5; ++i)
             for (int j = 0; j < 5; ++j)
-                BF3[i][j] += TF3[i] * FE14_C0_D10_Q12[0][iq][j];
-        const double fw3 = sv12[8] * weights12[iq];
+                BF3[i][j] += TF3[i] * FE15_C0_D10_Q12[0][iq][j];
+        const double fw3 = sv12[9] * weights12[iq];
         alignas(32) double TF4[5];
         for (int i = 0; i < 5; ++i)
-            TF4[i] = fw3 * FE14_C0_D01_Q12[0][iq][i];
+            TF4[i] = fw3 * FE15_C0_D01_Q12[0][iq][i];
         for (int i = 0; i < 5; ++i)
             for (int j = 0; j < 5; ++j)
-                BF4[i][j] += TF4[i] * FE14_C0_D01_Q12[0][iq][j];
+                BF4[i][j] += TF4[i] * FE15_C0_D01_Q12[0][iq][j];
     }
     std::fill(A, A + 36, 0.0);
     static const int DM0[5] = { 0, 1, 3, 4, 5 };
@@ -5030,7 +5057,7 @@ public:
 
   const char * signature() const final override
   {
-    return "e50a0976a9339ca4eee87b36372f854d8ceb1174f0a866f41a8aacacc7318b00b881f88036f8468b77a352ac1dc13478efb9d48cc6de981d04ec86fa3432369e";
+    return "8fc354fa302c674ec3ce6ba0063d0209af50124ae3fe914a92ec8e54f2811816cb09cb9d8d5317893fa5bfd97a3a649f0abd443b20a596912425b7045139cdf9";
   }
 
   std::size_t rank() const final override
@@ -5040,16 +5067,16 @@ public:
 
   std::size_t num_coefficients() const final override
   {
-    return 5;
+    return 6;
   }
 
   std::size_t original_coefficient_position(std::size_t i) const final override
   {
-    if (i >= 5)
+    if (i >= 6)
     {
         throw std::runtime_error("Invalid original coefficient index.");
     }
-    static const std::vector<std::size_t> position = {0, 1, 2, 3, 4};
+    static const std::vector<std::size_t> position = {0, 1, 2, 3, 4, 5};
     return position[i];
   }
 
@@ -5084,6 +5111,8 @@ public:
         return new variationalreactiondiffusion2d_finite_element_2();
     case 5:
         return new variationalreactiondiffusion2d_finite_element_3();
+    case 6:
+        return new variationalreactiondiffusion2d_finite_element_2();
     default:
         return nullptr;
     }
@@ -5105,6 +5134,8 @@ public:
         return new variationalreactiondiffusion2d_dofmap_2();
     case 5:
         return new variationalreactiondiffusion2d_dofmap_3();
+    case 6:
+        return new variationalreactiondiffusion2d_dofmap_2();
     default:
         return nullptr;
     }
@@ -5289,7 +5320,7 @@ public:
 
   const char * signature() const final override
   {
-    return "4ad907516512db466da657e8642fffc29bb3270482cc864e5a5389993e88ea1f09ffcc7d6911eba66d77f480b8d0afd1ec848533f7875e7f200a952e3e4b8043";
+    return "4262051a069a39e5502442f04d6a94eefb8be4adfd63222351cb5f729bed3be9a51c09c7abe146f559eefa87db0a8ec69a9b170234103742c34cc3fcb07bb2da";
   }
 
   std::size_t rank() const final override
@@ -5299,16 +5330,16 @@ public:
 
   std::size_t num_coefficients() const final override
   {
-    return 4;
+    return 5;
   }
 
   std::size_t original_coefficient_position(std::size_t i) const final override
   {
-    if (i >= 4)
+    if (i >= 5)
     {
         throw std::runtime_error("Invalid original coefficient index.");
     }
-    static const std::vector<std::size_t> position = {1, 2, 3, 4};
+    static const std::vector<std::size_t> position = {1, 2, 3, 4, 5};
     return position[i];
   }
 
@@ -5343,6 +5374,8 @@ public:
         return new variationalreactiondiffusion2d_finite_element_2();
     case 5:
         return new variationalreactiondiffusion2d_finite_element_3();
+    case 6:
+        return new variationalreactiondiffusion2d_finite_element_2();
     default:
         return nullptr;
     }
@@ -5364,6 +5397,8 @@ public:
         return new variationalreactiondiffusion2d_dofmap_2();
     case 5:
         return new variationalreactiondiffusion2d_dofmap_3();
+    case 6:
+        return new variationalreactiondiffusion2d_dofmap_2();
     default:
         return nullptr;
     }
@@ -5628,6 +5663,30 @@ public:
 
 };
 
+class CoefficientSpace_theta: public dolfin::FunctionSpace
+{
+public:
+
+  // Constructor for standard function space
+  CoefficientSpace_theta(std::shared_ptr<const dolfin::Mesh> mesh):
+    dolfin::FunctionSpace(mesh,
+                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalreactiondiffusion2d_finite_element_2>()),
+                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalreactiondiffusion2d_dofmap_2>(), *mesh))
+  {
+    // Do nothing
+  }
+
+  // Constructor for constrained function space
+  CoefficientSpace_theta(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
+    dolfin::FunctionSpace(mesh,
+                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalreactiondiffusion2d_finite_element_2>()),
+                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalreactiondiffusion2d_dofmap_2>(), *mesh, constrained_domain))
+  {
+    // Do nothing
+  }
+
+};
+
 class CoefficientSpace_u: public dolfin::FunctionSpace
 {
 public:
@@ -5730,13 +5789,15 @@ typedef CoefficientSpace_rho Form_F_FunctionSpace_4;
 
 typedef CoefficientSpace_D Form_F_FunctionSpace_5;
 
+typedef CoefficientSpace_theta Form_F_FunctionSpace_6;
+
 class Form_F: public dolfin::Form
 {
 public:
 
   // Constructor
   Form_F(std::shared_ptr<const dolfin::FunctionSpace> V0):
-    dolfin::Form(1, 5), u0(*this, 0), u(*this, 1), dt(*this, 2), rho(*this, 3), D(*this, 4)
+    dolfin::Form(1, 6), u0(*this, 0), u(*this, 1), dt(*this, 2), rho(*this, 3), D(*this, 4), theta(*this, 5)
   {
     _function_spaces[0] = V0;
 
@@ -5744,8 +5805,8 @@ public:
   }
 
   // Constructor
-  Form_F(std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> u0, std::shared_ptr<const dolfin::GenericFunction> u, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> rho, std::shared_ptr<const dolfin::GenericFunction> D):
-    dolfin::Form(1, 5), u0(*this, 0), u(*this, 1), dt(*this, 2), rho(*this, 3), D(*this, 4)
+  Form_F(std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> u0, std::shared_ptr<const dolfin::GenericFunction> u, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> rho, std::shared_ptr<const dolfin::GenericFunction> D, std::shared_ptr<const dolfin::GenericFunction> theta):
+    dolfin::Form(1, 6), u0(*this, 0), u(*this, 1), dt(*this, 2), rho(*this, 3), D(*this, 4), theta(*this, 5)
   {
     _function_spaces[0] = V0;
 
@@ -5754,6 +5815,7 @@ public:
     this->dt = dt;
     this->rho = rho;
     this->D = D;
+    this->theta = theta;
 
     _ufc_form = std::make_shared<const variationalreactiondiffusion2d_form_0>();
   }
@@ -5775,6 +5837,8 @@ public:
       return 3;
     else if (name == "D")
       return 4;
+    else if (name == "theta")
+      return 5;
 
     dolfin::dolfin_error("generated code for class Form",
                          "access coefficient data",
@@ -5797,6 +5861,8 @@ public:
       return "rho";
     case 4:
       return "D";
+    case 5:
+      return "theta";
     }
 
     dolfin::dolfin_error("generated code for class Form",
@@ -5813,6 +5879,7 @@ public:
   typedef Form_F_FunctionSpace_3 CoefficientSpace_dt;
   typedef Form_F_FunctionSpace_4 CoefficientSpace_rho;
   typedef Form_F_FunctionSpace_5 CoefficientSpace_D;
+  typedef Form_F_FunctionSpace_6 CoefficientSpace_theta;
 
   // Coefficients
   dolfin::CoefficientAssigner u0;
@@ -5820,6 +5887,7 @@ public:
   dolfin::CoefficientAssigner dt;
   dolfin::CoefficientAssigner rho;
   dolfin::CoefficientAssigner D;
+  dolfin::CoefficientAssigner theta;
 };
 
 class MultiMeshForm_F: public dolfin::MultiMeshForm
@@ -5828,7 +5896,7 @@ public:
 
   // Constructor
   MultiMeshForm_F(std::shared_ptr<const dolfin::MultiMeshFunctionSpace> V0):
-    dolfin::MultiMeshForm(V0), u0(*this, 0), u(*this, 1), dt(*this, 2), rho(*this, 3), D(*this, 4)
+    dolfin::MultiMeshForm(V0), u0(*this, 0), u(*this, 1), dt(*this, 2), rho(*this, 3), D(*this, 4), theta(*this, 5)
   {
     // Create and add standard forms
     std::size_t num_parts = V0->num_parts(); // assume all equal and pick first
@@ -5846,8 +5914,8 @@ public:
   }
 
   // Constructor
-  MultiMeshForm_F(std::shared_ptr<const dolfin::MultiMeshFunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> u0, std::shared_ptr<const dolfin::GenericFunction> u, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> rho, std::shared_ptr<const dolfin::GenericFunction> D):
-    dolfin::MultiMeshForm(V0), u0(*this, 0), u(*this, 1), dt(*this, 2), rho(*this, 3), D(*this, 4)
+  MultiMeshForm_F(std::shared_ptr<const dolfin::MultiMeshFunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> u0, std::shared_ptr<const dolfin::GenericFunction> u, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> rho, std::shared_ptr<const dolfin::GenericFunction> D, std::shared_ptr<const dolfin::GenericFunction> theta):
+    dolfin::MultiMeshForm(V0), u0(*this, 0), u(*this, 1), dt(*this, 2), rho(*this, 3), D(*this, 4), theta(*this, 5)
   {
     // Create and add standard forms
     std::size_t num_parts = V0->num_parts(); // assume all equal and pick first
@@ -5866,6 +5934,7 @@ public:
     this->dt = dt;
     this->rho = rho;
     this->D = D;
+    this->theta = theta;
 
   }
 
@@ -5886,6 +5955,8 @@ public:
       return 3;
     else if (name == "D")
       return 4;
+    else if (name == "theta")
+      return 5;
 
     dolfin::dolfin_error("generated code for class Form",
                          "access coefficient data",
@@ -5908,6 +5979,8 @@ public:
       return "rho";
     case 4:
       return "D";
+    case 5:
+      return "theta";
     }
 
     dolfin::dolfin_error("generated code for class Form",
@@ -5924,6 +5997,7 @@ public:
   typedef Form_F_FunctionSpace_3 CoefficientSpace_dt;
   typedef Form_F_FunctionSpace_4 CoefficientSpace_rho;
   typedef Form_F_FunctionSpace_5 CoefficientSpace_D;
+  typedef Form_F_FunctionSpace_6 CoefficientSpace_theta;
 
   // Coefficients
   dolfin::MultiMeshCoefficientAssigner u0;
@@ -5931,6 +6005,7 @@ public:
   dolfin::MultiMeshCoefficientAssigner dt;
   dolfin::MultiMeshCoefficientAssigner rho;
   dolfin::MultiMeshCoefficientAssigner D;
+  dolfin::MultiMeshCoefficientAssigner theta;
 };
 
 class Form_J_FunctionSpace_0: public dolfin::FunctionSpace
@@ -6029,13 +6104,15 @@ typedef CoefficientSpace_rho Form_J_FunctionSpace_4;
 
 typedef CoefficientSpace_D Form_J_FunctionSpace_5;
 
+typedef CoefficientSpace_theta Form_J_FunctionSpace_6;
+
 class Form_J: public dolfin::Form
 {
 public:
 
   // Constructor
   Form_J(std::shared_ptr<const dolfin::FunctionSpace> V1, std::shared_ptr<const dolfin::FunctionSpace> V0):
-    dolfin::Form(2, 4), u(*this, 0), dt(*this, 1), rho(*this, 2), D(*this, 3)
+    dolfin::Form(2, 5), u(*this, 0), dt(*this, 1), rho(*this, 2), D(*this, 3), theta(*this, 4)
   {
     _function_spaces[0] = V0;
     _function_spaces[1] = V1;
@@ -6044,8 +6121,8 @@ public:
   }
 
   // Constructor
-  Form_J(std::shared_ptr<const dolfin::FunctionSpace> V1, std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> u, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> rho, std::shared_ptr<const dolfin::GenericFunction> D):
-    dolfin::Form(2, 4), u(*this, 0), dt(*this, 1), rho(*this, 2), D(*this, 3)
+  Form_J(std::shared_ptr<const dolfin::FunctionSpace> V1, std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> u, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> rho, std::shared_ptr<const dolfin::GenericFunction> D, std::shared_ptr<const dolfin::GenericFunction> theta):
+    dolfin::Form(2, 5), u(*this, 0), dt(*this, 1), rho(*this, 2), D(*this, 3), theta(*this, 4)
   {
     _function_spaces[0] = V0;
     _function_spaces[1] = V1;
@@ -6054,6 +6131,7 @@ public:
     this->dt = dt;
     this->rho = rho;
     this->D = D;
+    this->theta = theta;
 
     _ufc_form = std::make_shared<const variationalreactiondiffusion2d_form_1>();
   }
@@ -6073,6 +6151,8 @@ public:
       return 2;
     else if (name == "D")
       return 3;
+    else if (name == "theta")
+      return 4;
 
     dolfin::dolfin_error("generated code for class Form",
                          "access coefficient data",
@@ -6093,6 +6173,8 @@ public:
       return "rho";
     case 3:
       return "D";
+    case 4:
+      return "theta";
     }
 
     dolfin::dolfin_error("generated code for class Form",
@@ -6110,12 +6192,14 @@ public:
   typedef Form_J_FunctionSpace_3 CoefficientSpace_dt;
   typedef Form_J_FunctionSpace_4 CoefficientSpace_rho;
   typedef Form_J_FunctionSpace_5 CoefficientSpace_D;
+  typedef Form_J_FunctionSpace_6 CoefficientSpace_theta;
 
   // Coefficients
   dolfin::CoefficientAssigner u;
   dolfin::CoefficientAssigner dt;
   dolfin::CoefficientAssigner rho;
   dolfin::CoefficientAssigner D;
+  dolfin::CoefficientAssigner theta;
 };
 
 class MultiMeshForm_J: public dolfin::MultiMeshForm
@@ -6124,7 +6208,7 @@ public:
 
   // Constructor
   MultiMeshForm_J(std::shared_ptr<const dolfin::MultiMeshFunctionSpace> V1, std::shared_ptr<const dolfin::MultiMeshFunctionSpace> V0):
-    dolfin::MultiMeshForm(V1, V0), u(*this, 0), dt(*this, 1), rho(*this, 2), D(*this, 3)
+    dolfin::MultiMeshForm(V1, V0), u(*this, 0), dt(*this, 1), rho(*this, 2), D(*this, 3), theta(*this, 4)
   {
     // Create and add standard forms
     std::size_t num_parts = V0->num_parts(); // assume all equal and pick first
@@ -6142,8 +6226,8 @@ public:
   }
 
   // Constructor
-  MultiMeshForm_J(std::shared_ptr<const dolfin::MultiMeshFunctionSpace> V1, std::shared_ptr<const dolfin::MultiMeshFunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> u, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> rho, std::shared_ptr<const dolfin::GenericFunction> D):
-    dolfin::MultiMeshForm(V1, V0), u(*this, 0), dt(*this, 1), rho(*this, 2), D(*this, 3)
+  MultiMeshForm_J(std::shared_ptr<const dolfin::MultiMeshFunctionSpace> V1, std::shared_ptr<const dolfin::MultiMeshFunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> u, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> rho, std::shared_ptr<const dolfin::GenericFunction> D, std::shared_ptr<const dolfin::GenericFunction> theta):
+    dolfin::MultiMeshForm(V1, V0), u(*this, 0), dt(*this, 1), rho(*this, 2), D(*this, 3), theta(*this, 4)
   {
     // Create and add standard forms
     std::size_t num_parts = V0->num_parts(); // assume all equal and pick first
@@ -6161,6 +6245,7 @@ public:
     this->dt = dt;
     this->rho = rho;
     this->D = D;
+    this->theta = theta;
 
   }
 
@@ -6179,6 +6264,8 @@ public:
       return 2;
     else if (name == "D")
       return 3;
+    else if (name == "theta")
+      return 4;
 
     dolfin::dolfin_error("generated code for class Form",
                          "access coefficient data",
@@ -6199,6 +6286,8 @@ public:
       return "rho";
     case 3:
       return "D";
+    case 4:
+      return "theta";
     }
 
     dolfin::dolfin_error("generated code for class Form",
@@ -6216,12 +6305,14 @@ public:
   typedef Form_J_FunctionSpace_3 CoefficientSpace_dt;
   typedef Form_J_FunctionSpace_4 CoefficientSpace_rho;
   typedef Form_J_FunctionSpace_5 CoefficientSpace_D;
+  typedef Form_J_FunctionSpace_6 CoefficientSpace_theta;
 
   // Coefficients
   dolfin::MultiMeshCoefficientAssigner u;
   dolfin::MultiMeshCoefficientAssigner dt;
   dolfin::MultiMeshCoefficientAssigner rho;
   dolfin::MultiMeshCoefficientAssigner D;
+  dolfin::MultiMeshCoefficientAssigner theta;
 };
 
 // Class typedefs

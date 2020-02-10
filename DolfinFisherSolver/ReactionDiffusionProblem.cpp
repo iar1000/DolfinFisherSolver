@@ -37,7 +37,7 @@ ReactionDiffusionProblem::ReactionDiffusionProblem(int rank, std::shared_ptr<dol
 	// @TODO: add to ufl function and attach to there
 	// collect coefficients into groups
 	std::map<std::string, std::shared_ptr<const dolfin::GenericFunction>> coefsJ =
-		{{"u", u_}, {"rho", rho_}, {"D", D_} , {"dt", dt_}};
+		{{"u", u_}, {"rho", rho_}, {"D", D_} , {"dt", dt_}, {"theta", theta_}};
 	std::map<std::string, std::shared_ptr<const dolfin::GenericFunction>> coefsF =
 			coefsJ;
 	coefsF.insert({"u0", u0_});
@@ -89,7 +89,8 @@ std::string ReactionDiffusionProblem::asString(){
 					"	mesh = pass by pointer <Mesh> " << std::endl <<
 					"	D = pass by pointer <Expression>" << std::endl <<
 					"	rho = " << *rho_ << std::endl <<
-					"	dt = " << *dt_ << std::endl;
+					"	dt = " << *dt_ << std::endl <<
+					"	theta = " << *theta_ << std::endl;
 	return ss.str();
 }
 
