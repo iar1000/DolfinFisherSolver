@@ -1,12 +1,13 @@
 
 #include "TimeStepper.h"
 #include "L2Error2D.h"
+#include "L2Error3D.h"
 
 
 // class RuntimeInformation
 ///////////////////////////////
 RuntimeTracker::RuntimeTracker(){}
-RuntimeTracker::RuntimeTracker(int simulationType, int verbose, double T, double dt_min, double dt_max){
+RuntimeTracker::RuntimeTracker(int simulationType, int verbose, bool toCsv, double T, double dt_min, double dt_max, std::string csvPath){
 	// general state
 	verbose_ = verbose;					// verbosity of tracker
 	simulationType_ = simulationType;	// type of simulation running
@@ -17,7 +18,14 @@ RuntimeTracker::RuntimeTracker(int simulationType, int verbose, double T, double
 	// iterations state
 	inIteration_ = false;				// no running iteration currently
 	numberIterations_ = 0;				// number of tracked iterations
-
+	// output of iteration data
+	toCsv_ = toCsv;						// if tracker outputs to given csv file
+	csvPath_ = csvPath;					// path to file storing iteration data as cvs
+	if(toCsv_){
+		csv_.open(csvPath, std::ios_base::trunc);
+		csv_ << "converged, t, elapsed time, number steps, residual, dt\n";
+		csv_.close();
+	}
 }
 std::string RuntimeTracker::asString(){
 	std::stringstream ss;
@@ -26,13 +34,15 @@ std::string RuntimeTracker::asString(){
 		ss << "RuntimeTracker:" << std::endl <<
 				"	simulation type = constant time" << std::endl <<
 				"	initializer = pass by pointer <Expression>" << std::endl <<
-				"	output = pass by pointer <File>" << std::endl;
+				"	output = pass by pointer <File>" << std::endl <<
+				"	iteration output = " << csvPath_ << std::endl;
 	}
 	else if(simulationType_ == 2){
 		ss << "RuntimeTracker:" << std::endl <<
 				"	simulation type = adaptive time" << std::endl <<
 				"	initializer = pass by pointer <Expression>" << std::endl <<
-				"	output = pass by pointer <File>" << std::endl;
+				"	output = pass by pointer <File>" << std::endl <<
+				"	iteration output = " << csvPath_ << std::endl;
 	}
 	// tracking has been ended, add simulation recap
 	if(elapsedAll_ > 0){
@@ -75,7 +85,7 @@ void RuntimeTracker::newIteration(){
 void RuntimeTracker::endIteration(){
 	if(inIteration_){
 		inIteration_ = false;
-		// iterations_.push_back(currIteration_); @TODO: do i need to track this data?
+		iterations_.push_back(currIteration_);
 		numberIterations_++;
 		// print
 		if(verbose_ > 2){ // verbose level 3
@@ -90,6 +100,26 @@ void RuntimeTracker::endIteration(){
 	else{
 		std::cout << "WARNING: seems like no iteration has been started yet!" << std::endl <<
 				"	No information stored" << std::endl;
+	}
+	// if limit is reached write iteration data to file and clear buffer
+	if(toCsv_ && numberIterations_ % iterationBufferSize_ == 0){
+
+		if(verbose_ > 2){	// verbosity level 3
+			std::cout << "writing iteration data (" << iterationBufferSize_ << ") to csv..." << std::endl << std::endl;
+		}
+
+		int numIts = iterations_.size();
+		csv_.open(csvPath_, std::ios_base::app);
+		for(int i = 0; i < numIts; i++){
+			auto it = iterations_[i];
+			csv_ << it.converged << "," <<
+					it.t << "," <<
+					it.elapsedTime << "," <<
+					it.numberSteps << "," <<
+					it.residual << "," <<
+					it.dt << "\n";
+		}
+		csv_.close();
 	}
 }
 void RuntimeTracker::startTime(){
@@ -113,7 +143,7 @@ void RuntimeTracker::addIterationData(double t, double dt, bool converged, int n
 ////////////////////////////
 TimeStepper::TimeStepper(int rank,
 		std::shared_ptr<ReactionDiffusionProblem> problem,	std::shared_ptr<dolfin::NewtonSolver> solver,
-		double T, double dt_min, double dt_max){
+		double T, double dt_min, double dt_max, double rTol, double rSafe){
 	rank_ = rank;				// MPI rank of instantiating processor
 	problem_ = problem;			// Nonlinear problem to solve
 	solver_ = solver; 			// newton solver
@@ -122,6 +152,8 @@ TimeStepper::TimeStepper(int rank,
 	T_ = T;					// simulation time
 	dt_min_ = dt_min;		// minimum timestep
 	dt_max_ = dt_max;		// maximum timestep
+	richTol_ = rTol;		// tolerance richardson extrapolation
+	richSafety_ = rSafe;	// safety factor richardson extrapolation
 };
 
 std::string TimeStepper::asString(){
@@ -131,12 +163,16 @@ std::string TimeStepper::asString(){
 			"	solver = pass by pointer <NewtonSolver>" << std::endl <<
 			"	T = " << T_ << std::endl <<
 			"	min dt = " << std::setprecision (15) << dt_min_ << std::endl <<
-			"	max dt = " << dt_max_ << std::endl;
+			"	max dt = " << dt_max_ << std::endl <<
+			"	richardson tolerance = " << richTol_ << std::endl <<
+			"	richardson safety factor = " << richSafety_ << std::endl;
+
 	return ss.str();
 }
 
 RuntimeTracker TimeStepper::run(int simulationType, int verbose, std::shared_ptr<dolfin::Expression> initializer,
-		std::shared_ptr<dolfin::File> output, int framesPerTimeUnit, double dt)
+		std::shared_ptr<dolfin::File> output, std::string csvPath,
+		int framesPerTimeUnit, double dt)
 {
 	// decide frame duration
 	// frameDuration is multiplied with #frames to decide when to take next frame, if left 0 all frames are taken
@@ -149,10 +185,10 @@ RuntimeTracker TimeStepper::run(int simulationType, int verbose, std::shared_ptr
 	// only create rank 0 process tracker with actual verbosity, rest is silent
 	RuntimeTracker tracker;
 	if(rank_ == 0){
-		tracker = RuntimeTracker(simulationType, verbose, T_, dt_min_, dt_max_);
+		tracker = RuntimeTracker(simulationType, verbose, true, T_, dt_min_, dt_max_, csvPath);
 	}
 	else {
-		tracker = RuntimeTracker(simulationType, 0, T_, dt_min_, dt_max_);
+		tracker = RuntimeTracker(simulationType, 0, false, T_, dt_min_, dt_max_, csvPath);
 	}
 	// print runtime information
 	if(rank_ == 0){
@@ -248,24 +284,6 @@ void TimeStepper::constTime_timestepping(int verbose, RuntimeTracker *tracker, s
 
 void TimeStepper::adaptiveTime_timestepping(int verbose, RuntimeTracker *tracker, std::shared_ptr<dolfin::Expression> initializer, std::shared_ptr<dolfin::File> output, double frameDuration, double tdt)
 {
-	/*
-	 * u_n (V)
-	 * u_n_low(V)
-	 * u_n_high(V)
-	 *
-	 * solver_low(u_n, u_n_low)
-	 * solver_low -> t, dt
-	 *
-	 * solver_high_1(u_n, u_n_high)
-	 * solver_high_1 -> t, dt/2
-	 *
-	 * solver_high_2(u_n_high, u_n_high)
-	 * solver_high_2 -> t+dt, dt/2
-	 *
-	 * est = compute_est(u_n_low, u_n_high)
-	 * dt_new = ...
-	 */
-
 	// set timestepping and helper variables
 	double t = 0;
 	double dt = tdt;		// current timestep
@@ -278,10 +296,16 @@ void TimeStepper::adaptiveTime_timestepping(int verbose, RuntimeTracker *tracker
 	std::shared_ptr<dolfin::Function> u_low = us.at(2);
 	auto dt_p = problem_->getDt();
 	// initialize L2-Norm functional and helpers for timestep adaption
-	double tol = 10e-8;
-	double safety = 0.9;
 	std::shared_ptr<dolfin::Mesh> mesh = problem_->getMesh();
-	L2Error2D::Functional M(mesh, u_low, u_p);
+	dolfin::Form Ms[2] = {L2Error2D::Functional(mesh, u_low, u_p),
+						L2Error3D::Functional(mesh, u_low, u_p)};
+	int MIndex;
+	if(mesh->geometry().dim() == 2){ MIndex = 0;}
+	else if(mesh->geometry().dim() == 3){ MIndex = 1;}
+	else{
+		std::cout << "WARNING: only 2 or 3 spatial dimensional L2Error Norms allowed" << std::endl;
+		return;
+	}
 	double p = 1;
 	if(problem_->getTheta() == 0.5){ p = 2; };
 	// initialize concentration function
@@ -321,12 +345,12 @@ void TimeStepper::adaptiveTime_timestepping(int verbose, RuntimeTracker *tracker
 		// u_p holds high end condition
 
 		// calculate richardson extrapolation nabla
-		double errorSqr = dolfin::assemble(M);
+		double errorSqr = dolfin::assemble(Ms[MIndex]);
 		double error = sqrt(errorSqr);
 		double nabla = error / (pow(2.0,p) - 1);
-		double fac = pow((safety * tol / nabla), (1/p));
+		double fac = pow((richSafety_ * richTol_ / nabla), (1/p));
 		dtNew = fac * dt;
-		if(nabla > tol){
+		if(nabla > richTol_){
 			if(rank_ == 0 && verbose > 2){	// verbose level 3
 				std::cout << "new timestep= " << dtNew << " (" << dt << ")" << std::endl;
 			}

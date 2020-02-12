@@ -1,0 +1,11 @@
+# L2-norm error formulation for 3D space
+
+cell = tetrahedron
+V = FiniteElement("Lagrange", cell, 2)  # degree of polynomials used
+
+u1 = Coefficient(V)			
+u2 = Coefficient(V)			 		
+
+e = u1-u2
+M = (e * e) * dx
+# need to take the root of assemble(M) to get L2 norm

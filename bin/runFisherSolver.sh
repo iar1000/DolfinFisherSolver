@@ -36,6 +36,7 @@ while [[ "$#" -gt 0 ]]; do case $1 in
   -dw|--diffusionwhite) DIFFUSION_W="$2"; shift;;
   -dg|--diffusiongrey) DIFFUSION_G="$2"; shift;;
   -rh|--rho) RHO="$2"; shift;;
+  -th|--theta) THETA="$2"; shift;;
   -dt|--dtstart) DTSTART="$2"; shift;;
   -T|--Tend) TEND="$2"; shift;;
   -type|--dttype) TIMEADAPTION="$2"; shift;;
@@ -52,13 +53,14 @@ echo "  MESH PATH= $MESH_PARENTFOLDER/$MESH_NAME"
 echo "  INITIALIZATION @ ($CX, $CY, $CZ) VALUE $VALUE"
 echo "  DIFFUSION PARAMETERS= $DIFFUSION_W (W), $DIFFUSION_G (G)"
 echo "  REACTION PARAMETERS = $RHO"
+echo "  DISCRETIZATION PARAMETER = $THETA"
 echo "  TIMESTEPPING: to T=$TEND with dt=$DTSTART, type $TIMEADAPTION"
 
 mpirun -n "$MPIPROCESS" ./FisherSolver \
 				"$OUTPUT_PARENTFOLDER" 	 "$MESH_PARENTFOLDER" "$MESH_NAME" "$FOLDER_NAME" "$FILE_NAME" \
 				"$CX" "$CY" "$CZ" "$RADIUS" "$VALUE" \
 				"$DTMIN" "$DTSTART" "$DTMAX" "$TEND" "$FRAMERATE" \
-				"$DIFFUSION_W" "$DIFFUSION_G" "$RHO" \
-				"$VERBOSE" "$TIMEADAPTION"
+				"$DIFFUSION_W" "$DIFFUSION_G" "$RHO" "$THETA"\
+				"$VERBOSE" "$TIMEADAPTION" "$RICHARDSONTOL" "$RICHARDSONSAFETY"
 				
 				

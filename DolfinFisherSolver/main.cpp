@@ -53,6 +53,11 @@ int main(int argc, char* argv[]){
 	MPI_Init(NULL, NULL);
 	int rank;
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+	if(rank == 0){
+		std::cout << "run FisherSolver:" << std::endl <<
+				"	hasMPI: " << dolfin::has_mpi() << std::endl <<
+				"	hasOpenMP: " << dolfin::has_openmp() << std::endl;
+	}
 
 	// paths and names
 	///////////////////////////////////
@@ -85,6 +90,9 @@ int main(int argc, char* argv[]){
 	///////////////////////////////////
 	int verbose = atoi(argv[20]);
 	int timeAdaption = atoi(argv[21]);
+	double richTol = atof(argv[22]);
+	double richSafe = atof(argv[23]);
+
 
 
 	// in/output handler
@@ -152,22 +160,28 @@ int main(int argc, char* argv[]){
 	solver->parameters["absolute_tolerance"] = 1e-10;
 
 	// create time stepper
-	TimeStepper timeStepper = TimeStepper(rank, problem, solver, T, dt_min, dt_max);
+	TimeStepper timeStepper = TimeStepper(rank, problem, solver, T, dt_min, dt_max, richTol, richSafe);
 	putput.addComponent(timeStepper.asString());
 
-	// create output file
-	std::string fileType = "pvd";
-	auto pathReturn = putput.getFilePath(tagFolder, tagFile, fileType);
-	if(!pathReturn.first){	// check if path to file loaded successful
+	// create output files
+	// simulation output
+	auto outPvdReturn = putput.getFilePath(tagFolder, tagFile, "pvd");
+	if(!outPvdReturn.first){	// check if path to file loaded successful
 		return 0;
 	}
-	std::shared_ptr<dolfin::File> file = std::make_shared<dolfin::File>(pathReturn.second);
+	std::shared_ptr<dolfin::File> file = std::make_shared<dolfin::File>(outPvdReturn.second);
+	auto outCsvReturn = putput.getFilePath(tagFolder, "iterationdata", "csv");
+	if(!outCsvReturn.first){	// check if path to file loaded successful
+		return 0;
+	}
 
 	// create pre-simulation info
 	putput.createRunInfo(tagFolder, tagFile);
 
 	// run simulation
-	RuntimeTracker tracker3 = timeStepper.run(timeAdaption, verbose, initialCondition, file, framesPerTimeUnit, dt);
+	RuntimeTracker tracker3 = timeStepper.run(timeAdaption, verbose, initialCondition,
+			file, outCsvReturn.second,
+			framesPerTimeUnit, dt);
 
 	// overwrite INFO file with post-simulation details
 	putput.addComponent(tracker3.asString());

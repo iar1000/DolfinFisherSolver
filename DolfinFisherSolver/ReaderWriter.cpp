@@ -74,7 +74,8 @@ std::pair<bool, std::string> ReaderWriter::getFilePath(std::string subfolder, st
 	// check if output file type is supportet
 	std::string folderPath = outputParent_ + "/" + subfolder;
 	if(suffix == "pvd" ||		// output format for paraview
-			suffix == "txt"		// output format for infofile
+			suffix == "txt"	||	// output format for infofile
+			suffix == "csv"		// output format for iteration data
 					){
 		// create sub-directory
 		if(mkdir(folderPath.c_str(), 0777) == 0){

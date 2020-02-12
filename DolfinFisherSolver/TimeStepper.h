@@ -4,6 +4,7 @@
 #include <dolfin.h>
 #include <vector>
 #include <chrono>
+#include <fstream>
 
 #include "ReactionDiffusionProblem.h"
 #include "PrintableComponent.h"
@@ -33,10 +34,15 @@ class RuntimeTracker : public PrintableComponent
 	bool inIteration_;							// if an iteration is currently tracked
 	RuntimeTracker::Iteration currIteration_;	// If inIteration, Iterationobject to be filled and added to list after finnishing iteration
 	std::chrono::time_point<std::chrono::system_clock> startTimeIteration_;
+	// storing iteration data
+	bool toCsv_;								// if this tracker outputs its data to csv
+	int iterationBufferSize_ = 1000;			// number of iteration stored before writing to file
+	std::string csvPath_;						// path to file storing iteration data as csv
+	std::ofstream csv_;							// csv file for iteration data
 
 public:
 	std::string asString();	// @override PrintableComponent
-	RuntimeTracker(int simulationType, int verbose, double T, double dt_min, double dt_max);
+	RuntimeTracker(int simulationType, int verbose, bool toCsv, double T, double dt_min, double dt_max, std::string outputPath);
 	RuntimeTracker();
 	// tracking simulation
 	void startTracking();	// sets start time of whole simulation
@@ -58,12 +64,14 @@ class TimeStepper : public PrintableComponent
 	double T_;			// simulation time
 	double dt_min_;		// smallest possible timestep
 	double dt_max_;		// biggest possible timestep
+	double richTol_;	// tolerance for richardson extrapolation adaptive timestep
+	double richSafety_;	// safety factor for richardson extrapolation adaptive timestep
 
 public:
 	std::string asString();	// @override PrintableComponent
 	TimeStepper(int rank,
 			std::shared_ptr<ReactionDiffusionProblem> problem, std::shared_ptr<dolfin::NewtonSolver> solver,
-			double T, double dt_min, double dt_max);
+			double T, double dt_min, double dt_max, double rTol, double tSafe);
 	/*
 	 * run desired simulation
 	 * type:				1: constant dt
@@ -75,7 +83,8 @@ public:
 	 * 						<= 0:	all frames saved as file
 	*/
 	RuntimeTracker run(int type, int verbose, std::shared_ptr<dolfin::Expression> initializer,
-			std::shared_ptr<dolfin::File> output, int framesPerTimeUnit, double dt);
+			std::shared_ptr<dolfin::File> output, std::string csvPath,
+			int framesPerTimeUnit, double dt);
 
 private:
 	// perform timestepping with constant dt
