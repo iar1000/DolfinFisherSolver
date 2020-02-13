@@ -1,6 +1,7 @@
 # Folders ###########
 #####################
 **/build
+DolfinFischerSolver/bin
 bin/FisherSolver
 **/output
 scaling-tests/
