@@ -14,11 +14,50 @@ MEM=12800
 echo "RUNNING PARALLEL EFFICIENCY TESTS FOR FISHER-SOLVER"
 echo "   SCRATCH=$SCRATCH MB"
 echo "   MEMORY=$MEM MB"
-echo "STRONG SCALING:"
-echo "$OMP_NUM_THREADS"
 
+echo "STRONG SCALING 24 PROCESSORS:"
+
+PROCS=24
+
+FILE_NAME="MPI12OMP2"
+export OMP_NUM_THREADS=2
+bsub -n "$PROCS" -R fullnode -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" "unset LSB_AFFINITY_HOSTFILE ; mpirun -n $(($PROCS/$OMP_NUM_THREADS)) --map-by-node:PE=$OMP_NUM_THREADS ./FisherSolver \
+				\"../output\" \"../mesh\" \"$MESH_NAME\" \"PARALLELEFFICIENCYTEST\" \"$FILE_NAME\" \
+				1 1 1 1 1 \
+				0.000000001 0.0001 1 0.1 0 \
+				0.013 0.0013 0.025 1\
+				1 1 0.00001 1"
+
+FILE_NAME="MPI6OMP4"
 export OMP_NUM_THREADS=4
-bsub -I -n 24 -R fullnode -R "rusage[scratch=10000, mem=5000]" "unset LSB_AFFINITY_HOSTFILE ; mpirun -n 8 --map-by-node:PE=4 ./FisherSolver \
+bsub -n "$PROCS" -R fullnode -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" "unset LSB_AFFINITY_HOSTFILE ; mpirun -n $(($PROCS/$OMP_NUM_THREADS)) --map-by-node:PE=$OMP_NUM_THREADS ./FisherSolver \
+				\"../output\" \"../mesh\" \"$MESH_NAME\" \"PARALLELEFFICIENCYTEST\" \"$FILE_NAME\" \
+				1 1 1 1 1 \
+				0.000000001 0.0001 1 0.1 0 \
+				0.013 0.0013 0.025 1\
+				1 1 0.00001 1"
+
+FILE_NAME="MPI4OMP6"				
+export OMP_NUM_THREADS=6
+bsub -n "$PROCS" -R fullnode -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" "unset LSB_AFFINITY_HOSTFILE ; mpirun -n $(($PROCS/$OMP_NUM_THREADS)) --map-by-node:PE=$OMP_NUM_THREADS ./FisherSolver \
+				\"../output\" \"../mesh\" \"$MESH_NAME\" \"PARALLELEFFICIENCYTEST\" \"$FILE_NAME\" \
+				1 1 1 1 1 \
+				0.000000001 0.0001 1 0.1 0 \
+				0.013 0.0013 0.025 1\
+				1 1 0.00001 1"
+
+FILE_NAME="MPI3OMP8"
+export OMP_NUM_THREADS=8
+bsub -n "$PROCS" -R fullnode -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" "unset LSB_AFFINITY_HOSTFILE ; mpirun -n $(($PROCS/$OMP_NUM_THREADS)) --map-by-node:PE=$OMP_NUM_THREADS ./FisherSolver \
+				\"../output\" \"../mesh\" \"$MESH_NAME\" \"PARALLELEFFICIENCYTEST\" \"$FILE_NAME\" \
+				1 1 1 1 1 \
+				0.000000001 0.0001 1 0.1 0 \
+				0.013 0.0013 0.025 1\
+				1 1 0.00001 1"
+
+FILE_NAME="MPI2OMP12"
+export OMP_NUM_THREADS=12
+bsub -n "$PROCS" -R fullnode -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" "unset LSB_AFFINITY_HOSTFILE ; mpirun -n $(($PROCS/$OMP_NUM_THREADS)) --map-by-node:PE=$OMP_NUM_THREADS ./FisherSolver \
 				\"../output\" \"../mesh\" \"$MESH_NAME\" \"PARALLELEFFICIENCYTEST\" \"$FILE_NAME\" \
 				1 1 1 1 1 \
 				0.000000001 0.0001 1 0.1 0 \
