@@ -120,6 +120,7 @@ void RuntimeTracker::endIteration(){
 					it.dt << "\n";
 		}
 		csv_.close();
+		iterations_.clear();
 	}
 }
 void RuntimeTracker::startTime(){

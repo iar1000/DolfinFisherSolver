@@ -53,11 +53,6 @@ int main(int argc, char* argv[]){
 	MPI_Init(NULL, NULL);
 	int rank;
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-	if(rank == 0){
-		std::cout << "run FisherSolver:" << std::endl <<
-				"	hasMPI: " << dolfin::has_mpi() << std::endl <<
-				"	hasOpenMP: " << dolfin::has_openmp() << std::endl;
-	}
 
 	// paths and names
 	///////////////////////////////////
