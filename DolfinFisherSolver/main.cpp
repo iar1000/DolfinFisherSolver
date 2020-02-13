@@ -54,10 +54,6 @@ int main(int argc, char* argv[]){
 	int rank;
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-	if(rank == 0){
-		std::cout << "has_mpi: " << dolfin::has_mpi() << "\nhas_omp: " << dolfin::has_openmp() << std::endl;
-	}
-
 	// paths and names
 	///////////////////////////////////
 	std::string outputParent = argv[1];
