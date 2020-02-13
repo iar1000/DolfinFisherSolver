@@ -43,6 +43,14 @@ bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" -R "select[nth
 				0.000000001 0.0001 1 "$TIME" 0 \
 				0.013 0.0013 0.025 1\
 				2 1 0.00001 1
+
+FILE_NAME="${PROCS}-${TIMESTEPS}STRONG-HALF"
+bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" -R "select[nthreads==2]" mpirun -n "$(($PROCS/2))" --report-bindings ./FisherSolver \
+				"../output" "../mesh" "$MESH_NAME" "PARALLELEFFICIENCYTEST" "$FILE_NAME" \
+				1 1 1 1 1 \
+				0.000000001 0.0001 1 "$TIME" 0 \
+				0.013 0.0013 0.025 1\
+				2 1 0.00001 1
 				
 ##########################################################
 # 4 PROCESSES SCALING TESTS #############################
@@ -58,6 +66,13 @@ bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" -R "select[nth
 				0.013 0.0013 0.025 1\
 				2 1 0.00001 1
 				
+FILE_NAME="${PROCS}-${TIMESTEPS}STRONG-HALF"
+bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" -R "select[nthreads==2]" mpirun -n "$(($PROCS/2))" --report-bindings ./FisherSolver \
+				"../output" "../mesh" "$MESH_NAME" "PARALLELEFFICIENCYTEST" "$FILE_NAME" \
+				1 1 1 1 1 \
+				0.000000001 0.0001 1 "$TIME" 0 \
+				0.013 0.0013 0.025 1\
+				2 1 0.00001 1
 
 ##########################################################
 # 8 PROCESSES SCALING TESTS #############################
@@ -73,6 +88,14 @@ bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" -R "select[nth
 				0.013 0.0013 0.025 1\
 				2 1 0.00001 1
 				
+FILE_NAME="${PROCS}-${TIMESTEPS}STRONG-HALF"
+bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" -R "select[nthreads==2]" mpirun -n "$(($PROCS/2))" --report-bindings ./FisherSolver \
+				"../output" "../mesh" "$MESH_NAME" "PARALLELEFFICIENCYTEST" "$FILE_NAME" \
+				1 1 1 1 1 \
+				0.000000001 0.0001 1 "$TIME" 0 \
+				0.013 0.0013 0.025 1\
+				2 1 0.00001 1
+
 
 ##########################################################
 # 12 PROCESSES SCALING TESTS #############################
@@ -82,6 +105,14 @@ echo "STRONG SCALING $PROCS PROCESSORS:"
 
 FILE_NAME="${PROCS}-${TIMESTEPS}STRONG"
 bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" -R "select[nthreads==2]" mpirun -n "$PROCS" --report-bindings ./FisherSolver \
+				"../output" "../mesh" "$MESH_NAME" "PARALLELEFFICIENCYTEST" "$FILE_NAME" \
+				1 1 1 1 1 \
+				0.000000001 0.0001 1 "$TIME" 0 \
+				0.013 0.0013 0.025 1\
+				2 1 0.00001 1
+				
+FILE_NAME="${PROCS}-${TIMESTEPS}STRONG-HALF"
+bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" -R "select[nthreads==2]" mpirun -n "$(($PROCS/2))" --report-bindings ./FisherSolver \
 				"../output" "../mesh" "$MESH_NAME" "PARALLELEFFICIENCYTEST" "$FILE_NAME" \
 				1 1 1 1 1 \
 				0.000000001 0.0001 1 "$TIME" 0 \
@@ -102,7 +133,7 @@ bsub -n "$PROCS" -R fullnode -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" -R
 				0.013 0.0013 0.025 1\
 				2 1 0.00001 1
 				
-FILE_NAME="${PROCS}-${TIMESTEPS}STRONG-HYPER"
+FILE_NAME="${PROCS}-${TIMESTEPS}STRONG-HALF"
 bsub -n "$PROCS" -R fullnode -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" -R "select[nthreads==2]" mpirun -n 12 --report-bindings ./FisherSolver \
 				"../output" "../mesh" "$MESH_NAME" "PARALLELEFFICIENCYTEST" "$FILE_NAME" \
 				1 1 1 1 1 \
