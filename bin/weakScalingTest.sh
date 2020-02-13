@@ -20,7 +20,7 @@ echo "   MEMORY=$MEM MB"
 #########################################################
 PROCS=1
 FILE_NAME="BASELINE-$PP{TIMESTEPS}WEAK"
-bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" -R fullnode ./FisherSolver \
+bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]"  ./FisherSolver \
 				"../output" "../mesh" "$MESH_NAME" "WEAKSCALING" "$FILE_NAME" \
 				1 1 1 1 1 \
 				0.000000001 0.000001 1 0.005 0 \
@@ -102,7 +102,7 @@ bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]"-R fullnode mpi
 				
 ##########################################################
 # 48 PROCESSES SCALING TESTS #############################
-#########################################################
+#########################################################	
 PROCS=48
 FILE_NAME="${PROCS}-$PP{TIMESTEPS}WEAK"
 bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]"-R fullnode mpirun -n "$PROCS" ./FisherSolver \
