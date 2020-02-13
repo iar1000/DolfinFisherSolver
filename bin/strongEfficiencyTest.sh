@@ -23,7 +23,7 @@ PROCS=1
 echo "STRONG SCALING $PROCS PROCESSORS:"
 
 FILE_NAME="BASELINE-${TIMESTEPS}STRONG"
-bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" ./FisherSolver \
+bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS)),select[nthreads==2]]" ./FisherSolver \
 				"../output" "../mesh" "$MESH_NAME" "PARALLELEFFICIENCYTEST" "$FILE_NAME" \
 				1 1 1 1 1 \
 				0.000000001 0.0001 1 "$TIME" 0 \
@@ -37,7 +37,7 @@ PROCS=2
 echo "STRONG SCALING $PROCS PROCESSORS:"
 
 FILE_NAME="${PROCS}-${TIMESTEPS}STRONG"
-bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" "mpirun -n $PROCS --report-bindings ./FisherSolver \
+bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS)),select[nthreads==2]]" "mpirun -n $PROCS --report-bindings ./FisherSolver \
 				../output ../mesh $MESH_NAME PARALLELEFFICIENCYTEST $FILE_NAME \
 				1 1 1 1 1 \
 				0.000000001 0.0001 1 $TIME 0 \
@@ -51,7 +51,7 @@ PROCS=4
 echo "STRONG SCALING $PROCS PROCESSORS:"
 
 FILE_NAME="${PROCS}-${TIMESTEPS}STRONG"
-bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" "mpirun -n $PROCS --report-bindings ./FisherSolver \
+bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS)),select[nthreads==2]]" "mpirun -n $PROCS --report-bindings ./FisherSolver \
 				../output ../mesh $MESH_NAME PARALLELEFFICIENCYTEST $FILE_NAME \
 				1 1 1 1 1 \
 				0.000000001 0.0001 1 $TIME 0 \
@@ -66,7 +66,7 @@ PROCS=8
 echo "STRONG SCALING $PROCS PROCESSORS:"
 
 FILE_NAME="${PROCS}-${TIMESTEPS}STRONG"
-bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" "mpirun -n $PROCS --report-bindings ./FisherSolver \
+bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS)),select[nthreads==2]]" "mpirun -n $PROCS --report-bindings ./FisherSolver \
 				../output ../mesh $MESH_NAME PARALLELEFFICIENCYTEST $FILE_NAME \
 				1 1 1 1 1 \
 				0.000000001 0.0001 1 $TIME 0 \
@@ -81,7 +81,7 @@ PROCS=12
 echo "STRONG SCALING $PROCS PROCESSORS:"
 
 FILE_NAME="${PROCS}-${TIMESTEPS}STRONG"
-bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" "mpirun -n $PROCS --report-bindings ./FisherSolver \
+bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS)),select[nthreads==2]]" "mpirun -n $PROCS --report-bindings ./FisherSolver \
 				../output ../mesh $MESH_NAME PARALLELEFFICIENCYTEST $FILE_NAME \
 				1 1 1 1 1 \
 				0.000000001 0.0001 1 $TIME 0 \
@@ -95,55 +95,20 @@ PROCS=24
 echo "STRONG SCALING $PROCS PROCESSORS:"
 
 FILE_NAME="${PROCS}-${TIMESTEPS}STRONG"
-bsub -n "$PROCS" -R fullnode -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" "mpirun -n $PROCS --report-bindings ./FisherSolver \
+bsub -n "$PROCS" -R fullnode -R "rusage[scratch=10000, mem=$(($MEM/$PROCS)),select[nthreads==2]]" "mpirun -n $PROCS --report-bindings ./FisherSolver \
+				\"../output\" \"../mesh\" \"$MESH_NAME\" \"PARALLELEFFICIENCYTEST\" \"$FILE_NAME\" \
+				1 1 1 1 1 \
+				0.000000001 0.0001 1 $TIME 0 \
+				0.013 0.0013 0.025 1\
+				2 1 0.00001 1"
+				
+FILE_NAME="${PROCS}-${TIMESTEPS}STRONG-HYPER"
+bsub -n "$PROCS" -R fullnode -R "rusage[scratch=10000, mem=$(($MEM/$PROCS)),select[nthreads==2]]" "mpirun -n 12 --report-bindings ./FisherSolver \
 				\"../output\" \"../mesh\" \"$MESH_NAME\" \"PARALLELEFFICIENCYTEST\" \"$FILE_NAME\" \
 				1 1 1 1 1 \
 				0.000000001 0.0001 1 $TIME 0 \
 				0.013 0.0013 0.025 1\
 				2 1 0.00001 1"
 
-FILE_NAME="${PROCS}-${TIMESTEPS}STRONG-MPI12OMP2"
-export OMP_NUM_THREADS=2
-bsub -n "$PROCS" -R fullnode -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" "unset LSB_AFFINITY_HOSTFILE ; mpirun -n $(($PROCS/$OMP_NUM_THREADS)) --map-by node:PE=$OMP_NUM_THREADS --report-bindings ./FisherSolver \
-				\"../output\" \"../mesh\" \"$MESH_NAME\" \"PARALLELEFFICIENCYTEST\" \"$FILE_NAME\" \
-				1 1 1 1 1 \
-				0.000000001 0.0001 1 $TIME 0 \
-				0.013 0.0013 0.025 1\
-				2 1 0.00001 1"
 
-FILE_NAME="${PROCS}-${TIMESTEPS}STRONG-MPI6OMP4"
-export OMP_NUM_THREADS=4
-bsub -n "$PROCS" -R fullnode -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" "unset LSB_AFFINITY_HOSTFILE ; mpirun -n $(($PROCS/$OMP_NUM_THREADS)) --map-by node:PE=$OMP_NUM_THREADS --report-bindings ./FisherSolver \
-				\"../output\" \"../mesh\" \"$MESH_NAME\" \"PARALLELEFFICIENCYTEST\" \"$FILE_NAME\" \
-				1 1 1 1 1 \
-				0.000000001 0.0001 1 $TIME 0 \
-				0.013 0.0013 0.025 1\
-				2 1 0.00001 1"
-
-FILE_NAME="${PROCS}-${TIMESTEPS}STRONG-MPI4OMP6"				
-export OMP_NUM_THREADS=6
-bsub -n "$PROCS" -R fullnode -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" "unset LSB_AFFINITY_HOSTFILE ; mpirun -n $(($PROCS/$OMP_NUM_THREADS)) --map-by node:PE=$OMP_NUM_THREADS --report-bindings ./FisherSolver \
-				\"../output\" \"../mesh\" \"$MESH_NAME\" \"PARALLELEFFICIENCYTEST\" \"$FILE_NAME\" \
-				1 1 1 1 1 \
-				0.000000001 0.0001 1 $TIME 0 \
-				0.013 0.0013 0.025 1\
-				2 1 0.00001 1"
-
-FILE_NAME="${PROCS}-${TIMESTEPS}STRONG-MPI3OMP8"
-export OMP_NUM_THREADS=8
-bsub -n "$PROCS" -R fullnode -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" "unset LSB_AFFINITY_HOSTFILE ; mpirun -n $(($PROCS/$OMP_NUM_THREADS)) --map-by node:PE=$OMP_NUM_THREADS --report-bindings ./FisherSolver \
-				\"../output\" \"../mesh\" \"$MESH_NAME\" \"PARALLELEFFICIENCYTEST\" \"$FILE_NAME\" \
-				1 1 1 1 1 \
-				0.000000001 0.0001 1 $TIME 0 \
-				0.013 0.0013 0.025 1\
-				2 1 0.00001 1"
-
-FILE_NAME="${PROCS}-${TIMESTEPS}STRONG-MPI2OMP12"
-export OMP_NUM_THREADS=12
-bsub -n "$PROCS" -R fullnode -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" "unset LSB_AFFINITY_HOSTFILE ; mpirun -n $(($PROCS/$OMP_NUM_THREADS)) --map-by node:PE=$OMP_NUM_THREADS --report-bindings ./FisherSolver \
-				\"../output\" \"../mesh\" \"$MESH_NAME\" \"PARALLELEFFICIENCYTEST\" \"$FILE_NAME\" \
-				1 1 1 1 1 \
-				0.000000001 0.0001 1 $TIME 0 \
-				0.013 0.0013 0.025 1\
-				2 1 0.00001 1"
 				
