@@ -252,7 +252,7 @@ void TimeStepper::constTime_timestepping(int verbose, RuntimeTracker *tracker, s
 		int solverIterations = results.first;
 		bool converged = results.second;
 		double residual = solver_->residual();
-		//tracker->addIterationData(t, dt, converged, solverIterations, residual);
+		tracker->addIterationData(t, dt, converged, solverIterations, residual);
 
 		// check convergence
 		if(!converged){
