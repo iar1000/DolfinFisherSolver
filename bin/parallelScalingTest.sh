@@ -21,7 +21,7 @@ PROCS=24
 
 FILE_NAME="MPI12OMP2"
 export OMP_NUM_THREADS=2
-bsub -n "$PROCS" -R fullnode -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" "unset LSB_AFFINITY_HOSTFILE ; mpirun -n $(($PROCS/$OMP_NUM_THREADS)) --map-by-node:PE=$OMP_NUM_THREADS ./FisherSolver \
+bsub -n "$PROCS" -R fullnode -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" "unset LSB_AFFINITY_HOSTFILE ; mpirun -n $(($PROCS/$OMP_NUM_THREADS)) --map-by node:PE=$OMP_NUM_THREADS ./FisherSolver \
 				\"../output\" \"../mesh\" \"$MESH_NAME\" \"PARALLELEFFICIENCYTEST\" \"$FILE_NAME\" \
 				1 1 1 1 1 \
 				0.000000001 0.0001 1 0.1 0 \
@@ -30,7 +30,7 @@ bsub -n "$PROCS" -R fullnode -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" "u
 
 FILE_NAME="MPI6OMP4"
 export OMP_NUM_THREADS=4
-bsub -n "$PROCS" -R fullnode -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" "unset LSB_AFFINITY_HOSTFILE ; mpirun -n $(($PROCS/$OMP_NUM_THREADS)) --map-by-node:PE=$OMP_NUM_THREADS ./FisherSolver \
+bsub -n "$PROCS" -R fullnode -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" "unset LSB_AFFINITY_HOSTFILE ; mpirun -n $(($PROCS/$OMP_NUM_THREADS)) --map-by node:PE=$OMP_NUM_THREADS ./FisherSolver \
 				\"../output\" \"../mesh\" \"$MESH_NAME\" \"PARALLELEFFICIENCYTEST\" \"$FILE_NAME\" \
 				1 1 1 1 1 \
 				0.000000001 0.0001 1 0.1 0 \
@@ -39,7 +39,7 @@ bsub -n "$PROCS" -R fullnode -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" "u
 
 FILE_NAME="MPI4OMP6"				
 export OMP_NUM_THREADS=6
-bsub -n "$PROCS" -R fullnode -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" "unset LSB_AFFINITY_HOSTFILE ; mpirun -n $(($PROCS/$OMP_NUM_THREADS)) --map-by-node:PE=$OMP_NUM_THREADS ./FisherSolver \
+bsub -n "$PROCS" -R fullnode -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" "unset LSB_AFFINITY_HOSTFILE ; mpirun -n $(($PROCS/$OMP_NUM_THREADS)) --map-by node:PE=$OMP_NUM_THREADS ./FisherSolver \
 				\"../output\" \"../mesh\" \"$MESH_NAME\" \"PARALLELEFFICIENCYTEST\" \"$FILE_NAME\" \
 				1 1 1 1 1 \
 				0.000000001 0.0001 1 0.1 0 \
@@ -48,7 +48,7 @@ bsub -n "$PROCS" -R fullnode -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" "u
 
 FILE_NAME="MPI3OMP8"
 export OMP_NUM_THREADS=8
-bsub -n "$PROCS" -R fullnode -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" "unset LSB_AFFINITY_HOSTFILE ; mpirun -n $(($PROCS/$OMP_NUM_THREADS)) --map-by-node:PE=$OMP_NUM_THREADS ./FisherSolver \
+bsub -n "$PROCS" -R fullnode -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" "unset LSB_AFFINITY_HOSTFILE ; mpirun -n $(($PROCS/$OMP_NUM_THREADS)) --map-by node:PE=$OMP_NUM_THREADS ./FisherSolver \
 				\"../output\" \"../mesh\" \"$MESH_NAME\" \"PARALLELEFFICIENCYTEST\" \"$FILE_NAME\" \
 				1 1 1 1 1 \
 				0.000000001 0.0001 1 0.1 0 \
@@ -57,7 +57,7 @@ bsub -n "$PROCS" -R fullnode -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" "u
 
 FILE_NAME="MPI2OMP12"
 export OMP_NUM_THREADS=12
-bsub -n "$PROCS" -R fullnode -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" "unset LSB_AFFINITY_HOSTFILE ; mpirun -n $(($PROCS/$OMP_NUM_THREADS)) --map-by-node:PE=$OMP_NUM_THREADS ./FisherSolver \
+bsub -n "$PROCS" -R fullnode -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" "unset LSB_AFFINITY_HOSTFILE ; mpirun -n $(($PROCS/$OMP_NUM_THREADS)) --map-by node:PE=$OMP_NUM_THREADS ./FisherSolver \
 				\"../output\" \"../mesh\" \"$MESH_NAME\" \"PARALLELEFFICIENCYTEST\" \"$FILE_NAME\" \
 				1 1 1 1 1 \
 				0.000000001 0.0001 1 0.1 0 \
