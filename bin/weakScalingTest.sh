@@ -32,7 +32,7 @@ bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]"  ./FisherSolve
 #########################################################
 PROCS=2
 FILE_NAME="${PROCS}-$PP{TIMESTEPS}WEAK"
-bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]"-R fullnode mpirun -n "$PROCS" ./FisherSolver \
+bsub -n "$PROCS" -R fullnode mpirun -n "$PROCS" ./FisherSolver \
 				"../output" "../mesh" "$MESH_NAME" "WEAKSCALING" "$FILE_NAME" \
 				1 1 1 1 1 \
 				0.000000001 0.000001 1 0.01 0 \
