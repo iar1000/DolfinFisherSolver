@@ -47,7 +47,7 @@ std::string RuntimeTracker::asString(){
 	// tracking has been ended, add simulation recap
 	if(elapsedAll_ > 0){
 		int minutes = elapsedAll_ / 60;
-		ss << std::endl << "	sucessfully run " << (iterations_.back().t / T_ * 100) << " % ("<< numberIterations_ << " iterations)" << std::endl <<
+		ss << std::endl << "	sucessfully run to time t= " << iterations_.back().t << " of " << T_ << " ("<< numberIterations_ << " iterations)" << std::endl <<
 				"	elapsed time: " << (minutes / 60) << "h " << (minutes % 60) << " min" << std::endl;
 	}
 	return ss.str();
@@ -180,6 +180,9 @@ RuntimeTracker TimeStepper::run(int simulationType, int verbose, std::shared_ptr
 	double frameDuration = 0.0;
 	if(framesPerTimeUnit > 0){
 		frameDuration = 1.0 / framesPerTimeUnit;
+	}
+	else if(framesPerTimeUnit == 0){
+		frameDuration = std::numeric_limits<double>::max();
 	}
 
 	// instantiate runtime information instance
