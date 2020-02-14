@@ -28,13 +28,29 @@ std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> get_101on101_
 	return vm;
 };
 
-// create test value map for box-100on100on100-res100.h test mesh
+std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> get_10on10_test_cm()
+{
+	std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> vm;
+
+	// init valuemaps to form pattern
+	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> vm_w = Eigen::MatrixXd::Ones(11, 11);
+	vm_w.block<5, 11>(0, 0) = Eigen::MatrixXd::Zero(5, 11);
+
+	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> vm_g = Eigen::MatrixXd::Zero(11, 11);
+	vm_g.block<5, 11>(0, 0) = Eigen::MatrixXd::Ones(5, 11);
+
+	vm.push_back(vm_w);
+	vm.push_back(vm_g);
+	return vm;
+};
+
+// create test value map for box-10on10on10-res15.h test mesh
 std::vector<std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>> get_101on101on101_test_cm(){
 	std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> vm_w;
 	std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> vm_g;
 
-	for(int i = 0; i < 101; i++){
-		auto ok = get_101on101_test_cm();
+	for(int i = 0; i < 16; i++){
+		auto ok = get_10on10_test_cm();
 		vm_w.push_back(ok[0]);
 		vm_g.push_back(ok[1]);
 	}

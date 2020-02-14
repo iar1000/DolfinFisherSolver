@@ -19,5 +19,13 @@ def box_mesh(w, l, d, res):
     file.write(mesh, "/mesh")
 
 # generate standart test meshes
-rect_mesh(100, 100, 100)
-box_mesh(100,100,100, 100)
+rect_mesh(100, 100, 50)     # 5'000 elements
+rect_mesh(100, 100, 70)     # 10'000 elements
+rect_mesh(100, 100, 100)    # 20'000 elements
+rect_mesh(100, 100, 140)    # 40'000 elements
+rect_mesh(100, 100, 170)    # 60'000 elements
+rect_mesh(100, 100, 244)    # 120'000 elements
+rect_mesh(100, 100, 300)    # 180'000 elements
+rect_mesh(100, 100, 340)    # 240'000 elements
+
+box_mesh(10,10,10,15)       # 20'000 elements
