@@ -7,7 +7,7 @@
 
 SCRATCH=10000
 MEM=12800
-TIMESTEPS=10000
+TIMESTEPS=100000
 
 echo "RUNNING WEAK SCALING TEST (RESOLUTION) FOR FISHER-SOLVER"
 echo "   SCRATCH=$SCRATCH MB"
@@ -21,7 +21,7 @@ FILE_NAME="BASELINE-$PP{RESOLUTION}WEAK"
 bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]"  ./FisherSolver \
 				"../output" "../mesh" "$MESH_NAME" "WEAKSCALING" "$FILE_NAME" "${PROCS}iterationdata"\
 				1 1 1 1 1 \
-				0.000000001 0.000001 1 0.01 0 \
+				0.000000001 0.000001 1 0.1 0 \
 				0.013 0.0013 0.025 1\
 				2 1 0.00001 1
 
@@ -31,7 +31,7 @@ FILE_NAME="${PROCS}-$PP{RESOLUTION}WEAK"
 bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" mpirun -n "$PROCS" ./FisherSolver \
 				"../output" "../mesh" "$MESH_NAME" "WEAKSCALING" "$FILE_NAME" "${PROCS}iterationdata"\
 				1 1 1 1 1 \
-				0.000000001 0.000001 1 0.01 0 \
+				0.000000001 0.000001 1 0.1 0 \
 				0.013 0.0013 0.025 1\
 				2 1 0.00001 1
 				
@@ -41,7 +41,7 @@ FILE_NAME="${PROCS}-$PP{RESOLUTION}WEAK"
 bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" mpirun -n "$PROCS" ./FisherSolver \
 				"../output" "../mesh" "$MESH_NAME" "WEAKSCALING" "$FILE_NAME" "${PROCS}iterationdata"\
 				1 1 1 1 1 \
-				0.000000001 0.000001 1 0.01 0 \
+				0.000000001 0.000001 1 0.1 0 \
 				0.013 0.0013 0.025 1\
 				2 1 0.00001 1
 
@@ -51,7 +51,7 @@ FILE_NAME="${PROCS}-$PP{RESOLUTION}WEAK"
 bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" mpirun -n "$PROCS" ./FisherSolver \
 				"../output" "../mesh" "$MESH_NAME" "WEAKSCALING" "$FILE_NAME" "${PROCS}iterationdata"\
 				1 1 1 1 1 \
-				0.000000001 0.000001 1 0.01 0 \
+				0.000000001 0.000001 1 0.1 0 \
 				0.013 0.0013 0.025 1\
 				2 1 0.00001 1
 
@@ -61,7 +61,7 @@ FILE_NAME="${PROCS}-$PP{RESOLUTION}WEAK"
 bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" mpirun -n "$PROCS" ./FisherSolver \
 				"../output" "../mesh" "$MESH_NAME" "WEAKSCALING" "$FILE_NAME" "${PROCS}iterationdata"\
 				1 1 1 1 1 \
-				0.000000001 0.000001 1 0.01 0 \
+				0.000000001 0.000001 1 0.1 0 \
 				0.013 0.0013 0.025 1\
 				2 1 0.00001 1
 
@@ -71,7 +71,7 @@ FILE_NAME="${PROCS}-$PP{RESOLUTION}WEAK"
 bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" -R fullnode mpirun -n "$PROCS" ./FisherSolver \
 				"../output" "../mesh" "$MESH_NAME" "WEAKSCALING" "$FILE_NAME" "${PROCS}iterationdata"\
 				1 1 1 1 1 \
-				0.000000001 0.000001 1 0.01 0 \
+				0.000000001 0.000001 1 0.1 0 \
 				0.013 0.0013 0.025 1\
 				2 1 0.00001 1
 				
@@ -81,7 +81,7 @@ FILE_NAME="${PROCS}-$PP{RESOLUTION}WEAK"
 bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" -R fullnode mpirun -n "$PROCS" ./FisherSolver \
 				"../output" "../mesh" "$MESH_NAME" "WEAKSCALING" "$FILE_NAME" "${PROCS}iterationdata"\
 				1 1 1 1 1 \
-				0.000000001 0.000001 1 0.01 0 \
+				0.000000001 0.000001 1 0.1 0 \
 				0.013 0.0013 0.025 1\
 				2 1 0.00001 1
 					
@@ -91,7 +91,7 @@ FILE_NAME="${PROCS}-$PP{RESOLUTION}WEAK"
 bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" -R fullnode mpirun -n "$PROCS" ./FisherSolver \
 				"../output" "../mesh" "$MESH_NAME" "WEAKSCALING" "$FILE_NAME" "${PROCS}iterationdata"\
 				1 1 1 1 1 \
-				0.000000001 0.000001 1 0.01 0 \
+				0.000000001 0.000001 1 0.1 0 \
 				0.013 0.0013 0.025 1\
 				2 1 0.00001 1
 
