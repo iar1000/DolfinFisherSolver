@@ -17,8 +17,11 @@ VERBOSE=3
 # --outputfolder: name of the output subfolder, must be valid directory name otherwise undefined behavior
 FOLDER_NAME=$(date +%F)
 # --outputfile: name of output files
-#		of output is always .pvd
+#		datatype of output is always .pvd
 FILE_NAME="out"
+# --csvfile: name of csv file for iteration data
+#		datatype of iteration data is always .csv
+CSV_NAME="iterationdata"
 # --framerate: number of frames saved to file per 1 time unit (TEND=10, FRAMERATE=30 => 300 FRAMES SAVED)
 FRAMERATE=60
 
@@ -31,6 +34,7 @@ while [[ "$#" -gt 0 ]]; do case $1 in
   -v|--verbose) VERBOSE="$2"; shift;;
   -ofo|--outputfolder) FOLDER_NAME="$2"; shift;;
   -ofi|--outputfile) FILE_NAME="$2"; shift;;
+  -csv|--csvfile) CSV_NAME="$2"; shift;;
   -fr|--framerate) FRAMERATE="$2"; shift;;
   # overwrite .config
   -dw|--diffusionwhite) DIFFUSION_W="$2"; shift;;
@@ -49,6 +53,7 @@ echo "PARAMETERS:"
 echo "  VERBOSE= $VERBOSE"
 echo "  OUTPUT PATH= $OUTPUT_PARENTFOLDER/$FOLDER_NAME"
 echo "  OUTPUT FILE= $FILE_NAME (FRAME RATE= $FRAMERATE)"
+echo "  CSV FILE= $CSV_NAME"
 echo "  MESH PATH= $MESH_PARENTFOLDER/$MESH_NAME"
 echo "  INITIALIZATION @ ($CX, $CY, $CZ) VALUE $VALUE"
 echo "  DIFFUSION PARAMETERS= $DIFFUSION_W (W), $DIFFUSION_G (G)"
@@ -57,7 +62,7 @@ echo "  DISCRETIZATION PARAMETER = $THETA"
 echo "  TIMESTEPPING: to T=$TEND with dt=$DTSTART, type $TIMEADAPTION"
 
 mpirun -n "$MPIPROCESS" ./FisherSolver \
-				"$OUTPUT_PARENTFOLDER" 	 "$MESH_PARENTFOLDER" "$MESH_NAME" "$FOLDER_NAME" "$FILE_NAME" \
+				"$OUTPUT_PARENTFOLDER" 	 "$MESH_PARENTFOLDER" "$MESH_NAME" "$FOLDER_NAME" "$FILE_NAME" "$CSV_NAME" \
 				"$CX" "$CY" "$CZ" "$RADIUS" "$VALUE" \
 				"$DTMIN" "$DTSTART" "$DTMAX" "$TEND" "$FRAMERATE" \
 				"$DIFFUSION_W" "$DIFFUSION_G" "$RHO" "$THETA"\
