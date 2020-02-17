@@ -16,7 +16,7 @@ echo "   MEMORY=$MEM MB"
 ## MESH RESOLUTION
 # BASELINE 
 PROCS=1
-MESH_NAME=rect-10on10-res-50.h5
+MESH_NAME=rect-10on10-res-25.h5
 FILE_NAME="BASELINE-$PP{RESOLUTION}WEAK"
 bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]"  ./FisherSolver \
 				"../output" "../mesh" "$MESH_NAME" "WEAKSCALING" "$FILE_NAME" "${PROCS}iterationdata"\
@@ -26,7 +26,7 @@ bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]"  ./FisherSolve
 				2 1 0.00001 1
 
 PROCS=2
-MESH_NAME=rect-10on10-res-70.h5
+MESH_NAME=rect-10on10-res-35.h5
 FILE_NAME="${PROCS}-$PP{RESOLUTION}WEAK"
 bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" mpirun -n "$PROCS" ./FisherSolver \
 				"../output" "../mesh" "$MESH_NAME" "WEAKSCALING" "$FILE_NAME" "${PROCS}iterationdata"\
@@ -36,7 +36,7 @@ bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" mpirun -n "$PR
 				2 1 0.00001 1
 				
 PROCS=4
-MESH_NAME=rect-10on10-res-100.h5
+MESH_NAME=rect-10on10-res-50.h5
 FILE_NAME="${PROCS}-$PP{RESOLUTION}WEAK"
 bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" mpirun -n "$PROCS" ./FisherSolver \
 				"../output" "../mesh" "$MESH_NAME" "WEAKSCALING" "$FILE_NAME" "${PROCS}iterationdata"\
@@ -46,7 +46,7 @@ bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" mpirun -n "$PR
 				2 1 0.00001 1
 
 PROCS=8
-MESH_NAME=rect-10on10-res-140.h5
+MESH_NAME=rect-10on10-res-70.h5
 FILE_NAME="${PROCS}-$PP{RESOLUTION}WEAK"
 bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" mpirun -n "$PROCS" ./FisherSolver \
 				"../output" "../mesh" "$MESH_NAME" "WEAKSCALING" "$FILE_NAME" "${PROCS}iterationdata"\
@@ -56,7 +56,7 @@ bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" mpirun -n "$PR
 				2 1 0.00001 1
 
 PROCS=12
-MESH_NAME=rect-10on10-res-170.h5
+MESH_NAME=rect-10on10-res-85.h5
 FILE_NAME="${PROCS}-$PP{RESOLUTION}WEAK"
 bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" mpirun -n "$PROCS" ./FisherSolver \
 				"../output" "../mesh" "$MESH_NAME" "WEAKSCALING" "$FILE_NAME" "${PROCS}iterationdata"\
@@ -66,7 +66,7 @@ bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" mpirun -n "$PR
 				2 1 0.00001 1
 
 PROCS=24
-MESH_NAME=rect-10on10-res-244.h5
+MESH_NAME=rect-10on10-res-120.h5
 FILE_NAME="${PROCS}-$PP{RESOLUTION}WEAK"
 bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" -R fullnode mpirun -n "$PROCS" ./FisherSolver \
 				"../output" "../mesh" "$MESH_NAME" "WEAKSCALING" "$FILE_NAME" "${PROCS}iterationdata"\
@@ -76,7 +76,7 @@ bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" -R fullnode mp
 				2 1 0.00001 1
 				
 PROCS=36
-MESH_NAME=rect-10on10-res-300.h5
+MESH_NAME=rect-10on10-res-140.h5
 FILE_NAME="${PROCS}-$PP{RESOLUTION}WEAK"
 bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" -R fullnode mpirun -n "$PROCS" ./FisherSolver \
 				"../output" "../mesh" "$MESH_NAME" "WEAKSCALING" "$FILE_NAME" "${PROCS}iterationdata"\
@@ -86,7 +86,7 @@ bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" -R fullnode mp
 				2 1 0.00001 1
 					
 PROCS=48
-MESH_NAME=rect-10on10-res-340.h5
+MESH_NAME=rect-10on10-res-170.h5
 FILE_NAME="${PROCS}-$PP{RESOLUTION}WEAK"
 bsub -n "$PROCS" -R "rusage[scratch=10000, mem=$(($MEM/$PROCS))]" -R fullnode mpirun -n "$PROCS" ./FisherSolver \
 				"../output" "../mesh" "$MESH_NAME" "WEAKSCALING" "$FILE_NAME" "${PROCS}iterationdata"\
