@@ -3,10 +3,14 @@
 
 #include <dolfin.h>
 #include "PrintableComponent.h"
+#include "TimeStepper.h"
+
+class RuntimeTracker; 	// forward definition of runtime tracker b.c. of cyclic dependency
 
 class ReactionDiffusionProblem : public dolfin::NonlinearProblem, PrintableComponent
 {
 	 std::shared_ptr<dolfin::Mesh> mesh_;		// storing the mesh the function spaces where created from
+	 std::shared_ptr<dolfin::FunctionSpace> V_;	// Function space of problem
 	 std::shared_ptr<const dolfin::Form> F_;
 	 std::shared_ptr<const dolfin::Form> J_;	// Jacobian of F
 	 std::shared_ptr<dolfin::Function> u0_;		// function holding concentration values at t=n
@@ -17,6 +21,9 @@ class ReactionDiffusionProblem : public dolfin::NonlinearProblem, PrintableCompo
 	 std::shared_ptr<dolfin::Constant> dt_;		// size of time-step
 	 std::shared_ptr<dolfin::Constant> theta_;	// theta value for time discretization
 	 int rank_;
+	 bool hasTracker_;							// bool indicating if tracker is initialized
+	 RuntimeTracker* tracker_;					// tracker for recording time data
+
 
 public:
 	ReactionDiffusionProblem(int rank, std::shared_ptr<dolfin::Mesh> mesh, std::shared_ptr<dolfin::Expression> D, double rho, double dt, double theta);
@@ -33,6 +40,8 @@ public:
 	double getTheta();
 	// returns pointer to the mesh used creating function spaces
 	std::shared_ptr<dolfin::Mesh> getMesh();
+	// adds tracker and option to start recording data
+	void addTracker(RuntimeTracker* tracker, bool record);
 	// @override PrintableComponent
 	std::string asString();
 };

@@ -23,7 +23,7 @@ RuntimeTracker::RuntimeTracker(int simulationType, int verbose, bool toCsv, doub
 	csvPath_ = csvPath;					// path to file storing iteration data as cvs
 	if(toCsv_){
 		csv_.open(csvPath, std::ios_base::trunc);
-		csv_ << "converged, t, elapsed time, number steps, residual, dt\n";
+		csv_ << "converged, t, elapsed time, assembly F time, assembly J time, number steps, residual, dt\n";
 		csv_.close();
 	}
 }
@@ -81,6 +81,9 @@ void RuntimeTracker::stopTracking(){
 void RuntimeTracker::newIteration(){
 	inIteration_ = true;
 	currIteration_ = Iteration();
+	// initialize assembly variables to recognize if they even being used
+	currIteration_.assemblyF = -1;
+	currIteration_.assemblyJ = -1;
 }
 void RuntimeTracker::endIteration(){
 	if(inIteration_){
@@ -94,7 +97,10 @@ void RuntimeTracker::endIteration(){
 					"	converged = " << (currIteration_.converged ? "true" : "false") << std::endl <<
 					"	residual = " << currIteration_.residual << std::endl <<
 					"	solver iterations = " << currIteration_.numberSteps << std::endl <<
-					"	elapsed time = " << currIteration_.elapsedTime << std::endl << std::endl;
+					"	elapsed time = " << currIteration_.elapsedTime << std::endl <<
+					"	  assembly F = " << currIteration_.assemblyF << std::endl <<
+					"	  assembly J = " << currIteration_.assemblyJ << std::endl <<
+					std::endl;
 		}
 	}
 	else{
@@ -115,6 +121,8 @@ void RuntimeTracker::endIteration(){
 			csv_ << it.converged << "," <<
 					it.t << "," <<
 					it.elapsedTime << "," <<
+					it.assemblyF << "," <<
+					it.assemblyJ << "," <<
 					it.numberSteps << "," <<
 					it.residual << "," <<
 					it.dt << "\n";
@@ -137,6 +145,24 @@ void RuntimeTracker::addIterationData(double t, double dt, bool converged, int n
 	currIteration_.converged = converged;
 	currIteration_.numberSteps = numSteps;
 	currIteration_.residual = residual;
+}
+void RuntimeTracker::addAssemblyData(double t, int type){
+	if(type == 1){
+		currIteration_.assemblyF = t;
+	}
+	else if(type == 2){
+		currIteration_.assemblyJ = t;
+	}
+	else{
+		std::cout << "WARNING: type from adding assembly data not recognized" << std::endl;
+ 	}
+}
+void RuntimeTracker::addLocalDofs(int global, int local, int rank){
+	if(toCsv_){
+		csv_.open(csvPath_, std::ios_base::trunc);
+		csv_ << "global dofs, rank, local dofs\n" << global << "," << rank << "," << local << std::endl << "converged, t, elapsed time, assembly F time, assembly J time, number steps, residual, dt\n";
+		csv_.close();
+	}
 }
 
 
@@ -192,12 +218,14 @@ RuntimeTracker TimeStepper::run(int simulationType, int verbose, std::shared_ptr
 		tracker = RuntimeTracker(simulationType, verbose, true, T_, dt_min_, dt_max_, csvPath);
 	}
 	else {
-		tracker = RuntimeTracker(simulationType, 0, false, T_, dt_min_, dt_max_, csvPath);
+		tracker = RuntimeTracker(simulationType, 0, true, T_, dt_min_, dt_max_, csvPath);
 	}
 	// print runtime information
 	if(rank_ == 0){
 		std::cout << tracker.asString();
 	}
+	// add tracker to problem to add additional information such as local dofs and tracking of assembly time
+	problem_->addTracker(&tracker, true);
 
 	tracker.startTracking();	// start tracker
 

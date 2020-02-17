@@ -7,6 +7,7 @@
 
 ReactionDiffusionProblem::ReactionDiffusionProblem(int rank, std::shared_ptr<dolfin::Mesh> mesh, std::shared_ptr<dolfin::Expression> D, double rho, double dt, double theta)
 {
+	hasTracker_ = false;
 	rank_ = rank;
 	mesh_ = mesh;
 	// create function space, non-linear function F and it's Jacobian J from variational problem definition
@@ -45,25 +46,27 @@ ReactionDiffusionProblem::ReactionDiffusionProblem(int rank, std::shared_ptr<dol
 	J->set_coefficients(coefsJ);
 	F->set_coefficients(coefsF);
 	// store forms internally
+	V_ = V;
 	F_ = F; 	// ?
 	J_ = J;		// Jacobian of F
-};
+
+	};
 
 void ReactionDiffusionProblem::F(dolfin::GenericVector& b, const dolfin::GenericVector& x){
 	auto start = std::chrono::steady_clock::now();
 	dolfin::assemble(b, *F_);
 	auto end = std::chrono::steady_clock::now();
-	if(false && rank_ == 0){
-		std::cout << "assemble F: " << std::chrono::duration_cast<std::chrono::seconds>(end - start).count() << std::endl;
-	}
+	if(hasTracker_){
+			tracker_->addAssemblyData(std::chrono::duration_cast<std::chrono::seconds>(end - start).count(), 1);
+		}
 };
 
 void ReactionDiffusionProblem::J(dolfin::GenericMatrix& A, const dolfin::GenericVector& x){
 	auto start = std::chrono::steady_clock::now();
 	dolfin::assemble(A, *J_);
 	auto end = std::chrono::steady_clock::now();
-	if(false && rank_ == 0){
-		std::cout << "assemble J: " << std::chrono::duration_cast<std::chrono::seconds>(end - start).count() << std::endl;
+	if(hasTracker_){
+		tracker_->addAssemblyData(std::chrono::duration_cast<std::chrono::seconds>(end - start).count(), 2);
 	}
 };
 
@@ -82,15 +85,28 @@ std::shared_ptr<dolfin::Mesh> ReactionDiffusionProblem::getMesh(){
 double ReactionDiffusionProblem::getTheta(){
 	return *theta_;
 }
+void ReactionDiffusionProblem::addTracker(RuntimeTracker* tracker, bool record){
+	tracker_ = tracker;
+	hasTracker_ = record;
+	if(rank_ == 0){
+		std::cout << "tracker has been added to problem instance, recording = " << record << std::endl;
+	}
+	// add local dofs to csv
+	tracker_->addLocalDofs(V_->dofmap()->index_map()->size(dolfin::IndexMap::MapSize::GLOBAL), V_->dofmap()->index_map()->size(dolfin::IndexMap::MapSize::ALL), rank_);
+}
 
 std::string ReactionDiffusionProblem::asString(){
 	std::stringstream ss;
 	ss << "ReactionDiffusionProblem:" << std::endl <<
 					"	mesh = pass by pointer <Mesh> " << std::endl <<
+					"	  cell type = " << dolfin::CellType::type2string(mesh_->type().cell_type()) << std::endl <<
+					"	  num cells = " << mesh_->num_cells() << std::endl <<
+					"	  num vertices = " << mesh_->num_vertices() << std::endl <<
+					"	  dof's = " << V_->dofmap()->global_dimension() << std::endl <<
 					"	D = pass by pointer <Expression>" << std::endl <<
 					"	rho = " << *rho_ << std::endl <<
 					"	dt = " << *dt_ << std::endl <<
-					"	theta = " << *theta_ << std::endl;
+					"	theta = " << *theta_ << std::endl << std::endl;
 	return ss.str();
 }
 

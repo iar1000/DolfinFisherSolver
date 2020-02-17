@@ -9,6 +9,8 @@
 #include "ReactionDiffusionProblem.h"
 #include "PrintableComponent.h"
 
+class ReactionDiffusionProblem;  	// forward definition of runtime tracker b.c. of cyclic dependency
+
 // class for tracking all the information of a run
 class RuntimeTracker : public PrintableComponent
 {
@@ -20,6 +22,8 @@ class RuntimeTracker : public PrintableComponent
 		double residual;	// residual of solution
 		double t;			// simulated timestep of simulation
 		double dt;			// last size of timestep used before convergence
+		double assemblyF;	// time used for assembly F
+		double assemblyJ;	// time used for assembly J
 	};
 	int verbose_;								// verbosity of runtime tracker
 	int simulationType_;						// type of simulation running
@@ -51,7 +55,9 @@ public:
 	void newIteration();	// prepare tracker for a fresh iteration
 	void startTime();		// take time when started solver
 	void endTime();			// take time when finished solver
+	void addLocalDofs(int global, int local, int rank);		// adding number of dofs to csv output, call before timestepping!
 	void addIterationData(double t, double dt, bool converged, int numSteps, double residual); // enter data for current iteration
+	void addAssemblyData(double t, int type);	// add time used for assembly. type 1: F, type 2: J
 	void endIteration();	// saves all data collected between last newIteration() and this function call
 };
 

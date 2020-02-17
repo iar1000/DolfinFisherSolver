@@ -77,32 +77,33 @@ int main(int argc, char* argv[]){
 	std::string meshName = argv[3];
 	std::string tagFolder = argv[4];
 	std::string tagFile = argv[5];
+	std::string tagCsv = argv[6];
 	// initial condition
 	////////////////////////////////////
-	double cx = atof(argv[6]);
-	double cy = atof(argv[7]);
-	double cz = atof(argv[8]);
-	double radius = atof(argv[9]);
-	double value = atof(argv[10]);
+	double cx = atof(argv[7]);
+	double cy = atof(argv[8]);
+	double cz = atof(argv[9]);
+	double radius = atof(argv[10]);
+	double value = atof(argv[11]);
 	// timestepping parameters
 	//////////////////////////////////
-	double dt_min = atof(argv[11]);
-	double dt = atof(argv[12]);
-	double dt_max = atof(argv[13]);
-	double T = atof(argv[14]);
-	int framesPerTimeUnit = atoi(argv[15]);
+	double dt_min = atof(argv[12]);
+	double dt = atof(argv[13]);
+	double dt_max = atof(argv[14]);
+	double T = atof(argv[15]);
+	int framesPerTimeUnit = atoi(argv[16]);
 	// reaction-diffusion coefficient
 	////////////////////////////////////
-	double Dw = atof(argv[16]);
-	double Dg = atof(argv[17]);
-	double rho = atof(argv[18]);
-	double theta = atof(argv[19]);
+	double Dw = atof(argv[17]);
+	double Dg = atof(argv[18]);
+	double rho = atof(argv[19]);
+	double theta = atof(argv[20]);
 	// other
 	///////////////////////////////////
-	int verbose = atoi(argv[20]);
-	int timeAdaption = atoi(argv[21]);
-	double richTol = atof(argv[22]);
-	double richSafe = atof(argv[23]);
+	int verbose = atoi(argv[21]);
+	int timeAdaption = atoi(argv[22]);
+	double richTol = atof(argv[23]);
+	double richSafe = atof(argv[24]);
 
 
 
@@ -181,7 +182,9 @@ int main(int argc, char* argv[]){
 		return 0;
 	}
 	std::shared_ptr<dolfin::File> file = std::make_shared<dolfin::File>(outPvdReturn.second);
-	auto outCsvReturn = putput.getFilePath(tagFolder, "iterationdata", "csv");
+	std::stringstream ss;
+	ss << tagCsv << "-" << rank;	// rank specific csv file
+	auto outCsvReturn = putput.getFilePath(tagFolder, ss.str(), "csv");
 	if(!outCsvReturn.first){	// check if path to file loaded successful
 		return 0;
 	}

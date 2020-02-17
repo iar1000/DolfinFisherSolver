@@ -85,9 +85,7 @@ std::pair<bool, std::string> ReaderWriter::getFilePath(std::string subfolder, st
 		}
 		else{
 			if(errno == EEXIST){
-				if(rank_ == 0){
-				std::cout << "INFO (getFilePath): already existing subfolder " << folderPath << std::endl;
-				}
+
 			}
 			else{
 				if(rank_ == 0){
@@ -128,13 +126,5 @@ void ReaderWriter::createRunInfo(std::string subfolder, std::string filename){
 }
 
 void ReaderWriter::addComponent(std::string details){
-	/*
-	std::stringstream ss(details);
-	std::string line;
-	std::getline(ss, line);
-	if(rank_ == 0){
-		std::cout << "added component to ReaderWriter (" << line << ")" << std::endl;
-	}
-	*/
 	components_.push_back(details);
 }
