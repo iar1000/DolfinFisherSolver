@@ -8,7 +8,7 @@ CMake (minimum 3.5): Compilation process
 FEniCS (2019.1): Automated solution of Differential Equations ([Installation guide](https://fenics.readthedocs.io/en/latest/installation.html))
 
 #### ETH Euler cluster
-To build the simulation on the Euler cluster, load following modules via the commands:  
+To build and run the simulation on the Euler cluster, load following modules via the commands:  
 `env2lmod`  
 `module load gcc/6.3.0 cmake/3.15.3 openmpi/3.0.1 fenics/2019.1.0`
 
@@ -21,7 +21,7 @@ To build the simulation on the Euler cluster, load following modules via the com
   
  ### Run FisherSolver
  After building, the executable should be in /bin.  
- The simulation is run via the script "runFisherSolver.sh". All the default simulation parameters are read-in from the "FisherSolver.config" file. Ther is the possibility to overwrite some values via command line parameters. The best is to take a quick look into "runFisherSolver.sh" to know what can be done.  
+ The simulation is run via the script "runFisherSolver.sh". All the default simulation parameters are read-in from the "FisherSolver.config" file. There is the possibility to overwrite some values via command line parameters. The best is to take a quick look into "runFisherSolver.sh" to know what can be done.  
  
  **Mesh**: The mesh defined in "FisherSolver.config" must be in the /mesh, folder. If not created externally, simple meshes can be created with the python script located in the /mesh folder.
  
@@ -30,6 +30,8 @@ To build the simulation on the Euler cluster, load following modules via the com
  **Euler**: ` bsub -N -W 00:30 -R "rusage[scratch=10000, mem=12800]" -n 10 ./runFisherSolver.sh -n 10 -ofo "ten-cores"`  
  There can be used a maximum of 128000 MB of memory, therefore mem = 128000MB / n  
 
+### Run weak scaling test
+After building, a weak scaling test can be performed by running weakScalingTest.sh. This test submits a couple of batch jobs with processor numbers from 1 up to 48. The workload is once scaled in terms of timesteps, and once in terms of mesh resolution. Be sure to run "simple_mesh_creator.py" in advance to create the necessary meshes.
 
 ### Tensors
 Each tensor is a dolfin::Expression. While solving a problem, the tensors eval()-function get's called and evaluated for every cell.
