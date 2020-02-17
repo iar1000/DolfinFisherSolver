@@ -9,25 +9,7 @@
 #include "Tensors.h"
 #include "ReaderWriter.h"
 
-
-// create test value map for rect-100on100-res100.h test mesh
-// @TODO ValueMapper
-std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> get_101on101_test_cm()
-{
-	std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> vm;
-
-	// init valuemaps to form pattern
-	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> vm_w = Eigen::MatrixXd::Ones(101, 101);
-	vm_w.block<50, 101>(0, 0) = Eigen::MatrixXd::Zero(40, 101);
-
-	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> vm_g = Eigen::MatrixXd::Zero(101, 101);
-	vm_g.block<50, 101>(0, 0) = Eigen::MatrixXd::Ones(40, 101);
-
-	vm.push_back(vm_w);
-	vm.push_back(vm_g);
-	return vm;
-};
-
+// create test value map for rect-10on10
 std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> get_10on10_test_cm()
 {
 	std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> vm;
@@ -45,7 +27,7 @@ std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> get_10on10_te
 };
 
 // create test value map for box-10on10on10-res15.h test mesh
-std::vector<std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>> get_101on101on101_test_cm(){
+std::vector<std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>> get_10on10on10_test_cm(){
 	std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> vm_w;
 	std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> vm_g;
 
@@ -145,12 +127,12 @@ int main(int argc, char* argv[]){
 	std::shared_ptr<TensorSpatial3D> DSpatial3D;
 	std::shared_ptr<dolfin::Expression> D;
 	if(dimensions == 2){
-		DSpatial2D = std::make_shared<TensorSpatial2D>(rank, Dw, Dg, get_101on101_test_cm());
+		DSpatial2D = std::make_shared<TensorSpatial2D>(rank, Dw, Dg, get_10on10_test_cm());
 		putput.addComponent(DSpatial2D->asString());
 		D = DSpatial2D;
 	}
 	else if(dimensions == 3){
-		DSpatial3D = std::make_shared<TensorSpatial3D>(rank, Dw, Dg, get_101on101on101_test_cm());
+		DSpatial3D = std::make_shared<TensorSpatial3D>(rank, Dw, Dg, get_10on10on10_test_cm());
 		putput.addComponent(DSpatial3D->asString());
 		D = DSpatial3D;
 	}
