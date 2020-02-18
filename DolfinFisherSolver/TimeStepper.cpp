@@ -383,24 +383,19 @@ void TimeStepper::adaptiveTime_timestepping(int verbose, RuntimeTracker *tracker
 		double fac = pow((richSafety_ * richTol_ / nabla), (1/p));
 		dtNew = fac * dt;
 
-		if(rank_ == 0 && verbose > 2){	// verbose level 3
-						std::cout << "richardson extrapolation: " << std::endl <<
-								"	(u_low - u_high)^2 = " << errorSqr << std::endl <<
-								"	L2 norm = " << error << std::endl <<
-								"	nabla = " << nabla << std::endl <<
-								"	dt (old/new) = " << dt << " -> " << dtNew << std::endl;
-		}
-
 		if(nabla > richTol_){
 			if(rank_ == 0 && verbose > 2){	// verbose level 3
-				std::cout << "	nabla > richTol (" << nabla << " > " << richTol_ << "): re-run with dt= "<< dtNew << std::endl << std::endl;
+				std::cout << "time discretiation error criterium not met: " << std::endl <<
+						"	L2 norm (u_low, u_high) = " << error << std::endl <<
+						"	discretization error (nabla) = " << nabla << " ( > " << richTol_ << ")" << std::endl <<
+						"	decrease of dt: " << dt << " -> " << dtNew << std::endl << std::endl;
 			}
 			dt = dtNew;	// update to smaller timestep
 			continue; // don't update t, repeat with smaller timestep
 		}
 		else{
 			if(rank_ == 0 && verbose > 2){	// verbose level 3
-				std::cout << "	error accepted (" << nabla << " < " << richTol_ << "): procced with dt= " << dtNew << std::endl << std::endl;
+				std::cout << "time discretiation error criterium met, increase dt to "<< dtNew << std::endl << std::endl;
 			}
 		}
 
