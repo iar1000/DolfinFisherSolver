@@ -175,7 +175,7 @@ TimeStepper::TimeStepper(int rank,
 	problem_ = problem;			// Nonlinear problem to solve
 	solver_ = solver; 			// newton solver
 	solver_->parameters["error_on_nonconvergence"] = false; // make sure no error is thrown when not converged
-	dolfin::set_log_level(40);								// stop solver from logging
+	dolfin::set_log_level(30);								// stop solver from logging
 	T_ = T;					// simulation time
 	dt_min_ = dt_min;		// minimum timestep
 	dt_max_ = dt_max;		// maximum timestep
@@ -338,8 +338,8 @@ void TimeStepper::adaptiveTime_timestepping(int verbose, RuntimeTracker *tracker
 		std::cout << "WARNING: only 2 or 3 spatial dimensional L2Error Norms allowed" << std::endl;
 		return;
 	}
-	double p = 1;
-	if(problem_->getTheta() == 0.5){ p = 2; };
+	double p = 2;
+	if(problem_->getTheta() == 0.5){ p = 1; };
 	// initialize concentration function
 	*u0_p = *initializer; 		// problem u^n concentration
 	*u_p =  *initializer;		// problem u^{n+1} concentration
@@ -377,17 +377,31 @@ void TimeStepper::adaptiveTime_timestepping(int verbose, RuntimeTracker *tracker
 		// u_p holds high end condition
 
 		// calculate richardson extrapolation nabla
-		double errorSqr = dolfin::assemble(Ms[MIndex]);
+		double errorSqr = dolfin::assemble(Ms[MIndex]); 	// (u_low - u_p) (u_low - u_p)
 		double error = sqrt(errorSqr);
 		double nabla = error / (pow(2.0,p) - 1);
 		double fac = pow((richSafety_ * richTol_ / nabla), (1/p));
 		dtNew = fac * dt;
+
+		if(rank_ == 0 && verbose > 2){	// verbose level 3
+						std::cout << "richardson extrapolation: " << std::endl <<
+								"	(u_low - u_high)^2 = " << errorSqr << std::endl <<
+								"	L2 norm = " << error << std::endl <<
+								"	nabla = " << nabla << std::endl <<
+								"	dt (old/new) = " << dt << " -> " << dtNew << std::endl;
+		}
+
 		if(nabla > richTol_){
 			if(rank_ == 0 && verbose > 2){	// verbose level 3
-				std::cout << "new timestep= " << dtNew << " (" << dt << ")" << std::endl;
+				std::cout << "	nabla > richTol (" << nabla << " > " << richTol_ << "): re-run with dt= "<< dtNew << std::endl << std::endl;
 			}
 			dt = dtNew;	// update to smaller timestep
 			continue; // don't update t, repeat with smaller timestep
+		}
+		else{
+			if(rank_ == 0 && verbose > 2){	// verbose level 3
+				std::cout << "	error accepted (" << nabla << " < " << richTol_ << "): procced with dt= " << dtNew << std::endl << std::endl;
+			}
 		}
 
 		// prepare next iteration
