@@ -44,6 +44,9 @@ while [[ "$#" -gt 0 ]]; do case $1 in
   -dt|--dtstart) DTSTART="$2"; shift;;
   -T|--Tend) TEND="$2"; shift;;
   -type|--dttype) TIMEADAPTION="$2"; shift;;
+  -rs|--richsafe) RICHARDSONSAFETY="$2"; shift;;
+  -rt|--richtol) RICHARDSONTOL="$2"; shift;;
+
   *) echo "Unknown parameter passed: $1"; exit 1;;
 esac; shift; done
 
