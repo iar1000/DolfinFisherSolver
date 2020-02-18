@@ -2,6 +2,7 @@
 #include <vector>
 #include <dolfin.h>
 #include <Eigen/Dense>
+#include <fstream>
 
 #include "TimeStepper.h"
 #include "ReactionDiffusionProblem.h"
@@ -122,7 +123,6 @@ int main(int argc, char* argv[]){
 	}
 
 	// create diffusion tensor
-	//std::shared_ptr<TensorConstant> DConstant = std::make_shared<TensorConstant>(rank, Dw);
 	std::shared_ptr<TensorSpatial2D> DSpatial2D;
 	std::shared_ptr<TensorSpatial3D> DSpatial3D;
 	std::shared_ptr<dolfin::Expression> D;
@@ -182,6 +182,13 @@ int main(int argc, char* argv[]){
 	// overwrite INFO file with post-simulation details
 	putput.addComponent(tracker3.asString());
 	putput.createRunInfo(tagFolder, tagFile);
+
+	// output timings to text file
+	std::ofstream timings;
+	timings.open(putput.getFilePath(tagFolder, "timings-latex", "txt").second, std::ios_base::trunc);
+	std::set<dolfin::TimingType> s = {dolfin::TimingType::wall};
+	timings << dolfin::timings(dolfin::TimingClear::keep, s).str_latex();
+	timings.close();
 
 	MPI_Finalize(); //seems to trigger an abort
 }

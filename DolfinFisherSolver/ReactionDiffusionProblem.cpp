@@ -100,9 +100,9 @@ std::string ReactionDiffusionProblem::asString(){
 	ss << "ReactionDiffusionProblem:" << std::endl <<
 					"	mesh = pass by pointer <Mesh> " << std::endl <<
 					"	  cell type = " << dolfin::CellType::type2string(mesh_->type().cell_type()) << std::endl <<
-					"	  num cells = " << mesh_->num_cells() << std::endl <<
-					"	  num vertices = " << mesh_->num_vertices() << std::endl <<
-					"	  dof's = " << V_->dofmap()->global_dimension() << std::endl <<
+					"	  num local cells = " << mesh_->num_cells() << std::endl <<
+					"	  num local vertices = " << mesh_->num_vertices() << std::endl <<
+					"	  global dof's = " << V_->dofmap()->global_dimension() << std::endl <<
 					"	D = pass by pointer <Expression>" << std::endl <<
 					"	rho = " << *rho_ << std::endl <<
 					"	dt = " << *dt_ << std::endl <<
