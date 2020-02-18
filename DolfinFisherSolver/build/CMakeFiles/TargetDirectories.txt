@@ -1,3 +1,0 @@
-/home/pius/Projects/DolfinFisherSolver/DolfinFisherSolver/build/CMakeFiles/rebuild_cache.dir
-/home/pius/Projects/DolfinFisherSolver/DolfinFisherSolver/build/CMakeFiles/FisherSolver.dir
-/home/pius/Projects/DolfinFisherSolver/DolfinFisherSolver/build/CMakeFiles/edit_cache.dir
