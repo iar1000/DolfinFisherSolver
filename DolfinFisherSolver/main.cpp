@@ -94,6 +94,7 @@ int main(int argc, char* argv[]){
 	ReaderWriter putput = ReaderWriter(rank, outputParent, meshParent);
 
 	// mesh read-in
+	if(rank == 0){ std::cout << "read in mesh..." << std::endl; };
 	std::shared_ptr<dolfin::Mesh> mesh = std::make_shared<dolfin::Mesh>();
 	std::pair<bool, int> meshInfo = putput.loadMesh(mesh, meshName);
 	int dimensions = 0;
@@ -103,6 +104,7 @@ int main(int argc, char* argv[]){
 	else{
 		return 0;
 	}
+	if(rank == 0){ std::cout << "mesh loaded!" << std::endl; };
 
 	// create initial condition
 	std::shared_ptr<dolfin::Expression> initialCondition;
