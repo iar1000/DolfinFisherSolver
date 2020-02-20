@@ -1,7 +1,6 @@
 #ifndef PRINTABLECOMPONENT_H
 #define PRINTABLECOMPONENT_H
 
-// superclass to use str() on all objects
 class PrintableComponent{
 	// must be overwritten by component
 	// returns string of component details
