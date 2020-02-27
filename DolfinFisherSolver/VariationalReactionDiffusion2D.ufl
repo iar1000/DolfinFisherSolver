@@ -1,7 +1,6 @@
 # ufl file describing:
-# the variational formulation of a 2D backwards-euler discretized reaction-diffusion system
+# the variational formulation of a 2D theta-discretized reaction-diffusion system
 
-# @TODO
 cell = triangle
 V = FiniteElement("Lagrange", cell, 2)  # degree of polynomials used
 
@@ -20,5 +19,4 @@ F = ((u - u0) / dt) * v * dx \
 	+ (1 - theta) * D * dot(grad(u0), grad(v)) * dx \
 	- theta * rho * u * (1 - u) * v * dx \
 	- (1 - theta) * rho * u0 * (1 - u0) * v * dx
-	
 J = derivative(F, u)

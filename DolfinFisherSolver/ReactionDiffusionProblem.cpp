@@ -35,7 +35,6 @@ ReactionDiffusionProblem::ReactionDiffusionProblem(int rank, std::shared_ptr<dol
 	D_ = D; 											// diffusion tensor
 	dt_ = std::make_shared<dolfin::Constant>(dt);		// initial size of time-step
 	theta_ = std::make_shared<dolfin::Constant>(theta); // theta of time discretization
-	// @TODO: add to ufl function and attach to there
 	// collect coefficients into groups
 	std::map<std::string, std::shared_ptr<const dolfin::GenericFunction>> coefsJ =
 		{{"u", u_}, {"rho", rho_}, {"D", D_} , {"dt", dt_}, {"theta", theta_}};
