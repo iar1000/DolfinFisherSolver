@@ -49,10 +49,11 @@ std::vector<std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>> 
 
 
 int main(int argc, char* argv[]){
-
-	// initialize MPI
-	MPI_Init(NULL, NULL);
-	int rank, nprocs;
+    // initialize MPI
+    // MPI_Init(NULL, NULL);
+    int provided;
+    MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
+    int rank, nprocs;
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD,&nprocs);
 
