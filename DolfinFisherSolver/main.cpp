@@ -4,8 +4,10 @@
 #include <Eigen/Dense>
 #include <fstream>
 
+#include "ProblemSolverContainer.h"
+#include "FisherNewtonContainer.h"
 #include "TimeStepper.h"
-#include "ReactionDiffusionProblem.h"
+#include "RuntimeTracker.h"
 #include "Initializers.h"
 #include "Tensors.h"
 #include "ReaderWriter.h"
@@ -50,8 +52,9 @@ int main(int argc, char* argv[]){
 
 	// initialize MPI
 	MPI_Init(NULL, NULL);
-	int rank;
+	int rank, nprocs;
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+	MPI_Comm_size(MPI_COMM_WORLD,&nprocs);
 
 	// paths and names
 	///////////////////////////////////
@@ -71,7 +74,7 @@ int main(int argc, char* argv[]){
 	// timestepping parameters
 	//////////////////////////////////
 	double dt_min = atof(argv[12]);
-	double dt = atof(argv[13]);
+	double dt_init = atof(argv[13]);
 	double dt_max = atof(argv[14]);
 	double T = atof(argv[15]);
 	int framesPerTimeUnit = atoi(argv[16]);
@@ -88,98 +91,109 @@ int main(int argc, char* argv[]){
 	double richTol = atof(argv[23]);
 	double richSafe = atof(argv[24]);
 
-
+	if(rank == 0 && verbose > 3){ std::cout << "load components..." << std::endl; };
 
 	// in/output handler
 	ReaderWriter putput = ReaderWriter(rank, outputParent, meshParent);
 
 	// mesh read-in
-	if(rank == 0){ std::cout << "read in mesh..." << std::endl; };
-	std::shared_ptr<dolfin::Mesh> mesh = std::make_shared<dolfin::Mesh>();
-	std::pair<bool, int> meshInfo = putput.loadMesh(mesh, meshName);
-	int dimensions = 0;
-	if(meshInfo.first){	// check if mesh loaded successful
-		dimensions = meshInfo.second;
+	if(rank == 0 && verbose > 3){ std::cout << "read in mesh..." << std::endl; };
+	std::shared_ptr<dolfin::Mesh> mesh;
+	std::pair<std::string, std::string> meshInfo = putput.loadMesh(meshName);
+	if(meshInfo.first == "h5"){
+		mesh = std::make_shared<dolfin::Mesh>();
+		auto hdf5 = dolfin::HDF5File(MPI_COMM_WORLD, meshInfo.second, std::string("r"));
+		hdf5.read(*mesh, "/mesh", false);
+		// add mesh to components list before returning
+		std::stringstream ss;
+		ss << "Mesh:" << std::endl <<
+				" 	format = h5" <<
+				"	name = " << meshName << std::endl <<
+				"	dimension = " << mesh->geometry().dim() << std::endl;
+		putput.addComponent(ss.str());
+	}
+	else if(meshInfo.first == "xml"){
+		mesh = std::make_shared<dolfin::Mesh>(meshInfo.second);
+		// add mesh to components list before returning
+		std::stringstream ss;
+		ss << "Mesh:" << std::endl <<
+				" 	format = xml" <<
+				"	name = " << meshName << std::endl <<
+				"	dimension = " << mesh->geometry().dim() << std::endl;
+		putput.addComponent(ss.str());
 	}
 	else{
-		return 0;
+		if(rank == 0){
+			std::cout << "WARNING (main) failed reading in mesh..." << std::endl;
+			return 0;
+		}
 	}
-	if(rank == 0){ std::cout << "mesh loaded!" << std::endl; };
+	int dimensions = mesh->geometry().dim();
+	if(rank == 0 && verbose > 3){ std::cout << "	mesh loaded!" << std::endl; };
 
 	// create initial condition
 	std::shared_ptr<dolfin::Expression> initialCondition;
 	if(dimensions == 2){
 		initialCondition = std::make_shared<InitializerCircle>(cx, cy, radius, value);
-		// make dummy variable to print
-		InitializerCircle dummy(cx, cy, radius, value);
+		InitializerCircle dummy(cx, cy, radius, value);		// make dummy variable to print
 		putput.addComponent(dummy.asString());
 	}
 	else if(dimensions == 3){
 		initialCondition = std::make_shared<InitializerSphere>(cx, cy, cz, radius, value);
-		// make dummy variable to print
-		InitializerSphere dummy(cx, cy, cz, radius, value);
+		InitializerSphere dummy(cx, cy, cz, radius, value);	// make dummy variable to print
 		putput.addComponent(dummy.asString());
 	}
-	else{
-		return 0;
-	}
+	else{ return 0; }
+	if(rank == 0 && verbose > 3){ std::cout << "	initial condition loaded!" << std::endl; };
 
 	// create diffusion tensor
-	std::shared_ptr<TensorSpatial2D> DSpatial2D;
-	std::shared_ptr<TensorSpatial3D> DSpatial3D;
 	std::shared_ptr<dolfin::Expression> D;
 	if(dimensions == 2){
-		DSpatial2D = std::make_shared<TensorSpatial2D>(rank, Dw, Dg, get_10on10_test_cm());
+		std::shared_ptr<TensorSpatial2D> DSpatial2D = std::make_shared<TensorSpatial2D>(rank, Dw, Dg, get_10on10_test_cm());
 		putput.addComponent(DSpatial2D->asString());
 		D = DSpatial2D;
 	}
 	else if(dimensions == 3){
-		DSpatial3D = std::make_shared<TensorSpatial3D>(rank, Dw, Dg, get_10on10on10_test_cm());
+		std::shared_ptr<TensorSpatial3D> DSpatial3D = std::make_shared<TensorSpatial3D>(rank, Dw, Dg, get_10on10on10_test_cm());
 		putput.addComponent(DSpatial3D->asString());
 		D = DSpatial3D;
 	}
-	else{
-		return 0;
-	}
+	else{ return 0;	}
+	if(rank == 0 && verbose > 3){ std::cout << "	D tensor loaded!" << std::endl; };
 
 
-	// create pde problem
-	std::shared_ptr<ReactionDiffusionProblem> problem = std::make_shared<ReactionDiffusionProblem>(rank, mesh, D, rho, dt, theta);
-	putput.addComponent(problem->asString());
-
-	// create solver
-	std::shared_ptr<dolfin::NewtonSolver> solver = std::make_shared<dolfin::NewtonSolver>();
-	solver->parameters["linear_solver"] = "lu";
-	solver->parameters["convergence_criterion"] = "incremental";
-	solver->parameters["maximum_iterations"] = 50;
-	solver->parameters["relative_tolerance"] = 1e-10;
-	solver->parameters["absolute_tolerance"] = 1e-10;
+	// create FisherNewtonContainter
+	FisherNewtonContainer problemContainer = FisherNewtonContainer(rank,
+			mesh, initialCondition, D, rho, theta, dt_init);
+	//putput.addComponent(problem->asString());
+	if(rank == 0 && verbose > 3){ std::cout << "	ProblemContainer loaded!" << std::endl; };
 
 	// create time stepper
-	TimeStepper timeStepper = TimeStepper(rank, problem, solver, T, dt_min, dt_max, richTol, richSafe);
+	TimeStepper timeStepper = TimeStepper(rank, dt_min, dt_max, richTol, richSafe);
 	putput.addComponent(timeStepper.asString());
+	if(rank == 0 && verbose > 3){ std::cout << "	Timestepper loaded!" << std::endl; };
 
 	// create output files
 	// simulation output
 	auto outPvdReturn = putput.getFilePath(tagFolder, tagFile, "pvd");
-	if(!outPvdReturn.first){	// check if path to file loaded successful
+	if(!outPvdReturn.first){	// check if path to output file loaded successful
 		return 0;
 	}
-	std::shared_ptr<dolfin::File> file = std::make_shared<dolfin::File>(outPvdReturn.second);
-	std::stringstream ss;
-	ss << tagCsv << "-" << rank;	// rank specific csv file
-	auto outCsvReturn = putput.getFilePath(tagFolder, ss.str(), "csv");
-	if(!outCsvReturn.first){	// check if path to file loaded successful
+	std::shared_ptr<dolfin::File> pvdFile = std::make_shared<dolfin::File>(outPvdReturn.second);
+	// iteration details output
+	auto outCsvReturn = putput.getFilePath(tagFolder, tagCsv, "csv");
+	if(!outCsvReturn.first){	// check if path to csv file loaded successful
 		return 0;
 	}
+	if(rank == 0 && verbose > 3){ std::cout << "	Output files loaded!" << std::endl; };
 
-	// create pre-simulation info
-	putput.createRunInfo(tagFolder, tagFile);
+	// create pre-simulation info, print added components
+	if(rank == 0){ putput.createRunInfo(tagFolder, tagFile); }
 
 	// run simulation
-	RuntimeTracker tracker3 = timeStepper.run(timeAdaption, verbose, initialCondition,
-			file, outCsvReturn.second,
-			framesPerTimeUnit, dt);
+	RuntimeTracker tracker3 = timeStepper.run(timeAdaption, verbose,
+			pvdFile, outCsvReturn.second, framesPerTimeUnit,
+			&problemContainer, T, dt_init);
 
 	// overwrite INFO file with post-simulation details
 	putput.addComponent(tracker3.asString());

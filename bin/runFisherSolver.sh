@@ -13,6 +13,7 @@ MPI_PROCESS=2
 #		1: no simulation output
 #		2: only simulation progress (default)
 #		3: progress and information about each iteration
+#		4: debug
 VERBOSE=3
 # --outputfolder: name of the output subfolder, must be valid directory name otherwise undefined behavior
 FOLDER_NAME=$(date +%F)

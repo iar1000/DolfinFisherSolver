@@ -5,6 +5,11 @@
 
 #include "../DolfinFisherSolver/Tensors.h"
 #include "../DolfinFisherSolver/ReaderWriter.h"
+#include "../DolfinFisherSolver/VariationalReactionDiffusion2D.h"
+#include "../DolfinFisherSolver/Initializers.h"
+#include "../DolfinFisherSolver/TimeStepper.h"
+#include "../DolfinFisherSolver/ReactionDiffusionProblem.h"
+
 
 // return a test concentraion map of size 100x100
 Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> test_cm_2D()
@@ -116,27 +121,92 @@ void testReaderWriter(){
 			", dimension (" << right.second << "," << mesh2->geometry().dim() << ")" << std::endl;
 	std::cout << std::endl;
 
-	// load file
-	std::cout << "loadFile" << std::endl;
-	std::shared_ptr<dolfin::File> file1;
-	bool fileLoaded = rw.loadFile(file1, "should-work", "out", "pvd");
-	std::cout << "	test loading should-work/out.pvd " << (fileLoaded ? "success" : "failed") << std::endl;
-	std::shared_ptr<dolfin::File> file11;
-	fileLoaded = rw.loadFile(file11, "should-work", "out2", "pvd");
-	std::cout << "	test loading should-work/out2.pvd " << (fileLoaded ? "success" : "failed") << std::endl;
+}
 
-	std::shared_ptr<dolfin::File> file2;
-	fileLoaded = rw.loadFile(file2, "", "out", "pvd");
-	std::cout << "	test loading /out.pvd " << (fileLoaded ? "failed" : "success") << std::endl;
-	std::shared_ptr<dolfin::File> file3;
-	fileLoaded = rw.loadFile(file3, "should-not-work", "out", "bla");
-	std::cout << "	test loading should-not-work/out.bla " << (fileLoaded ? "failed" : "success") << std::endl;
+void testMeshFunctions(){
+	ReaderWriter putput = ReaderWriter(0, "output", "../mesh");
 
+	// mesh read-in
+	std::shared_ptr<dolfin::Mesh> mesh = std::make_shared<dolfin::Mesh>();
+	std::pair<bool, int> meshInfo = putput.loadMesh(mesh, "rect-100on100-res-100.h5");
+	auto cellType = mesh->type().cell_type();
+	std::cout << "mesh: " << std::endl <<
+			"	cell type = "  << dolfin::CellType::type2string(cellType) << std::endl <<
+			"	cell description = "  << mesh->type().description(true) << std::endl <<
+			"	cell top dim = "  << mesh->type().dim() << std::endl <<
+			"	cell num verticies = "  << mesh->type().num_vertices() << std::endl <<
+			"	mesh num cells (local) = "  << mesh->num_cells() << std::endl <<
+			"	mesh num edges (local) = "  << mesh->num_edges() << std::endl <<
+			"	mesh num faces (local) = "  << mesh->num_faces() << std::endl;
+
+
+	std::cout << std::endl;
+	auto V = std::make_shared<VariationalReactionDiffusion2D::FunctionSpace>(mesh);
+	auto dofs = V->dofmap();
+	std::cout << "dofmap: " << std::endl <<
+			"	global dimension = "  << dofs->global_dimension() << std::endl <<
+			"	cell 10 dimension = "  << dofs->cell_dimension(10) << std::endl <<
+			"	max cell dimension = "  << dofs->max_cell_dimension() << std::endl <<
+			"	num facet dofs = "  << dofs->num_facet_dofs() << std::endl <<
+			"	size dofs list = "  << dofs->dofs().size() << std::endl;
+
+
+}
+
+void testAdaptiveMesh(){
+
+	// initialize MPI
+	MPI_Init(NULL, NULL);
+	int rank;
+	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+	std::shared_ptr<dolfin::Mesh> mesh = std::make_shared<dolfin::Mesh>();
+	auto hdf5 = dolfin::HDF5File(MPI_COMM_WORLD, "../mesh/rect-10on10-res-25.h5", std::string("r"));
+	hdf5.read(*mesh, "/mesh", false);
+
+	// create initial condition
+	std::shared_ptr<InitializerCircle> initialCondition;
+	initialCondition = std::make_shared<InitializerCircle>(5, 5, 1, 1);
+	if(rank == 0){ std::cout << initialCondition->asString() << std::endl; };
+
+	std::shared_ptr<TensorConstant> DConstant = std::make_shared<TensorConstant>(rank, 0.5);
+	if(rank == 0){ std::cout << DConstant->asString() << std::endl; };
+
+	std::shared_ptr<ReactionDiffusionProblem> problem = std::make_shared<ReactionDiffusionProblem>(rank, mesh, DConstant, 0.001, 0.001, 1);
+	if(rank == 0){ std::cout << problem->asString() << std::endl;};
+
+	std::shared_ptr<dolfin::NewtonSolver> solver = std::make_shared<dolfin::NewtonSolver>();
+	solver->parameters["linear_solver"] = "lu";
+	solver->parameters["convergence_criterion"] = "incremental";
+	solver->parameters["maximum_iterations"] = 50;
+	solver->parameters["relative_tolerance"] = 1e-10;
+	solver->parameters["absolute_tolerance"] = 1e-10;
+
+	if(rank == 0){
+		std::cout << solver->parameters.str(true) << std::endl;
+	}
+
+	return;
+
+	TimeStepper timeStepper = TimeStepper(rank, problem, solver, 10, 0.00000001, 0.01, 0.001, 1);
+	if(rank == 0){ std::cout << timeStepper.asString() << std::endl; };
+
+	// create output files
+	std::shared_ptr<dolfin::File> file = std::make_shared<dolfin::File>("output/adaptiveMesh/out.pvd");
+
+	// run simulation
+	RuntimeTracker tracker3 = timeStepper.run(1, 3, initialCondition,
+			file, "output/adaptiveMesh/iterationdata.csv",
+			-1, 0.001);
+
+	//AdaptiveLinearVariationalSolver solver(problem, M);
+
+
+	MPI_Finalize(); //seems to trigger an abort
 }
 
 int main()
 {
-	testReaderWriter();
-
+	testAdaptiveMesh();
 
 };

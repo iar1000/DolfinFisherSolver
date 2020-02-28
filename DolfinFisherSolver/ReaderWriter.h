@@ -17,11 +17,9 @@ class ReaderWriter
 public:
 	ReaderWriter(int rank, std::string toOutput, std::string toMesh);
 
-	// loads mesh with name "name" from the meshParent-folder to the pointer location "mesh"*
-	// name includes the file ending of the mesh, typecheck is done inside this function
-	// works using MPI
-	// returns true/dimensionality if succeeded, false/0 otherwise
-	std::pair<bool, int> loadMesh(std::shared_ptr<dolfin::Mesh> mesh, std::string name);
+	// returns path relativ path to mesh with name "name"
+	// returns (file ending/relative path) if success, ("fail"/"fail") otherwise
+	std::pair<std::string, std::string> loadMesh(std::string name);
 
 	// creates and returns path for output file with name "name" in outputParent/subfolder
 	// if the subdirectory does not exist it is created, must be valid directory name otherwise undefinded behavior

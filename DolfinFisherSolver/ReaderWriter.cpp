@@ -29,45 +29,21 @@ ReaderWriter::ReaderWriter(int rank, std::string toOutput, std::string toMesh){
 				"	path to mesh parent = " << meshParent_ << std::endl;
 	}
 }
-std::pair<bool, int> ReaderWriter::loadMesh(std::shared_ptr<dolfin::Mesh> mesh, std::string name)
+
+std::pair<std::string, std::string> ReaderWriter::loadMesh(std::string name)
 {
 	// check input format
 	std::vector<std::string> tokens = splitString(name, '.');
-	if(tokens.size() != 2){
-		if(rank_ == 0){
-			std::cout << "WARNING: wrong mesh name format" << std::endl;
-		}
-		return std::pair<bool,int>(false, 0);
+	if(tokens.size() != 2)
+	{
+		if(rank_ == 0){ std::cout << "WARNING (ReaderWriter): wrong mesh name format" << std::endl; }
+		return std::pair<std::string,std::string>("fail", "fail");
 	}
 	// check if source format of mesh is supported
 	std::string format = tokens.at(1);
-	if(format == "h5"){
-		try{
-			auto hdf5 = dolfin::HDF5File(MPI_COMM_WORLD, meshParent_ + "/" + name, std::string("r"));
-			hdf5.read(*mesh, "/mesh", false);
-			// add mesh to components list before returning
-			std::stringstream ss;
-			ss << "Mesh:" << std::endl <<
-					"	name = " << name << std::endl <<
-					"	dimension = " << mesh->geometry().dim() << std::endl;
-			addComponent(ss.str());
-
-			return std::pair<bool,int>(true, mesh->geometry().dim());
-		}
-		catch(const std::exception& e){
-			if(rank_ == 0){
-				std::cout << "WARNING: mesh not found. path: " << meshParent_ << "/" << name << std::endl;
-			}
-			return std::pair<bool,int>(false, 0);
-		}
-	}
-	else{
-		if(rank_ == 0){
-			std::cout << "WARNING: couldn't load mesh: " << name <<
-					". datatype not supported (yet)" << std::endl;
-		}
-		return std::pair<bool,int>(false, 0);
-	}
+	if(format == "h5"){ return std::pair<std::string,std::string>("h5", meshParent_ + "/" + name); }
+	else if(format == "xml"){ return std::pair<std::string,std::string>("xml", meshParent_ + "/" + name); }
+	else { return std::pair<std::string,std::string>("fail", "fail"); }
 }
 
 std::pair<bool, std::string> ReaderWriter::getFilePath(std::string subfolder, std::string filename, std::string suffix){

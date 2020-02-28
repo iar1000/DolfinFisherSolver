@@ -28,24 +28,24 @@
 //  representation:                 'auto'
 //  split:                          False
 
-#ifndef __VARIATIONALREACTIONDIFFUSION2D_H
-#define __VARIATIONALREACTIONDIFFUSION2D_H
+#ifndef __VARIATIONALFISHEREQUATION2D_H
+#define __VARIATIONALFISHEREQUATION2D_H
 #include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <stdexcept>
 #include <ufc.h>
 
-class variationalreactiondiffusion2d_finite_element_0: public ufc::finite_element
+class variationalfisherequation2d_finite_element_0: public ufc::finite_element
 {
 public:
 
-  variationalreactiondiffusion2d_finite_element_0() : ufc::finite_element()
+  variationalfisherequation2d_finite_element_0() : ufc::finite_element()
   {
     // Do nothing
   }
 
-  ~variationalreactiondiffusion2d_finite_element_0() override
+  ~variationalfisherequation2d_finite_element_0() override
   {
     // Do nothing
   }
@@ -820,22 +820,22 @@ public:
 
   ufc::finite_element * create() const final override
   {
-    return new variationalreactiondiffusion2d_finite_element_0();
+    return new variationalfisherequation2d_finite_element_0();
   }
 
 };
 
 
-class variationalreactiondiffusion2d_finite_element_1: public ufc::finite_element
+class variationalfisherequation2d_finite_element_1: public ufc::finite_element
 {
 public:
 
-  variationalreactiondiffusion2d_finite_element_1() : ufc::finite_element()
+  variationalfisherequation2d_finite_element_1() : ufc::finite_element()
   {
     // Do nothing
   }
 
-  ~variationalreactiondiffusion2d_finite_element_1() override
+  ~variationalfisherequation2d_finite_element_1() override
   {
     // Do nothing
   }
@@ -1988,9 +1988,9 @@ public:
     switch (i)
     {
     case 0:
-        return new variationalreactiondiffusion2d_finite_element_0();
+        return new variationalfisherequation2d_finite_element_0();
     case 1:
-        return new variationalreactiondiffusion2d_finite_element_0();
+        return new variationalfisherequation2d_finite_element_0();
     default:
         return nullptr;
     }
@@ -1998,22 +1998,22 @@ public:
 
   ufc::finite_element * create() const final override
   {
-    return new variationalreactiondiffusion2d_finite_element_1();
+    return new variationalfisherequation2d_finite_element_1();
   }
 
 };
 
 
-class variationalreactiondiffusion2d_finite_element_2: public ufc::finite_element
+class variationalfisherequation2d_finite_element_2: public ufc::finite_element
 {
 public:
 
-  variationalreactiondiffusion2d_finite_element_2() : ufc::finite_element()
+  variationalfisherequation2d_finite_element_2() : ufc::finite_element()
   {
     // Do nothing
   }
 
-  ~variationalreactiondiffusion2d_finite_element_2() override
+  ~variationalfisherequation2d_finite_element_2() override
   {
     // Do nothing
   }
@@ -2309,22 +2309,22 @@ public:
 
   ufc::finite_element * create() const final override
   {
-    return new variationalreactiondiffusion2d_finite_element_2();
+    return new variationalfisherequation2d_finite_element_2();
   }
 
 };
 
 
-class variationalreactiondiffusion2d_finite_element_3: public ufc::finite_element
+class variationalfisherequation2d_finite_element_3: public ufc::finite_element
 {
 public:
 
-  variationalreactiondiffusion2d_finite_element_3() : ufc::finite_element()
+  variationalfisherequation2d_finite_element_3() : ufc::finite_element()
   {
     // Do nothing
   }
 
-  ~variationalreactiondiffusion2d_finite_element_3() override
+  ~variationalfisherequation2d_finite_element_3() override
   {
     // Do nothing
   }
@@ -3636,22 +3636,22 @@ public:
 
   ufc::finite_element * create() const final override
   {
-    return new variationalreactiondiffusion2d_finite_element_3();
+    return new variationalfisherequation2d_finite_element_3();
   }
 
 };
 
 
-class variationalreactiondiffusion2d_dofmap_0: public ufc::dofmap
+class variationalfisherequation2d_dofmap_0: public ufc::dofmap
 {
 public:
 
-  variationalreactiondiffusion2d_dofmap_0() : ufc::dofmap()
+  variationalfisherequation2d_dofmap_0() : ufc::dofmap()
   {
     // Do nothing
   }
 
-  ~variationalreactiondiffusion2d_dofmap_0() override
+  ~variationalfisherequation2d_dofmap_0() override
   {
     // Do nothing
   }
@@ -3829,22 +3829,22 @@ public:
 
   ufc::dofmap * create() const final override
   {
-    return new variationalreactiondiffusion2d_dofmap_0();
+    return new variationalfisherequation2d_dofmap_0();
   }
 
 };
 
 
-class variationalreactiondiffusion2d_dofmap_1: public ufc::dofmap
+class variationalfisherequation2d_dofmap_1: public ufc::dofmap
 {
 public:
 
-  variationalreactiondiffusion2d_dofmap_1() : ufc::dofmap()
+  variationalfisherequation2d_dofmap_1() : ufc::dofmap()
   {
     // Do nothing
   }
 
-  ~variationalreactiondiffusion2d_dofmap_1() override
+  ~variationalfisherequation2d_dofmap_1() override
   {
     // Do nothing
   }
@@ -4047,9 +4047,9 @@ public:
     switch (i)
     {
     case 0:
-        return new variationalreactiondiffusion2d_dofmap_0();
+        return new variationalfisherequation2d_dofmap_0();
     case 1:
-        return new variationalreactiondiffusion2d_dofmap_0();
+        return new variationalfisherequation2d_dofmap_0();
     default:
         return nullptr;
     }
@@ -4057,22 +4057,22 @@ public:
 
   ufc::dofmap * create() const final override
   {
-    return new variationalreactiondiffusion2d_dofmap_1();
+    return new variationalfisherequation2d_dofmap_1();
   }
 
 };
 
 
-class variationalreactiondiffusion2d_dofmap_2: public ufc::dofmap
+class variationalfisherequation2d_dofmap_2: public ufc::dofmap
 {
 public:
 
-  variationalreactiondiffusion2d_dofmap_2() : ufc::dofmap()
+  variationalfisherequation2d_dofmap_2() : ufc::dofmap()
   {
     // Do nothing
   }
 
-  ~variationalreactiondiffusion2d_dofmap_2() override
+  ~variationalfisherequation2d_dofmap_2() override
   {
     // Do nothing
   }
@@ -4217,22 +4217,22 @@ public:
 
   ufc::dofmap * create() const final override
   {
-    return new variationalreactiondiffusion2d_dofmap_2();
+    return new variationalfisherequation2d_dofmap_2();
   }
 
 };
 
 
-class variationalreactiondiffusion2d_dofmap_3: public ufc::dofmap
+class variationalfisherequation2d_dofmap_3: public ufc::dofmap
 {
 public:
 
-  variationalreactiondiffusion2d_dofmap_3() : ufc::dofmap()
+  variationalfisherequation2d_dofmap_3() : ufc::dofmap()
   {
     // Do nothing
   }
 
-  ~variationalreactiondiffusion2d_dofmap_3() override
+  ~variationalfisherequation2d_dofmap_3() override
   {
     // Do nothing
   }
@@ -4439,22 +4439,22 @@ public:
 
   ufc::dofmap * create() const final override
   {
-    return new variationalreactiondiffusion2d_dofmap_3();
+    return new variationalfisherequation2d_dofmap_3();
   }
 
 };
 
 
-class variationalreactiondiffusion2d_coordinate_mapping_1: public ufc::coordinate_mapping
+class variationalfisherequation2d_coordinate_mapping_1: public ufc::coordinate_mapping
 {
 public:
 
-  variationalreactiondiffusion2d_coordinate_mapping_1() : ufc::coordinate_mapping()
+  variationalfisherequation2d_coordinate_mapping_1() : ufc::coordinate_mapping()
   {
     // Do nothing
   }
 
-  ~variationalreactiondiffusion2d_coordinate_mapping_1() override
+  ~variationalfisherequation2d_coordinate_mapping_1() override
   {
     // Do nothing
   }
@@ -4466,7 +4466,7 @@ public:
 
   ufc::coordinate_mapping * create() const final override
   {
-    return new variationalreactiondiffusion2d_coordinate_mapping_1();
+    return new variationalfisherequation2d_coordinate_mapping_1();
   }
 
   std::size_t geometric_dimension() const final override
@@ -4486,12 +4486,12 @@ public:
 
   ufc::finite_element * create_coordinate_finite_element() const final override
   {
-    return new variationalreactiondiffusion2d_finite_element_1();
+    return new variationalfisherequation2d_finite_element_1();
   }
 
   ufc::dofmap * create_coordinate_dofmap() const final override
   {
-    return new variationalreactiondiffusion2d_dofmap_1();
+    return new variationalfisherequation2d_dofmap_1();
   }
 
   void compute_physical_coordinates(
@@ -4499,7 +4499,7 @@ public:
       const double * X,
       const double * coordinate_dofs) const final override
   {
-    variationalreactiondiffusion2d_finite_element_0 xelement;
+    variationalfisherequation2d_finite_element_0 xelement;
     double phi[3];
     for (std::size_t ip = 0; ip < num_points; ++ip)
     {
@@ -4580,7 +4580,7 @@ public:
       const double * X,
       const double * coordinate_dofs) const final override
   {
-    variationalreactiondiffusion2d_finite_element_0 xelement;
+    variationalfisherequation2d_finite_element_0 xelement;
     double dphi[6];
     for (std::size_t ip = 0; ip < num_points; ++ip)
     {
@@ -4649,16 +4649,16 @@ public:
 };
 
 
-class variationalreactiondiffusion2d_cell_integral_0_otherwise: public ufc::cell_integral
+class variationalfisherequation2d_cell_integral_0_otherwise: public ufc::cell_integral
 {
 public:
 
-  variationalreactiondiffusion2d_cell_integral_0_otherwise() : ufc::cell_integral()
+  variationalfisherequation2d_cell_integral_0_otherwise() : ufc::cell_integral()
   {
 
   }
 
-  ~variationalreactiondiffusion2d_cell_integral_0_otherwise() override
+  ~variationalfisherequation2d_cell_integral_0_otherwise() override
   {
 
   }
@@ -4842,16 +4842,16 @@ return enabled;
 };
 
 
-class variationalreactiondiffusion2d_cell_integral_1_otherwise: public ufc::cell_integral
+class variationalfisherequation2d_cell_integral_1_otherwise: public ufc::cell_integral
 {
 public:
 
-  variationalreactiondiffusion2d_cell_integral_1_otherwise() : ufc::cell_integral()
+  variationalfisherequation2d_cell_integral_1_otherwise() : ufc::cell_integral()
   {
 
   }
 
-  ~variationalreactiondiffusion2d_cell_integral_1_otherwise() override
+  ~variationalfisherequation2d_cell_integral_1_otherwise() override
   {
 
   }
@@ -5041,16 +5041,16 @@ return enabled;
 };
 
 
-class variationalreactiondiffusion2d_form_0: public ufc::form
+class variationalfisherequation2d_form_0: public ufc::form
 {
 public:
 
-  variationalreactiondiffusion2d_form_0() : ufc::form()
+  variationalfisherequation2d_form_0() : ufc::form()
   {
     // Do nothing
   }
 
-  ~variationalreactiondiffusion2d_form_0() override
+  ~variationalfisherequation2d_form_0() override
   {
     // Do nothing
   }
@@ -5082,17 +5082,17 @@ public:
 
   ufc::finite_element * create_coordinate_finite_element() const final override
   {
-    return new variationalreactiondiffusion2d_finite_element_1();
+    return new variationalfisherequation2d_finite_element_1();
   }
 
   ufc::dofmap * create_coordinate_dofmap() const final override
   {
-    return new variationalreactiondiffusion2d_dofmap_1();
+    return new variationalfisherequation2d_dofmap_1();
    }
 
   ufc::coordinate_mapping * create_coordinate_mapping() const final override
   {
-    return new variationalreactiondiffusion2d_coordinate_mapping_1();
+    return new variationalfisherequation2d_coordinate_mapping_1();
   }
 
   ufc::finite_element * create_finite_element(std::size_t i) const final override
@@ -5100,19 +5100,19 @@ public:
     switch (i)
     {
     case 0:
-        return new variationalreactiondiffusion2d_finite_element_3();
+        return new variationalfisherequation2d_finite_element_3();
     case 1:
-        return new variationalreactiondiffusion2d_finite_element_3();
+        return new variationalfisherequation2d_finite_element_3();
     case 2:
-        return new variationalreactiondiffusion2d_finite_element_3();
+        return new variationalfisherequation2d_finite_element_3();
     case 3:
-        return new variationalreactiondiffusion2d_finite_element_2();
+        return new variationalfisherequation2d_finite_element_2();
     case 4:
-        return new variationalreactiondiffusion2d_finite_element_2();
+        return new variationalfisherequation2d_finite_element_2();
     case 5:
-        return new variationalreactiondiffusion2d_finite_element_3();
+        return new variationalfisherequation2d_finite_element_3();
     case 6:
-        return new variationalreactiondiffusion2d_finite_element_2();
+        return new variationalfisherequation2d_finite_element_2();
     default:
         return nullptr;
     }
@@ -5123,19 +5123,19 @@ public:
     switch (i)
     {
     case 0:
-        return new variationalreactiondiffusion2d_dofmap_3();
+        return new variationalfisherequation2d_dofmap_3();
     case 1:
-        return new variationalreactiondiffusion2d_dofmap_3();
+        return new variationalfisherequation2d_dofmap_3();
     case 2:
-        return new variationalreactiondiffusion2d_dofmap_3();
+        return new variationalfisherequation2d_dofmap_3();
     case 3:
-        return new variationalreactiondiffusion2d_dofmap_2();
+        return new variationalfisherequation2d_dofmap_2();
     case 4:
-        return new variationalreactiondiffusion2d_dofmap_2();
+        return new variationalfisherequation2d_dofmap_2();
     case 5:
-        return new variationalreactiondiffusion2d_dofmap_3();
+        return new variationalfisherequation2d_dofmap_3();
     case 6:
-        return new variationalreactiondiffusion2d_dofmap_2();
+        return new variationalfisherequation2d_dofmap_2();
     default:
         return nullptr;
     }
@@ -5263,7 +5263,7 @@ public:
 
   ufc::cell_integral * create_default_cell_integral() const final override
   {
-    return new variationalreactiondiffusion2d_cell_integral_0_otherwise();
+    return new variationalfisherequation2d_cell_integral_0_otherwise();
   }
 
   ufc::exterior_facet_integral * create_default_exterior_facet_integral() const final override
@@ -5304,16 +5304,16 @@ public:
 };
 
 
-class variationalreactiondiffusion2d_form_1: public ufc::form
+class variationalfisherequation2d_form_1: public ufc::form
 {
 public:
 
-  variationalreactiondiffusion2d_form_1() : ufc::form()
+  variationalfisherequation2d_form_1() : ufc::form()
   {
     // Do nothing
   }
 
-  ~variationalreactiondiffusion2d_form_1() override
+  ~variationalfisherequation2d_form_1() override
   {
     // Do nothing
   }
@@ -5345,17 +5345,17 @@ public:
 
   ufc::finite_element * create_coordinate_finite_element() const final override
   {
-    return new variationalreactiondiffusion2d_finite_element_1();
+    return new variationalfisherequation2d_finite_element_1();
   }
 
   ufc::dofmap * create_coordinate_dofmap() const final override
   {
-    return new variationalreactiondiffusion2d_dofmap_1();
+    return new variationalfisherequation2d_dofmap_1();
    }
 
   ufc::coordinate_mapping * create_coordinate_mapping() const final override
   {
-    return new variationalreactiondiffusion2d_coordinate_mapping_1();
+    return new variationalfisherequation2d_coordinate_mapping_1();
   }
 
   ufc::finite_element * create_finite_element(std::size_t i) const final override
@@ -5363,19 +5363,19 @@ public:
     switch (i)
     {
     case 0:
-        return new variationalreactiondiffusion2d_finite_element_3();
+        return new variationalfisherequation2d_finite_element_3();
     case 1:
-        return new variationalreactiondiffusion2d_finite_element_3();
+        return new variationalfisherequation2d_finite_element_3();
     case 2:
-        return new variationalreactiondiffusion2d_finite_element_3();
+        return new variationalfisherequation2d_finite_element_3();
     case 3:
-        return new variationalreactiondiffusion2d_finite_element_2();
+        return new variationalfisherequation2d_finite_element_2();
     case 4:
-        return new variationalreactiondiffusion2d_finite_element_2();
+        return new variationalfisherequation2d_finite_element_2();
     case 5:
-        return new variationalreactiondiffusion2d_finite_element_3();
+        return new variationalfisherequation2d_finite_element_3();
     case 6:
-        return new variationalreactiondiffusion2d_finite_element_2();
+        return new variationalfisherequation2d_finite_element_2();
     default:
         return nullptr;
     }
@@ -5386,19 +5386,19 @@ public:
     switch (i)
     {
     case 0:
-        return new variationalreactiondiffusion2d_dofmap_3();
+        return new variationalfisherequation2d_dofmap_3();
     case 1:
-        return new variationalreactiondiffusion2d_dofmap_3();
+        return new variationalfisherequation2d_dofmap_3();
     case 2:
-        return new variationalreactiondiffusion2d_dofmap_3();
+        return new variationalfisherequation2d_dofmap_3();
     case 3:
-        return new variationalreactiondiffusion2d_dofmap_2();
+        return new variationalfisherequation2d_dofmap_2();
     case 4:
-        return new variationalreactiondiffusion2d_dofmap_2();
+        return new variationalfisherequation2d_dofmap_2();
     case 5:
-        return new variationalreactiondiffusion2d_dofmap_3();
+        return new variationalfisherequation2d_dofmap_3();
     case 6:
-        return new variationalreactiondiffusion2d_dofmap_2();
+        return new variationalfisherequation2d_dofmap_2();
     default:
         return nullptr;
     }
@@ -5526,7 +5526,7 @@ public:
 
   ufc::cell_integral * create_default_cell_integral() const final override
   {
-    return new variationalreactiondiffusion2d_cell_integral_1_otherwise();
+    return new variationalfisherequation2d_cell_integral_1_otherwise();
   }
 
   ufc::exterior_facet_integral * create_default_exterior_facet_integral() const final override
@@ -5588,7 +5588,7 @@ public:
 #include <dolfin/adaptivity/GoalFunctional.h>
 #include <dolfin/la/GenericVector.h>
 
-namespace VariationalReactionDiffusion2D
+namespace VariationalFisherEquation2D
 {
 
 class CoefficientSpace_D: public dolfin::FunctionSpace
@@ -5598,8 +5598,8 @@ public:
   // Constructor for standard function space
   CoefficientSpace_D(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalreactiondiffusion2d_finite_element_3>()),
-                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalreactiondiffusion2d_dofmap_3>(), *mesh))
+                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalfisherequation2d_finite_element_3>()),
+                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalfisherequation2d_dofmap_3>(), *mesh))
   {
     // Do nothing
   }
@@ -5607,8 +5607,8 @@ public:
   // Constructor for constrained function space
   CoefficientSpace_D(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalreactiondiffusion2d_finite_element_3>()),
-                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalreactiondiffusion2d_dofmap_3>(), *mesh, constrained_domain))
+                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalfisherequation2d_finite_element_3>()),
+                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalfisherequation2d_dofmap_3>(), *mesh, constrained_domain))
   {
     // Do nothing
   }
@@ -5622,8 +5622,8 @@ public:
   // Constructor for standard function space
   CoefficientSpace_dt(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalreactiondiffusion2d_finite_element_2>()),
-                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalreactiondiffusion2d_dofmap_2>(), *mesh))
+                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalfisherequation2d_finite_element_2>()),
+                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalfisherequation2d_dofmap_2>(), *mesh))
   {
     // Do nothing
   }
@@ -5631,8 +5631,8 @@ public:
   // Constructor for constrained function space
   CoefficientSpace_dt(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalreactiondiffusion2d_finite_element_2>()),
-                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalreactiondiffusion2d_dofmap_2>(), *mesh, constrained_domain))
+                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalfisherequation2d_finite_element_2>()),
+                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalfisherequation2d_dofmap_2>(), *mesh, constrained_domain))
   {
     // Do nothing
   }
@@ -5646,8 +5646,8 @@ public:
   // Constructor for standard function space
   CoefficientSpace_rho(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalreactiondiffusion2d_finite_element_2>()),
-                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalreactiondiffusion2d_dofmap_2>(), *mesh))
+                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalfisherequation2d_finite_element_2>()),
+                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalfisherequation2d_dofmap_2>(), *mesh))
   {
     // Do nothing
   }
@@ -5655,8 +5655,8 @@ public:
   // Constructor for constrained function space
   CoefficientSpace_rho(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalreactiondiffusion2d_finite_element_2>()),
-                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalreactiondiffusion2d_dofmap_2>(), *mesh, constrained_domain))
+                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalfisherequation2d_finite_element_2>()),
+                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalfisherequation2d_dofmap_2>(), *mesh, constrained_domain))
   {
     // Do nothing
   }
@@ -5670,8 +5670,8 @@ public:
   // Constructor for standard function space
   CoefficientSpace_theta(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalreactiondiffusion2d_finite_element_2>()),
-                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalreactiondiffusion2d_dofmap_2>(), *mesh))
+                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalfisherequation2d_finite_element_2>()),
+                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalfisherequation2d_dofmap_2>(), *mesh))
   {
     // Do nothing
   }
@@ -5679,8 +5679,8 @@ public:
   // Constructor for constrained function space
   CoefficientSpace_theta(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalreactiondiffusion2d_finite_element_2>()),
-                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalreactiondiffusion2d_dofmap_2>(), *mesh, constrained_domain))
+                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalfisherequation2d_finite_element_2>()),
+                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalfisherequation2d_dofmap_2>(), *mesh, constrained_domain))
   {
     // Do nothing
   }
@@ -5694,8 +5694,8 @@ public:
   // Constructor for standard function space
   CoefficientSpace_u(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalreactiondiffusion2d_finite_element_3>()),
-                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalreactiondiffusion2d_dofmap_3>(), *mesh))
+                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalfisherequation2d_finite_element_3>()),
+                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalfisherequation2d_dofmap_3>(), *mesh))
   {
     // Do nothing
   }
@@ -5703,8 +5703,8 @@ public:
   // Constructor for constrained function space
   CoefficientSpace_u(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalreactiondiffusion2d_finite_element_3>()),
-                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalreactiondiffusion2d_dofmap_3>(), *mesh, constrained_domain))
+                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalfisherequation2d_finite_element_3>()),
+                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalfisherequation2d_dofmap_3>(), *mesh, constrained_domain))
   {
     // Do nothing
   }
@@ -5718,8 +5718,8 @@ public:
   // Constructor for standard function space
   CoefficientSpace_u0(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalreactiondiffusion2d_finite_element_3>()),
-                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalreactiondiffusion2d_dofmap_3>(), *mesh))
+                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalfisherequation2d_finite_element_3>()),
+                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalfisherequation2d_dofmap_3>(), *mesh))
   {
     // Do nothing
   }
@@ -5727,8 +5727,8 @@ public:
   // Constructor for constrained function space
   CoefficientSpace_u0(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalreactiondiffusion2d_finite_element_3>()),
-                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalreactiondiffusion2d_dofmap_3>(), *mesh, constrained_domain))
+                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalfisherequation2d_finite_element_3>()),
+                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalfisherequation2d_dofmap_3>(), *mesh, constrained_domain))
   {
     // Do nothing
   }
@@ -5742,8 +5742,8 @@ public:
   // Constructor for standard function space
   Form_F_FunctionSpace_0(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalreactiondiffusion2d_finite_element_3>()),
-                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalreactiondiffusion2d_dofmap_3>(), *mesh))
+                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalfisherequation2d_finite_element_3>()),
+                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalfisherequation2d_dofmap_3>(), *mesh))
   {
     // Do nothing
   }
@@ -5751,8 +5751,8 @@ public:
   // Constructor for constrained function space
   Form_F_FunctionSpace_0(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalreactiondiffusion2d_finite_element_3>()),
-                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalreactiondiffusion2d_dofmap_3>(), *mesh, constrained_domain))
+                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalfisherequation2d_finite_element_3>()),
+                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalfisherequation2d_dofmap_3>(), *mesh, constrained_domain))
   {
     // Do nothing
   }
@@ -5801,7 +5801,7 @@ public:
   {
     _function_spaces[0] = V0;
 
-    _ufc_form = std::make_shared<const variationalreactiondiffusion2d_form_0>();
+    _ufc_form = std::make_shared<const variationalfisherequation2d_form_0>();
   }
 
   // Constructor
@@ -5817,7 +5817,7 @@ public:
     this->D = D;
     this->theta = theta;
 
-    _ufc_form = std::make_shared<const variationalreactiondiffusion2d_form_0>();
+    _ufc_form = std::make_shared<const variationalfisherequation2d_form_0>();
   }
 
   // Destructor
@@ -6015,8 +6015,8 @@ public:
   // Constructor for standard function space
   Form_J_FunctionSpace_0(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalreactiondiffusion2d_finite_element_3>()),
-                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalreactiondiffusion2d_dofmap_3>(), *mesh))
+                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalfisherequation2d_finite_element_3>()),
+                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalfisherequation2d_dofmap_3>(), *mesh))
   {
     // Do nothing
   }
@@ -6024,8 +6024,8 @@ public:
   // Constructor for constrained function space
   Form_J_FunctionSpace_0(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalreactiondiffusion2d_finite_element_3>()),
-                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalreactiondiffusion2d_dofmap_3>(), *mesh, constrained_domain))
+                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalfisherequation2d_finite_element_3>()),
+                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalfisherequation2d_dofmap_3>(), *mesh, constrained_domain))
   {
     // Do nothing
   }
@@ -6039,8 +6039,8 @@ public:
   // Constructor for standard function space
   Form_J_FunctionSpace_1(std::shared_ptr<const dolfin::Mesh> mesh):
     dolfin::FunctionSpace(mesh,
-                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalreactiondiffusion2d_finite_element_3>()),
-                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalreactiondiffusion2d_dofmap_3>(), *mesh))
+                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalfisherequation2d_finite_element_3>()),
+                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalfisherequation2d_dofmap_3>(), *mesh))
   {
     // Do nothing
   }
@@ -6048,8 +6048,8 @@ public:
   // Constructor for constrained function space
   Form_J_FunctionSpace_1(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
     dolfin::FunctionSpace(mesh,
-                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalreactiondiffusion2d_finite_element_3>()),
-                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalreactiondiffusion2d_dofmap_3>(), *mesh, constrained_domain))
+                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalfisherequation2d_finite_element_3>()),
+                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalfisherequation2d_dofmap_3>(), *mesh, constrained_domain))
   {
     // Do nothing
   }
@@ -6117,7 +6117,7 @@ public:
     _function_spaces[0] = V0;
     _function_spaces[1] = V1;
 
-    _ufc_form = std::make_shared<const variationalreactiondiffusion2d_form_1>();
+    _ufc_form = std::make_shared<const variationalfisherequation2d_form_1>();
   }
 
   // Constructor
@@ -6133,7 +6133,7 @@ public:
     this->D = D;
     this->theta = theta;
 
-    _ufc_form = std::make_shared<const variationalreactiondiffusion2d_form_1>();
+    _ufc_form = std::make_shared<const variationalfisherequation2d_form_1>();
   }
 
   // Destructor
