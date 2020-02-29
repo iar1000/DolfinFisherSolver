@@ -4,8 +4,10 @@
 Following packages have been used during developement of this software:
 
 Ubuntu (18.04): OS  
-CMake (minimum 3.5): Compilation process   
+GCC (6.3.0): Compiler  
+CMake (minimum 3.5): Helps with compilation process   
 FEniCS (2019.1): Automated solution of Differential Equations ([Installation guide](https://fenics.readthedocs.io/en/latest/installation.html))
+OpenMPI (3.0.1): Library for distributed computing, is integrated in FEniCS
 
 #### ETH Euler cluster
 To build and run the simulation on the Euler cluster, load following modules via the commands:  
@@ -15,17 +17,17 @@ To build and run the simulation on the Euler cluster, load following modules via
 
 ### Build FisherSolver
 1. clone this repo to local machine
-2. in DolfinFisherSolver parent folder run following commands:  
+2. make sure all requirements are installed
+3. in DolfinFisherSolver parent folder run following commands:  
   `mkdir DolfinFisherSolver/build && mkdir output`  
   `cd DolfinFisherSolver/build && cmake .. && make`  
   
  ### Run FisherSolver
  After building, the executable should be in /bin.  
- The simulation is run via the script "runFisherSolver.sh". All the default simulation parameters are read-in from the "FisherSolver.config" file. There is the possibility to overwrite some values via command line parameters. The best is to take a quick look into "runFisherSolver.sh" to know what can be done.  
+ The simulation is run via the script "runFisherSolver.sh". All the default simulation parameters are read-in from the "FisherSolver.config" file. The parameters in the "FisherSolver.config" file must be instantiated there. Otherwise some inputs to the FisherSolver are missing and the behavior is undefined. Try to work with feasible values, otherwise the behavior is again undefined. There is the possibility to overwrite some values via command line parameters. The best is to take a quick look into "runFisherSolver.sh" to know what can be done.  
  
  **Mesh**: The mesh defined in "FisherSolver.config" must be in the /mesh, folder. If not created externally, simple meshes can be created with the python script located in the /mesh folder.
  
-**Note**: The parameters in the "FisherSolver.config" file must be instantiated there. Otherwise some inputs are missing and the behavior is undefined. Try to work with feasible values, otherwise the behavior is again undefined
 
  **Euler**: ` bsub -N -W 00:30 -R "rusage[scratch=10000, mem=12800]" -n 10 ./runFisherSolver.sh -n 10 -ofo "ten-cores"`  
  There can be used a maximum of 128000 MB of memory, therefore mem = 128000MB / n  
