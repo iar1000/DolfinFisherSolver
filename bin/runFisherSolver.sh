@@ -14,7 +14,7 @@ MPI_PROCESS=2
 #		2: only simulation progress (default)
 #		3: progress and information about each iteration
 #		4: debug
-VERBOSE=3
+VERBOSE=2
 # --outputfolder: name of the output subfolder, must be valid directory name otherwise undefined behavior
 FOLDER_NAME=$(date +%F)
 # --outputfile: name of output files
@@ -24,7 +24,7 @@ FILE_NAME="out"
 #		datatype of iteration data is always .csv
 CSV_NAME="iterationdata"
 # --framerate: number of frames saved to file per 1 time unit (TEND=10, FRAMERATE=30 => 300 FRAMES SAVED)
-FRAMERATE=60
+FRAMERATE=30
 
 OUTPUT_PARENTFOLDER="../output" # path to output parent folder
 MESH_PARENTFOLDER="../mesh" # path to mesh parent folder
