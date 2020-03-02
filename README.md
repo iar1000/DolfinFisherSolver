@@ -12,7 +12,13 @@ OpenMPI (3.0.1): Library for distributed computing, is integrated in FEniCS
 #### ETH Euler cluster
 To build and run the simulation on the Euler cluster, load following modules via the commands:  
 `env2lmod`  
-`module load gcc/6.3.0 cmake/3.15.3 openmpi/3.0.1 fenics/2019.1.0`
+`module load gcc/6.3.0 cmake/3.15.3 openmpi/3.0.1 fenics/2019.1.0`  
+Since the mesh partitioner of the Scotch library has a bug and is not working when the mesh reaches a certain number of elements, a fixed version of dolfin must be used. Source it with:  
+`source /usr/source_env.sh`  
+It then can be compiled with the correct version of dolfin. Use the script `/DolfinFisherSolver/cmake_init.sh` to generate the CMake files, then use `make` as usual in the build folder.
+To make sure the correct version is used run commands:  
+`ldd FisherSolver | grep dolfin`
+
 
 
 ### Build FisherSolver
