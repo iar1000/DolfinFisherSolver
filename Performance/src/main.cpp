@@ -119,7 +119,7 @@ int main(int argc, char* argv[]){
 	solver3->solve(*problem2, *u2->vector());
 	t3.stop();
 
-	/*
+	/* No parallel ilu preconditioner support
 	if(rank==0){ std::cout << "BBB solve gmres + ilu" << std::endl;}
 	dolfin::Timer t4("BBB solve gmres + ilu");
 	std::shared_ptr<dolfin::NewtonSolver> solver4 = std::make_shared<dolfin::NewtonSolver>();
@@ -128,7 +128,6 @@ int main(int argc, char* argv[]){
 	solver4->parameters["preconditioner"] = "ilu";
 	solver4->solve(*problem2, *u2->vector());
 	t4.stop();
-	*/
 
 	if(rank==0){ std::cout << "BBB solve gmres + icc" << std::endl;}
 	dolfin::Timer t5("BBB solve gmres + icc");
@@ -138,6 +137,7 @@ int main(int argc, char* argv[]){
 	solver5->parameters["preconditioner"] = "icc";
 	solver5->solve(*problem2, *u2->vector());
 	t5.stop();
+	 */
 
 	if(rank==0){ std::cout << "BBB solve gmres + hypre_amg" << std::endl;}
 	dolfin::Timer t6("BBB solve gmres + hypre_amg");
@@ -176,6 +176,7 @@ int main(int argc, char* argv[]){
 	solver9->solve(*problem2, *u2->vector());
 	t9.stop();
 
+	/* No parallel ilu preconditioner support
 	if(rank==0){ std::cout << "BBB solve cg + ilu" << std::endl;}
 	dolfin::Timer t10("BBB solve cg + ilu");
 	std::shared_ptr<dolfin::NewtonSolver> solver10 = std::make_shared<dolfin::NewtonSolver>();
@@ -193,6 +194,7 @@ int main(int argc, char* argv[]){
 	solver11->parameters["preconditioner"] = "icc";
 	solver11->solve(*problem2, *u2->vector());
 	t11.stop();
+	*/
 
 	if(rank==0){ std::cout << "BBB solve cg + hypre_amgg" << std::endl;}
 	dolfin::Timer t12("BBB solve cg + hypre_amg");
@@ -221,8 +223,8 @@ int main(int argc, char* argv[]){
 	solver14->parameters["linear_solver"] = "petsc";
 	solver14->solve(*problem2, *u2->vector());
 	t14.stop();
-	/*
-	// not possible to use preconditioner with this solver
+
+	/* not possible to use preconditioner with this solver
 	if(rank==0){ std::cout << "BBB solve petsc + jacobi" << std::endl;}
 	dolfin::Timer t15("BBB solve petsc + jacobi");
 	std::shared_ptr<dolfin::NewtonSolver> solver15 = std::make_shared<dolfin::NewtonSolver>();
@@ -292,6 +294,7 @@ int main(int argc, char* argv[]){
 	t21.stop();
 	*/
 
+	/* No parallel ilu preconditioner support
 	if(rank==0){ std::cout << "BBB solve richardson + ilu" << std::endl;}
 	dolfin::Timer t22("BBB solve richardson + ilu");
 	std::shared_ptr<dolfin::NewtonSolver> solver22 = std::make_shared<dolfin::NewtonSolver>();
@@ -311,6 +314,7 @@ int main(int argc, char* argv[]){
 	solver23->parameters["preconditioner"] = "icc";
 	solver23->solve(*problem2, *u2->vector());
 	t23.stop();
+	*/
 
 	if(rank==0){ std::cout << "BBB solve richardson + hypre_amg" << std::endl;}
 	dolfin::Timer t24("BBB solve richardson + hypre_amg");
