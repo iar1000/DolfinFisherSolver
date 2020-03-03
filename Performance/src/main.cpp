@@ -95,20 +95,19 @@ int main(int argc, char* argv[]){
 	for(int i = 0; i < solver_methods.size(); i++){
 		for(int j = 0; j < solver_preconditioner.size(); j++){
 			if(rank == 0){ std::cout << "solve " << solver_methods.at(i) << " + " << solver_preconditioner.at(j) << std::endl;}
-
-			dolfin::Timer t2("AAA solve2D " + solver_methods.at(i) + "+" + solver_preconditioner.at(j));
-			std::vector<std::pair<std::string, std::string>> paras;
 			std::pair<std::string, std::string> sol = make_pair("linear_solver", solver_methods.at(i));
 			std::pair<std::string, std::string> pre = make_pair("preconditioner", solver_preconditioner.at(j));
+			std::vector<std::pair<std::string, std::string>> paras;
 			paras.push_back(sol); paras.push_back(pre);
 			fnc2->setSolverParameters(paras);
+			fnc3->setSolverParameters(paras);
+
+			dolfin::Timer t2("AAA solve2D " + solver_methods.at(i) + "+" + solver_preconditioner.at(j));
 			fnc2->solve(0.1);
 			t2.stop();
 			if(rank == 0){ std::cout << "	2D: " << get<0>(t2.elapsed()) << std::endl;}
 
 			dolfin::Timer t3("AAA solve3D " + solver_methods.at(i) + "+" + solver_preconditioner.at(j));
-			paras.push_back(sol); paras.push_back(pre);
-			fnc3->setSolverParameters(paras);
 			fnc3->solve(0.1);
 			t3.stop();
 			if(rank == 0){ std::cout << "	3D: " << get<0>(t3.elapsed()) << std::endl;}
