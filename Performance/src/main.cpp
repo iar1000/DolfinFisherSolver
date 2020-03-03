@@ -15,6 +15,11 @@ int main(int argc, char* argv[]){
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD,&nprocs);
 
+	if(rank==0){
+		dolfin::list_krylov_solver_preconditioners();
+		dolfin::list_linear_solver_methods();
+	}
+
 	// Parse command line options (will intialise PETSc if any PETSc
 	// options are present, e.g. --petsc.pc_type=jacobi)
 	dolfin::parameters.parse(argc, argv);
@@ -328,7 +333,7 @@ int main(int argc, char* argv[]){
 
 
 	 // Display timings
-	 list_timings(dolfin::TimingClear::keep, {dolfin::TimingType::wall});
+	 dolfin::list_timings(dolfin::TimingClear::keep, {dolfin::TimingType::wall});
 
 	 // output timings to text file
 	 if(output){
@@ -339,6 +344,8 @@ int main(int argc, char* argv[]){
 		 std::set<dolfin::TimingType> s = {dolfin::TimingType::wall};
 		 timings << dolfin::timings(dolfin::TimingClear::keep, s).str_latex();
 		 timings.close();
+
+		 dolfin::dump_timings_to_xml("timings.xml", dolfin::TimingClear::keep);
 	 }
 
 	MPI_Finalize();
