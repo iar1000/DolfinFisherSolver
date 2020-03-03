@@ -55,6 +55,12 @@ void FisherNewtonContainer::initialize(){
 	*u_low_ = *initializer_;
 }
 
+void FisherNewtonContainer::setSolverParameters(std::vector<std::pair<std::string, std::string>> paras){
+	for(int i = 0; i < paras.size(); i++){
+		solver_->parameters[paras.at(i).first] = paras.at(i).second;
+	}
+}
+
 int FisherNewtonContainer::solve(double t){
 	// start tracking new iteration if available
 	if(hasTracker_){ tracker_->newIteration(); }

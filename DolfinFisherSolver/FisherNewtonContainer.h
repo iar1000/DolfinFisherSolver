@@ -35,6 +35,7 @@ public:
 
 	// @override virtuals from ProblemSolverContainer
 	void initialize();
+	void setSolverParameters(std::vector<std::pair<std::string, std::string>> paras);
 	int solve(double t);
 	std::pair<int, double> solveAdaptive(double t, double dt, double tol);
 	double getP();
