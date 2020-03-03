@@ -107,10 +107,12 @@ int main(int argc, char* argv[]){
 			t2.stop();
 			if(rank == 0){ std::cout << "	2D: " << get<0>(t2.elapsed()) << std::endl;}
 
+			/*
 			dolfin::Timer t3("AAA solve3D " + solver_methods.at(i) + "+" + solver_preconditioner.at(j));
 			fnc3->solve(0.1);
 			t3.stop();
 			if(rank == 0){ std::cout << "	3D: " << get<0>(t3.elapsed()) << std::endl;}
+			*/
 		}
 	}
 
