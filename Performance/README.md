@@ -1,9 +1,15 @@
 
+# Performance Tester
+This subpart of the simulation is testing different linear solver/ preconditioner pairs for the Newton solver. It is currently adapted to work on Euler.
+
 ### Build PerformanceTester
-1. build missing folders  
- `mkdir src/build && mkdir output`
-2. Compile 
+All the requirements from building FisherSolver must be fullfiled to build the PerformanceTester. If this is the case do the following:
+1. build missing folders from within /Performance folder: 
+ `mkdir src/build`
+2. Setup and compile
+`cd src && ./cmake_init.sh && cd build && make`
 
-
-### Parameters
-ndofs: if weak scaling is tested, ndofs describes number of dofs per processor. in strong scaling test, ndofs describes total number of dofs.
+### Run PerformanceTester
+The runPerformanceTester.sh script runs the test for a range of processes.  
+The script can be parameterised on the size of memory used and the number of dof's per core. If the number of dof's is to high, it can happen that the LSF memory limit is reached.  
+The script produces xml and latex timetables with times of the different steps of the test.
