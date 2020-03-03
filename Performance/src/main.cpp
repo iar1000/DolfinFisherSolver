@@ -216,6 +216,7 @@ int main(int argc, char* argv[]){
 
 	// petsc
 
+	/* not possible to use preconditioner with this solver
 	if(rank==0){ std::cout << "BBB solve petsc" << std::endl;}
 	dolfin::Timer t14("BBB solve petsc");
 	std::shared_ptr<dolfin::NewtonSolver> solver14 = std::make_shared<dolfin::NewtonSolver>();
@@ -224,7 +225,6 @@ int main(int argc, char* argv[]){
 	solver14->solve(*problem2, *u2->vector());
 	t14.stop();
 
-	/* not possible to use preconditioner with this solver
 	if(rank==0){ std::cout << "BBB solve petsc + jacobi" << std::endl;}
 	dolfin::Timer t15("BBB solve petsc + jacobi");
 	std::shared_ptr<dolfin::NewtonSolver> solver15 = std::make_shared<dolfin::NewtonSolver>();
