@@ -119,6 +119,7 @@ int main(int argc, char* argv[]){
 	solver3->solve(*problem2, *u2->vector());
 	t3.stop();
 
+	/*
 	if(rank==0){ std::cout << "BBB solve gmres + ilu" << std::endl;}
 	dolfin::Timer t4("BBB solve gmres + ilu");
 	std::shared_ptr<dolfin::NewtonSolver> solver4 = std::make_shared<dolfin::NewtonSolver>();
@@ -127,6 +128,7 @@ int main(int argc, char* argv[]){
 	solver4->parameters["preconditioner"] = "ilu";
 	solver4->solve(*problem2, *u2->vector());
 	t4.stop();
+	*/
 
 	if(rank==0){ std::cout << "BBB solve gmres + icc" << std::endl;}
 	dolfin::Timer t5("BBB solve gmres + icc");
