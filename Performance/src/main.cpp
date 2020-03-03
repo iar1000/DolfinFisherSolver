@@ -320,7 +320,7 @@ int main(int argc, char* argv[]){
 	 // output timings to text file
 	 if(output){
 		 std::ofstream timings;
-		 timings.open("timings-" + nprocs, std::ios_base::trunc);
+		 timings.open("timings-" + nprocs + ".txt", std::ios_base::trunc);
 		 std::set<dolfin::TimingType> s = {dolfin::TimingType::wall};
 		 timings << dolfin::timings(dolfin::TimingClear::keep, s).str_latex();
 		 timings.close();
