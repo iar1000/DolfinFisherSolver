@@ -4,7 +4,7 @@
 
 SCRATCH=10000
 MEM=3000000
-NDOFS=100000
+NDOFS=500000
 
 bsub mpirun ./PerformanceTest --ndofs 250000
 PROCS=2
