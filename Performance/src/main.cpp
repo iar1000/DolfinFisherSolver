@@ -8,28 +8,35 @@
 
 // automatic performance assestment of FisherSolver
 int main(int argc, char* argv[]){
-    // initialize MPI
-    int provided;
-    MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
-    int rank, nprocs;
+	int provided;
+	MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
+	int rank, nprocs;
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD,&nprocs);
 
-	dolfin::SubSystemsManager::init_mpi();
+	// Parse command line options (will intialise PETSc if any PETSc
+	// options are present, e.g. --petsc.pc_type=jacobi)
+	dolfin::parameters.parse(argc, argv);
 	dolfin::SubSystemsManager::init_petsc();
 
 	// Default parameters
-	dolfin::Parameters paras("application_parameters");
-	paras.add("scaling_type", "weak", {"weak", "strong"});
-	paras.add("ndofs", 500000);
-	paras.add("output", true);
+	dolfin::Parameters application_parameters("application_parameters");
+	application_parameters.add("scaling_type", "weak", {"weak", "strong"});
+	application_parameters.add("ndofs", 500000);
+	application_parameters.add("output", true);
+
+	// Update from command line
+	application_parameters.parse(argc, argv);
 
 	// extract parameters
 	const std::string problem_type = "fisher";
-	const std::string scaling_type = paras["scaling_type"];
-	const int ndofs = paras["ndofs"];
-	const bool output = paras["output"];
+	const std::string scaling_type = application_parameters["scaling_type"];
+	const int ndofs = application_parameters["ndofs"];
+	const bool output = application_parameters["output"];
 	const std::string out_dir = "output/";
+
+	 // Set mesh partitioner
+	 dolfin::parameters["mesh_partitioner"] = "SCOTCH";
 
 	// create constant diffusion tensors
 	std::shared_ptr<dolfin::Expression> D2 = std::make_shared<TensorConstant>(rank, 0.013);
@@ -84,42 +91,227 @@ int main(int argc, char* argv[]){
 		std::cout << "----------------------------------------------------------------" << std::endl;
 	}
 
-	std::shared_ptr<FisherNewtonContainer> fnc2 = std::make_shared<FisherNewtonContainer>(rank,
-				mesh2D, init2D, D2, 0.025, 1, 0.00001);
-	std::shared_ptr<FisherNewtonContainer> fnc3 = std::make_shared<FisherNewtonContainer>(rank,
-					mesh3D, init3D, D3, 0.025, 1, 0.00001);
+	// different solver - preconditioner pairs
+	///////////////////////////////////////////////////
+	// gmres
+	if(rank==0){ std::cout << "next pair solving" << std::endl;}
+	dolfin::Timer t2("BBB solve gmres + pets_amg");
+	std::shared_ptr<dolfin::NewtonSolver> solver2 = std::make_shared<dolfin::NewtonSolver>();
+	solver2->parameters["convergence_criterion"] = "incremental";
+	solver2->parameters["linear_solver"] = "gmres";
+	solver2->parameters["preconditioner"] = "petsc_amg";
+	solver2->solve(*problem2, *u2->vector());
+	t2.stop();
 
-	// instanciate the different solvers
-	std::vector<std::string> solver_methods = {"bicgstab", "cg", "gmres", "minres", "mumps", "petsc", "richardson", "superlu"};
-	std::vector<std::string> solver_preconditioner = {"amg", "icc", "ilu", "jacobi", "petsc_amg", "sor"};
-	for(int i = 0; i < solver_methods.size(); i++){
-		for(int j = 0; j < solver_preconditioner.size(); j++){
-			if(rank == 0){ std::cout << "solve " << solver_methods.at(i) << " + " << solver_preconditioner.at(j) << std::endl;}
-			std::pair<std::string, std::string> sol = make_pair("linear_solver", solver_methods.at(i));
-			std::pair<std::string, std::string> pre = make_pair("preconditioner", solver_preconditioner.at(j));
-			std::vector<std::pair<std::string, std::string>> paras;
-			paras.push_back(sol); paras.push_back(pre);
-			fnc2->setSolverParameters(paras);
-			fnc3->setSolverParameters(paras);
+	if(rank==0){ std::cout << "next pair solving" << std::endl;}
+	dolfin::Timer t3("BBB solve gmres + jacobi");
+	std::shared_ptr<dolfin::NewtonSolver> solver3 = std::make_shared<dolfin::NewtonSolver>();
+	solver3->parameters["convergence_criterion"] = "incremental";
+	solver3->parameters["linear_solver"] = "gmres";
+	solver3->parameters["preconditioner"] = "jacobi";
+	solver3->solve(*problem2, *u2->vector());
+	t3.stop();
 
-			dolfin::Timer t2("AAA solve2D " + solver_methods.at(i) + "+" + solver_preconditioner.at(j));
-			fnc2->solve(0.1);
-			t2.stop();
-			if(rank == 0){ std::cout << "	2D: " << get<0>(t2.elapsed()) << std::endl;}
+	if(rank==0){ std::cout << "next pair solving" << std::endl;}
+	dolfin::Timer t4("BBB solve gmres + ilu");
+	std::shared_ptr<dolfin::NewtonSolver> solver4 = std::make_shared<dolfin::NewtonSolver>();
+	solver4->parameters["convergence_criterion"] = "incremental";
+	solver4->parameters["linear_solver"] = "gmres";
+	solver4->parameters["preconditioner"] = "ilu";
+	solver4->solve(*problem2, *u2->vector());
+	t4.stop();
 
-			/*
-			dolfin::Timer t3("AAA solve3D " + solver_methods.at(i) + "+" + solver_preconditioner.at(j));
-			fnc3->solve(0.1);
-			t3.stop();
-			if(rank == 0){ std::cout << "	3D: " << get<0>(t3.elapsed()) << std::endl;}
-			*/
-		}
-	}
+	if(rank==0){ std::cout << "next pair solving" << std::endl;}
+	dolfin::Timer t5("BBB solve gmres + icc");
+	std::shared_ptr<dolfin::NewtonSolver> solver5 = std::make_shared<dolfin::NewtonSolver>();
+	solver5->parameters["convergence_criterion"] = "incremental";
+	solver5->parameters["linear_solver"] = "gmres";
+	solver5->parameters["preconditioner"] = "icc";
+	solver5->solve(*problem2, *u2->vector());
+	t5.stop();
 
+	if(rank==0){ std::cout << "next pair solving" << std::endl;}
+	dolfin::Timer t6("BBB solve gmres + hypre_amg");
+	std::shared_ptr<dolfin::NewtonSolver> solver6 = std::make_shared<dolfin::NewtonSolver>();
+	solver6->parameters["convergence_criterion"] = "incremental";
+	solver6->parameters["linear_solver"] = "gmres";
+	solver6->parameters["preconditioner"] = "hypre_amg";
+	solver6->solve(*problem2, *u2->vector());
+	t6.stop();
 
+	if(rank==0){ std::cout << "next pair solving" << std::endl;}
+	dolfin::Timer t7("BBB solve gmres + hypre_euclid");
+	std::shared_ptr<dolfin::NewtonSolver> solver7 = std::make_shared<dolfin::NewtonSolver>();
+	solver7->parameters["convergence_criterion"] = "incremental";
+	solver7->parameters["linear_solver"] = "gmres";
+	solver7->parameters["preconditioner"] = "hypre_euclid";
+	solver7->solve(*problem2, *u2->vector());
+	t7.stop();
 
-	//dolfin::list_linear_solver_methods();
-	//dolfin::list_krylov_solver_preconditioners();
+	// cg
+	if(rank==0){ std::cout << "next pair solving" << std::endl;}
+	dolfin::Timer t8("BBB solve cg + pets_amg");
+	std::shared_ptr<dolfin::NewtonSolver> solver8 = std::make_shared<dolfin::NewtonSolver>();
+	solver8->parameters["convergence_criterion"] = "incremental";
+	solver8->parameters["linear_solver"] = "cg";
+	solver8->parameters["preconditioner"] = "petsc_amg";
+	solver8->solve(*problem2, *u2->vector());
+	t8.stop();
+
+	if(rank==0){ std::cout << "next pair solving" << std::endl;}
+	dolfin::Timer t9("BBB solve cg + jacobi");
+	std::shared_ptr<dolfin::NewtonSolver> solver9 = std::make_shared<dolfin::NewtonSolver>();
+	solver9->parameters["convergence_criterion"] = "incremental";
+	solver9->parameters["linear_solver"] = "cg";
+	solver9->parameters["preconditioner"] = "jacobi";
+	solver9->solve(*problem2, *u2->vector());
+	t9.stop();
+
+	if(rank==0){ std::cout << "next pair solving" << std::endl;}
+	dolfin::Timer t10("BBB solve cg + ilu");
+	std::shared_ptr<dolfin::NewtonSolver> solver10 = std::make_shared<dolfin::NewtonSolver>();
+	solver10->parameters["convergence_criterion"] = "incremental";
+	solver10->parameters["linear_solver"] = "cg";
+	solver10->parameters["preconditioner"] = "ilu";
+	solver10->solve(*problem2, *u2->vector());
+	t10.stop();
+
+	if(rank==0){ std::cout << "next pair solving" << std::endl;}
+	dolfin::Timer t11("BBB solve cg + icc");
+	std::shared_ptr<dolfin::NewtonSolver> solver11 = std::make_shared<dolfin::NewtonSolver>();
+	solver11->parameters["convergence_criterion"] = "incremental";
+	solver11->parameters["linear_solver"] = "cg";
+	solver11->parameters["preconditioner"] = "icc";
+	solver11->solve(*problem2, *u2->vector());
+	t11.stop();
+
+	if(rank==0){ std::cout << "next pair solving" << std::endl;}
+	dolfin::Timer t12("BBB solve cg + hypre_amg");
+	std::shared_ptr<dolfin::NewtonSolver> solver12 = std::make_shared<dolfin::NewtonSolver>();
+	solver12->parameters["convergence_criterion"] = "incremental";
+	solver12->parameters["linear_solver"] = "cg";
+	solver12->parameters["preconditioner"] = "hypre_amg";
+	solver12->solve(*problem2, *u2->vector());
+	t12.stop();
+
+	if(rank==0){ std::cout << "next pair solving" << std::endl;}
+	dolfin::Timer t13("BBB solve cg + hypre_euclid");
+	std::shared_ptr<dolfin::NewtonSolver> solver13 = std::make_shared<dolfin::NewtonSolver>();
+	solver13->parameters["convergence_criterion"] = "incremental";
+	solver13->parameters["linear_solver"] = "cg";
+	solver13->parameters["preconditioner"] = "hypre_euclid";
+	solver13->solve(*problem2, *u2->vector());
+	t13.stop();
+
+	// petsc
+	if(rank==0){ std::cout << "next pair solving" << std::endl;}
+	dolfin::Timer t14("BBB solve petsc + pets_amg");
+	std::shared_ptr<dolfin::NewtonSolver> solver14 = std::make_shared<dolfin::NewtonSolver>();
+	solver14->parameters["convergence_criterion"] = "incremental";
+	solver14->parameters["linear_solver"] = "petsc";
+	solver14->parameters["preconditioner"] = "petsc_amg";
+	solver14->solve(*problem2, *u2->vector());
+	t14.stop();
+
+	if(rank==0){ std::cout << "next pair solving" << std::endl;}
+	dolfin::Timer t15("BBB solve petsc + jacobi");
+	std::shared_ptr<dolfin::NewtonSolver> solver15 = std::make_shared<dolfin::NewtonSolver>();
+	solver15->parameters["convergence_criterion"] = "incremental";
+	solver15->parameters["linear_solver"] = "petsc";
+	solver15->parameters["preconditioner"] = "jacobi";
+	solver15->solve(*problem2, *u2->vector());
+	t15.stop();
+
+	if(rank==0){ std::cout << "next pair solving" << std::endl;}
+	dolfin::Timer t16("BBB solve petsc + ilu");
+	std::shared_ptr<dolfin::NewtonSolver> solver16 = std::make_shared<dolfin::NewtonSolver>();
+	solver16->parameters["convergence_criterion"] = "incremental";
+	solver16->parameters["linear_solver"] = "petsc";
+	solver16->parameters["preconditioner"] = "ilu";
+	solver16->solve(*problem2, *u2->vector());
+	t16.stop();
+
+	if(rank==0){ std::cout << "next pair solving" << std::endl;}
+	dolfin::Timer t17("BBB solve petsc + icc");
+	std::shared_ptr<dolfin::NewtonSolver> solver17 = std::make_shared<dolfin::NewtonSolver>();
+	solver17->parameters["convergence_criterion"] = "incremental";
+	solver17->parameters["linear_solver"] = "petsc";
+	solver17->parameters["preconditioner"] = "icc";
+	solver17->solve(*problem2, *u2->vector());
+	t17.stop();
+
+	if(rank==0){ std::cout << "next pair solving" << std::endl;}
+	dolfin::Timer t18("BBB solve petsc + hypre_amg");
+	std::shared_ptr<dolfin::NewtonSolver> solver18 = std::make_shared<dolfin::NewtonSolver>();
+	solver18->parameters["convergence_criterion"] = "incremental";
+	solver18->parameters["linear_solver"] = "petsc";
+	solver18->parameters["preconditioner"] = "hypre_amg";
+	solver18->solve(*problem2, *u2->vector());
+	t18.stop();
+
+	if(rank==0){ std::cout << "next pair solving" << std::endl;}
+	dolfin::Timer t19("BBB solve petsc + hypre_euclid");
+	std::shared_ptr<dolfin::NewtonSolver> solver19 = std::make_shared<dolfin::NewtonSolver>();
+	solver19->parameters["convergence_criterion"] = "incremental";
+	solver19->parameters["linear_solver"] = "petsc";
+	solver19->parameters["preconditioner"] = "hypre_euclid";
+	solver19->solve(*problem2, *u2->vector());
+	t19.stop();
+
+	// richardson
+	if(rank==0){ std::cout << "next pair solving" << std::endl;}
+	dolfin::Timer t20("BBB solve richardson + pets_amg");
+	std::shared_ptr<dolfin::NewtonSolver> solver20 = std::make_shared<dolfin::NewtonSolver>();
+	solver20->parameters["convergence_criterion"] = "incremental";
+	solver20->parameters["linear_solver"] = "richardson";
+	solver20->parameters["preconditioner"] = "petsc_amg";
+	solver20->solve(*problem2, *u2->vector());
+	t20.stop();
+
+	if(rank==0){ std::cout << "next pair solving" << std::endl;}
+	dolfin::Timer t21("BBB solve richardson + jacobi");
+	std::shared_ptr<dolfin::NewtonSolver> solver21 = std::make_shared<dolfin::NewtonSolver>();
+	solver21->parameters["convergence_criterion"] = "incremental";
+	solver21->parameters["linear_solver"] = "richardson";
+	solver21->parameters["preconditioner"] = "jacobi";
+	solver21->solve(*problem2, *u2->vector());
+	t21.stop();
+
+	if(rank==0){ std::cout << "next pair solving" << std::endl;}
+	dolfin::Timer t22("BBB solve richardson + ilu");
+	std::shared_ptr<dolfin::NewtonSolver> solver22 = std::make_shared<dolfin::NewtonSolver>();
+	solver22->parameters["convergence_criterion"] = "incremental";
+	solver22->parameters["linear_solver"] = "richardson";
+	solver22->parameters["preconditioner"] = "ilu";
+	solver22->solve(*problem2, *u2->vector());
+	t22.stop();
+
+	if(rank==0){ std::cout << "next pair solving" << std::endl;}
+	dolfin::Timer t23("BBB solve richardson + icc");
+	std::shared_ptr<dolfin::NewtonSolver> solver23 = std::make_shared<dolfin::NewtonSolver>();
+	solver23->parameters["convergence_criterion"] = "incremental";
+	solver23->parameters["linear_solver"] = "richardson";
+	solver23->parameters["preconditioner"] = "icc";
+	solver23->solve(*problem2, *u2->vector());
+	t23.stop();
+
+	if(rank==0){ std::cout << "next pair solving" << std::endl;}
+	dolfin::Timer t24("BBB solve richardson + hypre_amg");
+	std::shared_ptr<dolfin::NewtonSolver> solver24 = std::make_shared<dolfin::NewtonSolver>();
+	solver24->parameters["convergence_criterion"] = "incremental";
+	solver24->parameters["linear_solver"] = "richardson";
+	solver24->parameters["preconditioner"] = "hypre_amg";
+	solver24->solve(*problem2, *u2->vector());
+	t24.stop();
+
+	if(rank==0){ std::cout << "next pair solving" << std::endl;}
+	dolfin::Timer t25("BBB solve richardson + hypre_euclid");
+	std::shared_ptr<dolfin::NewtonSolver> solver25 = std::make_shared<dolfin::NewtonSolver>();
+	solver25->parameters["convergence_criterion"] = "incremental";
+	solver25->parameters["linear_solver"] = "richardson";
+	solver25->parameters["preconditioner"] = "hypre_euclid";
+	solver25->solve(*problem2, *u2->vector());
+	t25.stop();
 
 
 	 // Display timings
