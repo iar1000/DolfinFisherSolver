@@ -1,5 +1,6 @@
 
 #include <dolfin.h>
+#include <fstream>
 #include "../../DolfinFisherSolver/Tensors.h"
 #include "../../DolfinFisherSolver/Initializers.h"
 #include "../../DolfinFisherSolver/FisherProblem.h"
@@ -320,7 +321,9 @@ int main(int argc, char* argv[]){
 	 // output timings to text file
 	 if(output){
 		 std::ofstream timings;
-		 timings.open("timings-" + nprocs + ".txt", std::ios_base::trunc);
+		 std::stringstream ss;
+		 ss << "timings-" << nprocs << ".txt";
+		 timings.open(ss.str(), std::ios_base::trunc);
 		 std::set<dolfin::TimingType> s = {dolfin::TimingType::wall};
 		 timings << dolfin::timings(dolfin::TimingClear::keep, s).str_latex();
 		 timings.close();
