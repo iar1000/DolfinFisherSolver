@@ -344,7 +344,9 @@ int main(int argc, char* argv[]){
 		 timings << dolfin::timings(dolfin::TimingClear::keep, s).str_latex();
 		 timings.close();
 
-		 dolfin::dump_timings_to_xml("timings.xml", dolfin::TimingClear::keep);
+		 std::stringstream sss;
+		 sss << "timings-" << nprocs << ".xml";
+		 dolfin::dump_timings_to_xml(sss.str(), dolfin::TimingClear::keep);
 	 }
 
 	MPI_Finalize();
