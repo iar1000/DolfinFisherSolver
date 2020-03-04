@@ -6,7 +6,7 @@ SCRATCH=10000
 MEM=3000000
 NDOFS=500000
 
-bsub mpirun ./PerformanceTest --ndofs 250000
+bsub mpirun ./PerformanceTest --ndofs "$NDOFS"
 PROCS=2
 bsub -n "$PROCS" -R "rusage[scratch=$SCRATCH, mem=$(($MEM/$PROCS))]" mpirun ./PerformanceTest --ndofs "$NDOFS"
 PROCS=4
