@@ -14,7 +14,7 @@ MPI_PROCESS=2
 #		2: only simulation progress (default)
 #		3: progress and information about each iteration
 #		4: debug
-VERBOSE=2
+VERBOSE=4 
 # --outputfolder: name of the output subfolder, must be valid directory name otherwise undefined behavior
 FOLDER_NAME=$(date +%F)
 # --outputfile: name of output files
@@ -65,12 +65,15 @@ echo "  REACTION PARAMETERS = $RHO"
 echo "  DISCRETIZATION PARAMETER = $THETA"
 echo "  TIMESTEPPING: to T=$TEND with dt=$DTSTART"
 echo "	TIMEADAPTION: $TIMEADAPTION (tol= $RICHARDSONTOL, safety= $RICHARDSONSAFETY)"
+echo "	LINEAR SOLVER: $KRYLOVSOLVER, PRECONDITIONER: $KRYLOVPREC"
 
 mpirun -n "$MPI_PROCESS" ./FisherSolver \
 				"$OUTPUT_PARENTFOLDER" 	 "$MESH_PARENTFOLDER" "$MESH_NAME" "$FOLDER_NAME" "$FILE_NAME" "$CSV_NAME" \
 				"$CX" "$CY" "$CZ" "$RADIUS" "$VALUE" \
 				"$DTMIN" "$DTSTART" "$DTMAX" "$TEND" "$FRAMERATE" \
 				"$DIFFUSION_W" "$DIFFUSION_G" "$RHO" "$THETA"\
-				"$VERBOSE" "$TIMEADAPTION" "$RICHARDSONTOL" "$RICHARDSONSAFETY"
+				"$VERBOSE" "$TIMEADAPTION" "$RICHARDSONTOL" "$RICHARDSONSAFETY" \
+				"$NEWTONRESIDUALTOLREL" "$NEWTONRESIDUALTOLABS" "$KRYLOVRESIDUALTOLREL" "$KRYLOVRESIDUALTOLABS" \
+				"$KRYLOVSOLVER" "$KRYLOVPREC"
 				
 				

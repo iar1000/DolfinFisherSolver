@@ -92,14 +92,14 @@ int main(int argc, char* argv[]){
 	double richSafe = atof(argv[24]);
 	// solver
 	///////////////////////////////////
-	double newtontolrel = 0.0000001;
-	double newtontolabs = 0.0000001;
+	double newtontolrel = atof(argv[25]);
+	double newtontolabs = atof(argv[26]);
 	int newtonmaxiter = 50;
-	double krylovtolrel = 0.0000001;
-	double krylovtolabs = 0.0000001;
+	double krylovtolrel = atof(argv[27]);
+	double krylovtolabs = atof(argv[28]);
 	int krylovmaxiter = 50;
-	std::string ls = "cg";
-	std::string pc = "jacobi";
+	std::string ls = argv[29];
+	std::string pc = argv[30];
 
 	if(rank == 0 && verbose > 3){ std::cout << "load components..." << std::endl; };
 
