@@ -163,7 +163,9 @@ int main(int argc, char* argv[]){
 				krylovtolrel, krylovtolabs, krylovmaxiter, ls, pc);
 	std::stringstream ss3;
 	ss3 << "Containter:	Mesh, Initial condition, Diffusion Tensor from above" << std::endl <<
-			"		Reaction coefficient= " << rho << ", theta= " << theta << ", dt_init= " << dt_init << std::endl;
+			"		Reaction coefficient= " << rho << ", theta= " << theta << ", dt_init= " << dt_init << std::endl <<
+			"		Solver= " << ls << ", Preconditioner= " << pc << ", RelTol= (" << newtontolrel << "," << krylovtolrel <<
+			"), AbsTol= (" << newtontolabs << "," << krylovtolabs << ")" << std::endl;
 	putput.addComponent(ss3.str());
 	if(rank == 0 && verbose > 3){ std::cout << "	ProblemContainer loaded!" << std::endl; };
 

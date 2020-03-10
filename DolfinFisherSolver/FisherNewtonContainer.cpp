@@ -74,10 +74,11 @@ int FisherNewtonContainer::solve(double t){
 	*u0_->vector() = *u_->vector();
 
 	// retrieve and save iteration data from solver
-	double solverIterations = static_cast<double>(results.first);
+	double newtonIterations = static_cast<double>(results.first);
+	double krylovIterations = static_cast<double>(solver_->krylov_iterations());
 	double converged = static_cast<double>(results.second);
 	double residual = solver_->residual();
-	std::vector<double> data = {t, *dt_, residual, solverIterations, converged};
+	std::vector<double> data = {t, *dt_, residual, newtonIterations, krylovIterations, converged};
 	if(hasTracker_){ tracker_->addIterationData(data); }
 
 	// finish current iteration
@@ -101,10 +102,11 @@ std::pair<int, double> FisherNewtonContainer::solveAdaptive(double t, double dt,
 	*dt_ = dt;
 	auto results = solver_->solve(*problem_, *u_->vector());
 	// retrieve and save low precision iteration data from solver
-	double solverIterations = static_cast<double>(results.first);
+	double newtonIterations = static_cast<double>(results.first);
+	double krylovIterations = static_cast<double>(solver_->krylov_iterations());
 	double converged = static_cast<double>(results.second);
 	double residual = solver_->residual();
-	std::vector<double> data = {t, dt, residual, solverIterations, converged};
+	std::vector<double> data = {t, dt, residual, newtonIterations, krylovIterations, converged};
 	if(hasTracker_){ tracker_->addIterationData(data); }
 	// save low precision result
 	*u_low_->vector() = *u_->vector();
@@ -147,7 +149,7 @@ double FisherNewtonContainer::getP(){
 void FisherNewtonContainer::attachTracker(RuntimeTracker* tracker){
 	tracker_ = tracker;
 	hasTracker_ = true;
-	std::string format = "t, dt, residual, solverIterations, converged";
+	std::string format = "t, dt, residual, newton iterations, krylov iterations, converged";
 	tracker_->addIterationFormat(format);
 }
 
