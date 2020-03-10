@@ -47,7 +47,9 @@ while [[ "$#" -gt 0 ]]; do case $1 in
   -type|--dttype) TIMEADAPTION="$2"; shift;;
   -rs|--richsafe) RICHARDSONSAFETY="$2"; shift;;
   -rt|--richtol) RICHARDSONTOL="$2"; shift;;
-
+  -ls|--solver) KRYLOVSOLVER="$2"; shift;;
+  -pc|--preconditioner) KRYLOVPREC="$2"; shift;;
+    
   *) echo "Unknown parameter passed: $1"; exit 1;;
 esac; shift; done
 
@@ -64,8 +66,8 @@ echo "  DIFFUSION PARAMETERS= $DIFFUSION_W (W), $DIFFUSION_G (G)"
 echo "  REACTION PARAMETERS = $RHO"
 echo "  DISCRETIZATION PARAMETER = $THETA"
 echo "  TIMESTEPPING: to T=$TEND with dt=$DTSTART"
-echo "	TIMEADAPTION: $TIMEADAPTION (tol= $RICHARDSONTOL, safety= $RICHARDSONSAFETY)"
-echo "	LINEAR SOLVER: $KRYLOVSOLVER, PRECONDITIONER: $KRYLOVPREC"
+echo "  TIMEADAPTION: $TIMEADAPTION (tol= $RICHARDSONTOL, safety= $RICHARDSONSAFETY)"
+echo "  LINEAR SOLVER: $KRYLOVSOLVER, PRECONDITIONER: $KRYLOVPREC"
 
 mpirun -n "$MPI_PROCESS" ./FisherSolver \
 				"$OUTPUT_PARENTFOLDER" 	 "$MESH_PARENTFOLDER" "$MESH_NAME" "$FOLDER_NAME" "$FILE_NAME" "$CSV_NAME" \
