@@ -98,7 +98,7 @@ int main(int argc, char* argv[]){
 		std::ofstream file("_INFO-Test-Summary");
 		ss << "----------------------------------------------------------------" << std::endl <<
 		 "Test problem summary" << std::endl <<
-		"  Problem type:   "   << (problem_type == 1 ? "all" : (problem_type == 2 ? "cg as linsolver" : "unknown")) << " (3D)" << std::endl <<
+		"  Problem type:   "   << (type == 1 ? "all" : (type == 2 ? "cg as linsolver" : "unknown")) << " (3D)" << std::endl <<
 		"  Scaling type:   "   << scaling_type << std::endl <<
 		"  Num processes:  "  << nprocs << std::endl <<
 		"  Mesh elements:	" <<  mesh3D->num_cells() << " (3D)" << std::endl <<
