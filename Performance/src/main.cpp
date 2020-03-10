@@ -94,15 +94,20 @@ int main(int argc, char* argv[]){
 	// Print simulation summary to console
 	if (rank == 0)
 	{
-		std::cout << "----------------------------------------------------------------" << std::endl;
-		std::cout << "Test problem summary" << std::endl;
-		std::cout << "  Problem type:   "   << problem_type << " (3D)" << std::endl;
-		std::cout << "  Scaling type:   "   << scaling_type << std::endl;
-		std::cout << "  Num processes:  "  << nprocs << std::endl;
-		std::cout << "  Mesh elements:	" <<  mesh3D->num_cells() << " (3D)" << std::endl;
-		std::cout << "  Total dof:      " << us3.at(0)->function_space()->dim() << " (3D)" << std::endl;
-		std::cout << "  Average dof per rank: " << us3.at(0)->function_space()->dim()/dolfin::MPI::size(mesh3D->mpi_comm()) << " (3D)" << std::endl;
-		std::cout << "----------------------------------------------------------------" << std::endl;
+		std::stringstream ss;
+		std::ofstream file("_INFO-Test-Summary");
+		ss << "----------------------------------------------------------------" << std::endl <<
+		 "Test problem summary" << std::endl <<
+		"  Problem type:   "   << (problem_type == 1 ? "all" : (problem_type == 2 ? "cg as linsolver" : "unknown")) << " (3D)" << std::endl <<
+		"  Scaling type:   "   << scaling_type << std::endl <<
+		"  Num processes:  "  << nprocs << std::endl <<
+		"  Mesh elements:	" <<  mesh3D->num_cells() << " (3D)" << std::endl <<
+		"  Total dof:      " << us3.at(0)->function_space()->dim() << " (3D)" << std::endl <<
+		"  Average dof per rank: " << us3.at(0)->function_space()->dim()/dolfin::MPI::size(mesh3D->mpi_comm()) << " (3D)" << std::endl <<
+		"----------------------------------------------------------------" << std::endl;
+		std::cout << ss.str() << std::endl;
+		file << ss.str();
+		file.close();
 	}
 
 	// different solver - preconditioner pairs
