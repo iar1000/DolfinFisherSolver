@@ -28,7 +28,7 @@ void runNewton(int rank, int nprocs, std::shared_ptr<dolfin::Function> u, std::s
 
 	auto r = solver->solve(*problem, *u->vector());
 	t.stop();
-	iterfile << ls << " + " << pc << "," << r.first << "," << solver->krylov_iterations() << "," << std::get<0>(t.elapsed()) << "," << std::endl;
+	if(rank == 0){ iterfile << ls << " + " << pc << "," << r.first << "," << solver->krylov_iterations() << "," << std::get<0>(t.elapsed()) << "," << std::endl; }
 	iterfile.close();
 }
 
@@ -62,11 +62,12 @@ void runCG(int rank, int nprocs, std::shared_ptr<dolfin::Function> u, std::share
 	PetscInt used = 0;
 	PetscReal *residuals;
 	KSPGetResidualHistory(krylov->ksp(), &residuals, &used);
-	iterfile << "preconditioner, " << pc << std::endl <<
+	if(rank == 0){ iterfile << "preconditioner, " << pc << std::endl <<
 			"Newton iterations," << r.first << std::endl <<
 			"Krylov iterations, " << solver->krylov_iterations() << std::endl <<
 			"Elapsed time, " << std::get<0>(t.elapsed()) << std::endl <<
 			"Iteration residuals, ";
+	}
 	for(int i = 0; i < used; i++){
 		iterfile << residuals[i] << ",";
 	}
@@ -166,7 +167,7 @@ int main(int argc, char* argv[]){
 	*u3 = *init3D;
 
 	// Print simulation summary to console
-	if (rank == 0)
+	if (rank == 0 && output)
 	{
 		std::stringstream ss;
 		std::ofstream file("_INFO-Test-Summary-" + nprocs);
