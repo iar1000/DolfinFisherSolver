@@ -1,5 +1,7 @@
 
 #include <dolfin.h>
+#include <petscksp.h>
+#include <petscsys.h>
 #include <fstream>
 #include "../../DolfinFisherSolver/Tensors.h"
 #include "../../DolfinFisherSolver/Initializers.h"
@@ -7,9 +9,9 @@
 #include "../../DolfinFisherSolver/FisherNewtonContainer.h"
 
 void runNewton(int rank, int nprocs, std::shared_ptr<dolfin::Function> u, std::shared_ptr<FisherProblem> problem,
-		std::string ls, std::string pc){
+		std::string ls, std::string pc, double abstol, double reltol){
 	std::stringstream iters;
-	iters << "solver-iterations-" << nprocs << ".txt";
+	iters << "type-1-all-iterations-time-test-procs-" << nprocs << "-tol" << reltol << "-" << abstol << ".csv";
 	std::ofstream iterfile(iters.str(), std::ios_base::app);
 
 	if(rank==0){ std::cout << "Solve " << ls << " + " << pc << std::endl;}
@@ -19,14 +21,58 @@ void runNewton(int rank, int nprocs, std::shared_ptr<dolfin::Function> u, std::s
 	solver->parameters["convergence_criterion"] = "incremental";
 	solver->parameters["linear_solver"] = ls;
 	solver->parameters["preconditioner"] = pc;
+	solver->parameters["relative_tolerance"] = reltol;
+	solver->parameters["absolute_tolerance"] = abstol;
+	solver->parameters("krylov_solver")["relative_tolerance"] = reltol;
+	solver->parameters("krylov_solver")["absolute_tolerance"] = abstol;
+
 	auto r = solver->solve(*problem, *u->vector());
 	t.stop();
-	iterfile << ls << " + " << pc << std::endl <<
-			"Newton iterations: " << r.first << std::endl <<
-			"Krylov iterations: " << solver->krylov_iterations() << std::endl <<
-			"Elapsed time: " << std::get<0>(t.elapsed()) << std::endl << std::endl;
-
+	iterfile << ls << " + " << pc << "," << r.first << "," << solver->krylov_iterations() << "," << std::get<0>(t.elapsed()) << "," << std::endl;
 	iterfile.close();
+}
+
+void runCG(int rank, int nprocs, std::shared_ptr<dolfin::Function> u, std::shared_ptr<FisherProblem> problem, std::string pc,
+		double reltol, double abstol){
+	std::stringstream iters;
+	iters << "cg-convergence-" << nprocs << "-tol-" << reltol << "-" << abstol << ".csv";
+	std::ofstream iterfile(iters.str(), std::ios_base::app);
+
+	if(rank==0){ std::cout << "Solve cg with preconditioner " << pc << std::endl;}
+	dolfin::Timer t("BBB solve cg + " + pc);
+	std::shared_ptr<dolfin::PETScKrylovSolver> krylov = std::make_shared<dolfin::PETScKrylovSolver>("cg", pc);
+	std::shared_ptr<dolfin::NewtonSolver> solver = std::make_shared<dolfin::NewtonSolver>(
+			problem->getMesh()->mpi_comm(), krylov, dolfin::PETScFactory::instance());
+	solver->parameters["error_on_nonconvergence"] = false;
+	solver->parameters["convergence_criterion"] = "incremental";
+	solver->parameters["relative_tolerance"] = reltol;
+	solver->parameters["absolute_tolerance"] = abstol;
+	solver->parameters("krylov_solver")["relative_tolerance"] = reltol;
+	solver->parameters("krylov_solver")["absolute_tolerance"] = abstol;
+
+	// setup krylov residual historys
+	PetscInt size = 1000;
+	PetscReal *a;
+	PetscCalloc1(size, &a);
+	KSPSetResidualHistory(krylov->ksp(), a, 1000, PETSC_FALSE);
+	// solve
+	auto r = solver->solve(*problem, *u->vector());
+	t.stop();
+	// get residual data
+	PetscInt used = 0;
+	PetscReal *residuals;
+	KSPGetResidualHistory(krylov->ksp(), &residuals, &used);
+	iterfile << "preconditioner, " << pc << std::endl <<
+			"Newton iterations," << r.first << std::endl <<
+			"Krylov iterations, " << solver->krylov_iterations() << std::endl <<
+			"Elapsed time, " << std::get<0>(t.elapsed()) << std::endl <<
+			"Iteration residuals, ";
+	for(int i = 0; i < used; i++){
+		iterfile << residuals[i] << ",";
+	}
+	iterfile << std::endl << std::endl;
+	iterfile.close();
+	PetscFree(a);
 }
 
 // automatic performance assestment of FisherSolver
@@ -36,13 +82,6 @@ int main(int argc, char* argv[]){
 	int rank, nprocs;
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD,&nprocs);
-
-	/* CHeck available solvers
-	if(rank==0){
-		dolfin::list_krylov_solver_preconditioners();
-		dolfin::list_linear_solver_methods();
-	}
-	*/
 
 	// Parse command line options (will intialise PETSc if any PETSc
 	// options are present, e.g. --petsc.pc_type=jacobi)
@@ -54,8 +93,11 @@ int main(int argc, char* argv[]){
 	application_parameters.add("scaling_type", "weak", {"weak", "strong"});
 	application_parameters.add("ndofs", 500000);
 	application_parameters.add("output", false);
-	application_parameters.add("type", 1);
+	application_parameters.add("type", 2);
 	application_parameters.add("dolflog", 30);
+	application_parameters.add("abstol", 0.00000001);
+	application_parameters.add("reltol", 0.00000001);
+
 
 	// Update from command line
 	application_parameters.parse(argc, argv);
@@ -68,6 +110,8 @@ int main(int argc, char* argv[]){
 	const std::string out_dir = "output/";
 	const int type = application_parameters["type"];
 	const int dolflog = application_parameters["dolflog"];
+	const double abstol = application_parameters["abstol"];
+	const double reltol = application_parameters["reltol"];
 
 	 // Set mesh partitioner
 	 dolfin::parameters["mesh_partitioner"] = "SCOTCH";
@@ -95,13 +139,13 @@ int main(int argc, char* argv[]){
 	if (rank == 0)
 	{
 		std::stringstream ss;
-		std::ofstream file("_INFO-Test-Summary");
+		std::ofstream file("_INFO-Test-Summary-" + nprocs);
 		ss << "----------------------------------------------------------------" << std::endl <<
 		 "Test problem summary" << std::endl <<
 		"  Problem type:   "   << (type == 1 ? "all" : (type == 2 ? "cg as linsolver" : "unknown")) << " (3D)" << std::endl <<
 		"  Scaling type:   "   << scaling_type << std::endl <<
 		"  Num processes:  "  << nprocs << std::endl <<
-		"  Mesh elements:	" <<  mesh3D->num_cells() << " (3D)" << std::endl <<
+		"  Mesh elements:  " <<  mesh3D->num_cells() << " (3D)" << std::endl <<
 		"  Total dof:      " << us3.at(0)->function_space()->dim() << " (3D)" << std::endl <<
 		"  Average dof per rank: " << us3.at(0)->function_space()->dim()/dolfin::MPI::size(mesh3D->mpi_comm()) << " (3D)" << std::endl <<
 		"----------------------------------------------------------------" << std::endl;
@@ -119,32 +163,43 @@ int main(int argc, char* argv[]){
 	//
 	dolfin::set_log_level(dolflog);
 
-	std::stringstream iters;
-	iters << "solver-iterations-" << nprocs << ".txt";
-	std::ofstream iterfile(iters.str(), std::ios_base::trunc);
-	iterfile.close();
-
-
-
 	// tpye 1: run all, track time and iterations
 	if(type == 1){
-		runNewton(rank, nprocs, u3, problem3,  "gmres", "petsc_amg");
-		runNewton(rank, nprocs, u3, problem3,  "gmres", "jacobi");
-		runNewton(rank, nprocs, u3, problem3,  "gmres", "hypre_amg");
-		runNewton(rank, nprocs, u3, problem3,  "gmres", "hypre_euclid");
-		runNewton(rank, nprocs, u3, problem3,  "cg", "petsc_amg");
-		runNewton(rank, nprocs, u3, problem3,  "cg", "jacobi");
-		runNewton(rank, nprocs, u3, problem3,  "cg", "hypre_amg");
-		runNewton(rank, nprocs, u3, problem3,  "cg", "hypre_euclid");
-		runNewton(rank, nprocs, u3, problem3,  "richardson", "petsc_amg");
-		runNewton(rank, nprocs, u3, problem3,  "richardson", "hypre_amg");
-		runNewton(rank, nprocs, u3, problem3,  "richardson", "hypre_euclid");
-		runNewton(rank, nprocs, u3, problem3,  "bicgstab", "hypre_amg");
-		runNewton(rank, nprocs, u3, problem3,  "bicgstab", "hypre_euclid");
-		runNewton(rank, nprocs, u3, problem3,  "minres", "hypre_amg");
-		runNewton(rank, nprocs, u3, problem3,  "minres", "hypre_euclid");
-		runNewton(rank, nprocs, u3, problem3,  "tfqmr", "hypre_amg");
-		runNewton(rank, nprocs, u3, problem3,  "tfqmr", "hypre_euclid");
+		std::stringstream iters;
+		iters << "type-1-all-iterations-time-test-procs-" << nprocs << "-tol" << reltol << "-" << abstol << ".csv";
+		std::ofstream iterfile(iters.str(), std::ios_base::trunc);
+		iterfile << "name, newton iterations, krylov iterations, time for solve()" << std::endl;
+		iterfile.close();
+
+		runNewton(rank, nprocs, u3, problem3,  "gmres", "petsc_amg", abstol, reltol);
+		runNewton(rank, nprocs, u3, problem3,  "gmres", "jacobi", abstol, reltol);
+		runNewton(rank, nprocs, u3, problem3,  "gmres", "hypre_amg", abstol, reltol);
+		runNewton(rank, nprocs, u3, problem3,  "gmres", "hypre_euclid", abstol, reltol);
+		runNewton(rank, nprocs, u3, problem3,  "cg", "petsc_amg", abstol, reltol);
+		runNewton(rank, nprocs, u3, problem3,  "cg", "jacobi", abstol, reltol);
+		runNewton(rank, nprocs, u3, problem3,  "cg", "hypre_amg", abstol, reltol);
+		runNewton(rank, nprocs, u3, problem3,  "cg", "hypre_euclid", abstol, reltol);
+		runNewton(rank, nprocs, u3, problem3,  "richardson", "petsc_amg", abstol, reltol);
+		runNewton(rank, nprocs, u3, problem3,  "richardson", "hypre_amg", abstol, reltol);
+		runNewton(rank, nprocs, u3, problem3,  "richardson", "hypre_euclid", abstol, reltol);
+		runNewton(rank, nprocs, u3, problem3,  "bicgstab", "hypre_amg", abstol, reltol);
+		runNewton(rank, nprocs, u3, problem3,  "bicgstab", "hypre_euclid", abstol, reltol);
+		runNewton(rank, nprocs, u3, problem3,  "minres", "hypre_amg", abstol, reltol);
+		runNewton(rank, nprocs, u3, problem3,  "minres", "hypre_euclid", abstol, reltol);
+		runNewton(rank, nprocs, u3, problem3,  "tfqmr", "hypre_amg", abstol, reltol);
+		runNewton(rank, nprocs, u3, problem3,  "tfqmr", "hypre_euclid", abstol, reltol);
+	}
+	// type 2: test only preconditioners for cg
+	else if(type == 2){
+		std::stringstream iters;
+		iters << "cg-convergence-" << nprocs << "-tol-" << reltol << "-" << abstol << ".csv";
+		std::ofstream iterfile(iters.str(), std::ios_base::trunc);
+		iterfile.close();
+
+		runCG(rank, nprocs, u3, problem3, "jacobi", reltol, abstol);
+		runCG(rank, nprocs, u3, problem3, "petsc_amg", reltol, abstol);
+		runCG(rank, nprocs, u3, problem3, "hypre_amg", reltol, abstol);
+		runCG(rank, nprocs, u3, problem3, "hypre_euclid", reltol, abstol);
 	}
 	else{
 		if(rank == 0){ std::cout << "don't know what type to run" << std::endl;}
