@@ -18,7 +18,7 @@ while [[ "$#" -gt 0 ]]; do case $1 in
   *) echo "Unknown parameter passed: $1"; exit 1;;
 esac; shift; done
 
-bsub -R "rusage[scratch=$SCRATCH, mem=50000]"mpirun ./PerformanceTest --ndofs "$NDOFS" --tol "$TOL" --type "$TYPE"
+bsub -R "rusage[scratch=$SCRATCH, mem=50000]" mpirun ./PerformanceTest --ndofs "$NDOFS" --tol "$TOL" --type "$TYPE"
 PROCS=2
 bsub -n "$PROCS" -R "rusage[scratch=$SCRATCH, mem=$(($MEM/$PROCS))]" mpirun ./PerformanceTest --ndofs "$NDOFS" --tol "$TOL" --type "$TYPE"
 PROCS=4
