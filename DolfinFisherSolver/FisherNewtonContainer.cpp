@@ -12,26 +12,9 @@ FisherNewtonContainer::FisherNewtonContainer(int rank,
 	solver_ = std::make_shared<dolfin::NewtonSolver>();
 	mesh_ = mesh;
 	initializer_ = initialCondition;
-	initialize();
-}
 
-FisherNewtonContainer::FisherNewtonContainer(int rank)
-{
-	if(rank == 0){
-		std::cout << "constructor for seperate file initialization not implemented yet" << std::endl;
-	}
-}
-
-void FisherNewtonContainer::initialize(){
 	// stop solver from logging each iteration on it's own
-	dolfin::set_log_level(30);
-	// set solver parameters
-	solver_->parameters["error_on_nonconvergence"] = false; // make sure no error is thrown when not converged
-	solver_->parameters["linear_solver"] = "lu";
-	solver_->parameters["convergence_criterion"] = "incremental";
-	solver_->parameters["maximum_iterations"] = 50;
-	solver_->parameters["relative_tolerance"] = 1e-10;
-	solver_->parameters["absolute_tolerance"] = 1e-10;
+	dolfin::set_log_level(30); //16 for trace
 	// get pointers to problem variables
 	auto us = problem_->getUs();
 	u0_ = us.at(0);				// is going to hold initial fundtion for solver
@@ -55,10 +38,27 @@ void FisherNewtonContainer::initialize(){
 	*u_low_ = *initializer_;
 }
 
-void FisherNewtonContainer::setSolverParameters(std::vector<std::pair<std::string, std::string>> paras){
-	for(int i = 0; i < paras.size(); i++){
-		solver_->parameters[paras.at(i).first] = paras.at(i).second;
+FisherNewtonContainer::FisherNewtonContainer(int rank)
+{
+	if(rank == 0){
+		std::cout << "constructor for seperate file initialization not implemented yet" << std::endl;
 	}
+}
+
+void FisherNewtonContainer::initializeSolver(bool verbose, double newtontolrel, double newtontolabs, int newtonmaxiter,
+		double krylovtolrel, double krylovtolabs, int krylovmaxiter, std::string ls, std::string pc){
+	// set default solver parameters
+	solver_->parameters["error_on_nonconvergence"] = false; // make sure no error is thrown when not converged
+	solver_->parameters["convergence_criterion"] = "incremental";
+	solver_->parameters["maximum_iterations"] = newtonmaxiter;
+	solver_->parameters["relative_tolerance"] = newtontolrel;
+	solver_->parameters["absolute_tolerance"] = newtontolabs;
+	solver_->parameters["linear_solver"] = ls;
+	solver_->parameters["preconditioner"] = pc;
+	solver_->parameters("krylov_solver")["maximum_iterations"] = krylovmaxiter;
+	solver_->parameters("krylov_solver")["relative_tolerance"] = krylovtolrel;
+	solver_->parameters("krylov_solver")["absolute_tolerance"] = krylovtolabs;
+	if(rank_ == 0 && verbose){	std::cout << solver_->parameters.str(true) << std::endl; };
 }
 
 int FisherNewtonContainer::solve(double t){

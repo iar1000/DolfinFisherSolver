@@ -50,7 +50,6 @@ std::vector<std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>> 
 
 int main(int argc, char* argv[]){
     // initialize MPI
-    // MPI_Init(NULL, NULL);
     int provided;
     MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
     int rank, nprocs;
@@ -85,12 +84,22 @@ int main(int argc, char* argv[]){
 	double Dg = atof(argv[18]);
 	double rho = atof(argv[19]);
 	double theta = atof(argv[20]);
-	// other
+	// timestepping
 	///////////////////////////////////
 	int verbose = atoi(argv[21]);
 	int timeAdaption = atoi(argv[22]);
 	double richTol = atof(argv[23]);
 	double richSafe = atof(argv[24]);
+	// solver
+	///////////////////////////////////
+	double newtontolrel = 0.0000001;
+	double newtontolabs = 0.0000001;
+	int newtonmaxiter = 50;
+	double krylovtolrel = 0.0000001;
+	double krylovtolabs = 0.0000001;
+	int krylovmaxiter = 50;
+	std::string ls = "cg";
+	std::string pc = "jacobi";
 
 	if(rank == 0 && verbose > 3){ std::cout << "load components..." << std::endl; };
 
@@ -98,7 +107,7 @@ int main(int argc, char* argv[]){
 	ReaderWriter putput = ReaderWriter(rank, outputParent, meshParent);
 
 	// mesh read-in
-	if(rank == 0 && verbose > 3){ std::cout << "read in mesh..." << std::endl; };
+	if(rank == 0 && verbose > 3){ std::cout << "	read in mesh..." << std::endl; };
 	std::shared_ptr<dolfin::Mesh> mesh;
 	std::pair<std::string, std::string> meshInfo = putput.loadMesh(meshName);
 	if(meshInfo.first == "h5"){
@@ -107,20 +116,14 @@ int main(int argc, char* argv[]){
 		hdf5.read(*mesh, "/mesh", false);
 		// add mesh to components list before returning
 		std::stringstream ss;
-		ss << "Mesh:" << std::endl <<
-				" 	format = h5" <<
-				"	name = " << meshName << std::endl <<
-				"	dimension = " << mesh->geometry().dim() << std::endl;
+		ss << "Mesh: " << meshName << " (" << mesh->geometry().dim() << "D)" << std::endl;
 		putput.addComponent(ss.str());
 	}
 	else if(meshInfo.first == "xml"){
 		mesh = std::make_shared<dolfin::Mesh>(meshInfo.second);
 		// add mesh to components list before returning
 		std::stringstream ss;
-		ss << "Mesh:" << std::endl <<
-				" 	format = xml" <<
-				"	name = " << meshName << std::endl <<
-				"	dimension = " << mesh->geometry().dim() << std::endl;
+		ss << "Mesh: " << meshName << " (" << mesh->geometry().dim() << "D)" << std::endl;
 		putput.addComponent(ss.str());
 	}
 	else{
@@ -134,39 +137,34 @@ int main(int argc, char* argv[]){
 
 	// create initial condition
 	std::shared_ptr<dolfin::Expression> initialCondition;
-	if(dimensions == 2){
-		initialCondition = std::make_shared<InitializerCircle>(cx, cy, radius, value);
-		InitializerCircle dummy(cx, cy, radius, value);		// make dummy variable to print
-		putput.addComponent(dummy.asString());
-	}
-	else if(dimensions == 3){
-		initialCondition = std::make_shared<InitializerSphere>(cx, cy, cz, radius, value);
-		InitializerSphere dummy(cx, cy, cz, radius, value);	// make dummy variable to print
-		putput.addComponent(dummy.asString());
-	}
+	if(dimensions == 2){ initialCondition = std::make_shared<InitializerCircle>(cx, cy, radius, value);	}
+	else if(dimensions == 3){ initialCondition = std::make_shared<InitializerSphere>(cx, cy, cz, radius, value); }
 	else{ return 0; }
+	std::stringstream ss;
+	ss << "InitialCondition: " << (dimensions == 2 ? "Circle" : "Sphere") << " at (" << cx << ", " << cy << ", " << cz << "), r= " << radius << ", v= " << value << std::endl;
+	putput.addComponent(ss.str());
 	if(rank == 0 && verbose > 3){ std::cout << "	initial condition loaded!" << std::endl; };
 
 	// create diffusion tensor
 	std::shared_ptr<dolfin::Expression> D;
-	if(dimensions == 2){
-		std::shared_ptr<TensorSpatial2D> DSpatial2D = std::make_shared<TensorSpatial2D>(rank, Dw, Dg, get_10on10_test_cm());
-		putput.addComponent(DSpatial2D->asString());
-		D = DSpatial2D;
-	}
-	else if(dimensions == 3){
-		std::shared_ptr<TensorSpatial3D> DSpatial3D = std::make_shared<TensorSpatial3D>(rank, Dw, Dg, get_10on10on10_test_cm());
-		putput.addComponent(DSpatial3D->asString());
-		D = DSpatial3D;
-	}
+	if(dimensions == 2){ D = std::make_shared<TensorSpatial2D>(rank, Dw, Dg, get_10on10_test_cm());	}
+	else if(dimensions == 3){ D = std::make_shared<TensorSpatial3D>(rank, Dw, Dg, get_10on10on10_test_cm()); }
 	else{ return 0;	}
+	std::stringstream ss2;
+	ss2 << "Diffusion Tensor: D_white= " << Dw << ", D_grey= " << Dg << std::endl;
+	putput.addComponent(ss2.str());
 	if(rank == 0 && verbose > 3){ std::cout << "	D tensor loaded!" << std::endl; };
 
 
 	// create FisherNewtonContainter
 	FisherNewtonContainer problemContainer = FisherNewtonContainer(rank,
 			mesh, initialCondition, D, rho, theta, dt_init);
-	//putput.addComponent(problem->asString());
+	problemContainer.initializeSolver((verbose > 2 ? 1 : 0), newtontolrel, newtontolabs, newtonmaxiter,
+				krylovtolrel, krylovtolabs, krylovmaxiter, ls, pc);
+	std::stringstream ss3;
+	ss3 << "Containter:	Mesh, Initial condition, Diffusion Tensor from above" << std::endl <<
+			"		Reaction coefficient= " << rho << ", theta= " << theta << ", dt_init= " << dt_init << std::endl;
+	putput.addComponent(ss3.str());
 	if(rank == 0 && verbose > 3){ std::cout << "	ProblemContainer loaded!" << std::endl; };
 
 	// create time stepper
@@ -177,16 +175,17 @@ int main(int argc, char* argv[]){
 	// create output files
 	// simulation output
 	auto outPvdReturn = putput.getFilePath(tagFolder, tagFile, "pvd");
-	if(!outPvdReturn.first){	// check if path to output file loaded successful
-		return 0;
-	}
+	if(!outPvdReturn.first){ return 0; }
 	std::shared_ptr<dolfin::File> pvdFile = std::make_shared<dolfin::File>(outPvdReturn.second);
 	// iteration details output
 	auto outCsvReturn = putput.getFilePath(tagFolder, tagCsv, "csv");
-	if(!outCsvReturn.first){	// check if path to csv file loaded successful
-		return 0;
-	}
+	if(!outCsvReturn.first){ return 0; }
 	if(rank == 0 && verbose > 3){ std::cout << "	Output files loaded!" << std::endl; };
+	std::stringstream ss4;
+	ss4 << "Files: pvd= " << outPvdReturn.second << std::endl <<
+			"	csv= " << outCsvReturn.second << std::endl;
+	putput.addComponent(ss4.str());
+
 
 	// create pre-simulation info, print added components
 	if(rank == 0){ putput.createRunInfo(tagFolder, tagFile); }

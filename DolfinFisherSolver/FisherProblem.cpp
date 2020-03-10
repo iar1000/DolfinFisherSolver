@@ -74,6 +74,7 @@ std::shared_ptr<dolfin::Mesh> FisherProblem::getMesh(){
 double FisherProblem::getTheta(){
 	return *theta_;
 }
+
 std::string FisherProblem::asString(){
 	std::stringstream ss;
 	ss << "FisherProblem:" << std::endl <<

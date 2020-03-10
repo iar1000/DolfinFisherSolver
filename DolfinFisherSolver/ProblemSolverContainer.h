@@ -13,8 +13,9 @@ protected:
 	RuntimeTracker* tracker_;
 
 public:
-	// initialize and prepare problem/ solver
-	virtual void initialize() = 0;
+	// setup solver with newton and krylov solver parameters
+	virtual void initializeSolver(bool verbose, double newtontolrel, double newtontolabs, int newtonmaxiter,
+			double krylovtolrel, double krylovtolabs, int krylovmaxiter, std::string ls, std::string pc) = 0;
 	// solves the problem and updates internal parameters with results
 	// @return:
 	virtual int solve(double t) = 0;

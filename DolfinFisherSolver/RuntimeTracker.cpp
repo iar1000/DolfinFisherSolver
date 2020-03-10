@@ -22,14 +22,11 @@ RuntimeTracker::RuntimeTracker(int verbose, bool toCsv, std::string csvPath){
 }
 std::string RuntimeTracker::asString(){
 	std::stringstream ss;
-	ss << "RuntimeTracker:" << std::endl <<
-			"	csv path = " << csvPath_ << std::endl;
-
 	// tracking has been ended, add simulation recap
 	if(elapsedAll_ > 0){
 		int minutes = elapsedAll_ / 60;
-		ss << std::endl << "	number iterations run: "<< numberIterations_ << std::endl <<
-				"	elapsed time: " << (minutes / 60) << "h " << (minutes % 60) << " min" << std::endl;
+		ss << std::endl << "Simulation finished:\nnumber iterations: "<< numberIterations_ << std::endl <<
+				"elapsed time: " << (minutes / 60) << "h " << (minutes % 60) << " min" << std::endl;
 	}
 	return ss.str();
 }

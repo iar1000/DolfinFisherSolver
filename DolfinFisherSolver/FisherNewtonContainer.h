@@ -34,8 +34,8 @@ public:
 	FisherNewtonContainer(int rank);
 
 	// @override virtuals from ProblemSolverContainer
-	void initialize();
-	void setSolverParameters(std::vector<std::pair<std::string, std::string>> paras);
+	void initializeSolver(bool verbose, double newtontolrel, double newtontolabs, int newtonmaxiter,
+				double krylovtolrel, double krylovtolabs, int krylovmaxiter, std::string ls, std::string pc);
 	int solve(double t);
 	std::pair<int, double> solveAdaptive(double t, double dt, double tol);
 	double getP();
