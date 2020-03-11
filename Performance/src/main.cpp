@@ -15,7 +15,6 @@ void runNewton(int rank, int nprocs, std::shared_ptr<dolfin::Function> u, std::s
 	std::ofstream iterfile(iters.str(), std::ios_base::app);
 
 	if(rank==0){ std::cout << "Solve " << ls << " + " << pc << std::endl;}
-	dolfin::Timer t("BBB solve " + ls + " + " + pc);
 	std::shared_ptr<dolfin::NewtonSolver> solver = std::make_shared<dolfin::NewtonSolver>();
 	solver->parameters["error_on_nonconvergence"] = false;
 	solver->parameters["convergence_criterion"] = "incremental";
@@ -25,7 +24,7 @@ void runNewton(int rank, int nprocs, std::shared_ptr<dolfin::Function> u, std::s
 	solver->parameters["absolute_tolerance"] = tol;
 	solver->parameters("krylov_solver")["relative_tolerance"] = tol;
 	solver->parameters("krylov_solver")["absolute_tolerance"] = tol;
-
+	dolfin::Timer t("BBB solve " + ls + " + " + pc);
 	auto r = solver->solve(*problem, *u->vector());
 	t.stop();
 	if(rank == 0){ iterfile << ls << " + " << pc << "," << r.first << "," << solver->krylov_iterations() << "," << std::get<0>(t.elapsed()) << "," << std::endl; }
@@ -39,7 +38,6 @@ void runCG(int rank, int nprocs, std::shared_ptr<dolfin::Function> u, std::share
 	std::ofstream iterfile(iters.str(), std::ios_base::app);
 
 	if(rank==0){ std::cout << "Solve cg with preconditioner " << pc << std::endl;}
-	dolfin::Timer t("BBB solve cg + " + pc);
 	std::shared_ptr<dolfin::PETScKrylovSolver> krylov = std::make_shared<dolfin::PETScKrylovSolver>("cg", pc);
 	std::shared_ptr<dolfin::NewtonSolver> solver = std::make_shared<dolfin::NewtonSolver>(
 			problem->getMesh()->mpi_comm(), krylov, dolfin::PETScFactory::instance());
@@ -56,6 +54,7 @@ void runCG(int rank, int nprocs, std::shared_ptr<dolfin::Function> u, std::share
 	PetscCalloc1(size, &a);
 	KSPSetResidualHistory(krylov->ksp(), a, 1000, PETSC_FALSE);
 	// solve
+	dolfin::Timer t("BBB solve cg + " + pc);
 	auto r = solver->solve(*problem, *u->vector());
 	t.stop();
 	// get residual data
@@ -67,11 +66,12 @@ void runCG(int rank, int nprocs, std::shared_ptr<dolfin::Function> u, std::share
 			"Krylov iterations, " << solver->krylov_iterations() << std::endl <<
 			"Elapsed time, " << std::get<0>(t.elapsed()) << std::endl <<
 			"Iteration residuals, ";
+		for(int i = 0; i < used; i++){
+			iterfile << residuals[i] << ",";
+		}
+		iterfile << std::endl << std::endl;
 	}
-	for(int i = 0; i < used; i++){
-		iterfile << residuals[i] << ",";
-	}
-	iterfile << std::endl << std::endl;
+
 	iterfile.close();
 	PetscFree(a);
 }
