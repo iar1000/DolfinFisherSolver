@@ -11,7 +11,7 @@ TYPE=1
 # overwrite default by command line arguments
 while [[ "$#" -gt 0 ]]; do case $1 in
   -dof|--ndofs) NDOFS="$2"; shift;;
-  -me|--memory) NDOFS="$2"; shift;;
+  -me|--memory) MEM="$2"; shift;;
   -tol|--tolerance) TOL="$2"; shift;;
   -t|--type) TYPE="$2"; shift;;
  

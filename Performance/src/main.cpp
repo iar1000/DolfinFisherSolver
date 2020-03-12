@@ -1,4 +1,5 @@
 
+
 #include <dolfin.h>
 #include <petscksp.h>
 #include <petscsys.h>
@@ -7,74 +8,6 @@
 #include "../../DolfinFisherSolver/Initializers.h"
 #include "../../DolfinFisherSolver/FisherProblem.h"
 #include "../../DolfinFisherSolver/FisherNewtonContainer.h"
-
-void runNewton(int rank, int nprocs, std::shared_ptr<dolfin::Function> u, std::shared_ptr<FisherProblem> problem,
-		std::string ls, std::string pc, double tol){
-	std::stringstream iters;
-	iters << "type-1-all-iterations-time-test-procs-" << nprocs << "-tol" << tol << ".csv";
-	std::ofstream iterfile(iters.str(), std::ios_base::app);
-
-	if(rank==0){ std::cout << "Solve " << ls << " + " << pc << std::endl;}
-	std::shared_ptr<dolfin::NewtonSolver> solver = std::make_shared<dolfin::NewtonSolver>();
-	solver->parameters["error_on_nonconvergence"] = false;
-	solver->parameters["convergence_criterion"] = "incremental";
-	solver->parameters["linear_solver"] = ls;
-	solver->parameters["preconditioner"] = pc;
-	solver->parameters["relative_tolerance"] = tol;
-	solver->parameters["absolute_tolerance"] = tol;
-	solver->parameters("krylov_solver")["relative_tolerance"] = tol;
-	solver->parameters("krylov_solver")["absolute_tolerance"] = tol;
-	dolfin::Timer t("BBB solve " + ls + " + " + pc);
-	auto r = solver->solve(*problem, *u->vector());
-	t.stop();
-	if(rank == 0){ iterfile << ls << " + " << pc << "," << r.first << "," << solver->krylov_iterations() << "," << std::get<0>(t.elapsed()) << "," << std::endl; }
-	iterfile.close();
-}
-
-void runCG(int rank, int nprocs, std::shared_ptr<dolfin::Function> u, std::shared_ptr<FisherProblem> problem, std::string pc,
-		double tol){
-	std::stringstream iters;
-	iters << "cg-convergence-" << nprocs << "-tol-" << tol << ".csv";
-	std::ofstream iterfile(iters.str(), std::ios_base::app);
-
-	if(rank==0){ std::cout << "Solve cg with preconditioner " << pc << std::endl;}
-	std::shared_ptr<dolfin::PETScKrylovSolver> krylov = std::make_shared<dolfin::PETScKrylovSolver>("cg", pc);
-	std::shared_ptr<dolfin::NewtonSolver> solver = std::make_shared<dolfin::NewtonSolver>(
-			problem->getMesh()->mpi_comm(), krylov, dolfin::PETScFactory::instance());
-	solver->parameters["error_on_nonconvergence"] = false;
-	solver->parameters["convergence_criterion"] = "incremental";
-	solver->parameters["relative_tolerance"] = tol;
-	solver->parameters["absolute_tolerance"] = tol;
-	solver->parameters("krylov_solver")["relative_tolerance"] = tol;
-	solver->parameters("krylov_solver")["absolute_tolerance"] = tol;
-
-	// setup krylov residual historys
-	PetscInt size = 1000;
-	PetscReal *a;
-	PetscCalloc1(size, &a);
-	KSPSetResidualHistory(krylov->ksp(), a, 1000, PETSC_FALSE);
-	// solve
-	dolfin::Timer t("BBB solve cg + " + pc);
-	auto r = solver->solve(*problem, *u->vector());
-	t.stop();
-	// get residual data
-	PetscInt used = 0;
-	PetscReal *residuals;
-	KSPGetResidualHistory(krylov->ksp(), &residuals, &used);
-	if(rank == 0){ iterfile << "preconditioner, " << pc << std::endl <<
-			"Newton iterations," << r.first << std::endl <<
-			"Krylov iterations, " << solver->krylov_iterations() << std::endl <<
-			"Elapsed time, " << std::get<0>(t.elapsed()) << std::endl <<
-			"Iteration residuals, ";
-		for(int i = 0; i < used; i++){
-			iterfile << residuals[i] << ",";
-		}
-		iterfile << std::endl << std::endl;
-	}
-
-	iterfile.close();
-	PetscFree(a);
-}
 
 std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> create_10on10_vm()
 {
@@ -108,6 +41,153 @@ std::vector<std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>> 
 	return vm;
 }
 
+void runNewton(int rank, int nprocs, std::shared_ptr<dolfin::Mesh> mesh, std::string ls, std::string pc, double tol, std::string restype){
+	std::shared_ptr<dolfin::Expression> D3 = std::make_shared<TensorSpatial3D>(rank, 0.013, 0.0013, create_10on10on10_vm());
+	std::shared_ptr<dolfin::Expression> init3D = std::make_shared<InitializerSphere>(0.5, 0.5, 0.5, 0.1, 1);
+	std::shared_ptr<FisherProblem> problem = std::make_shared<FisherProblem>(rank, mesh, D3, 0.025, 0.0000001, 1);
+	auto us = problem->getUs();
+	std::shared_ptr<dolfin::Function> u0 = us.at(0);
+	std::shared_ptr<dolfin::Function> u = us.at(1);
+	*u0 = *init3D;
+	*u = *init3D;
+
+	std::stringstream iters;
+	iters << "type-1-all-iterations-time-test-procs-" << nprocs << "-tol" << tol << "-" << restype << ".csv";
+	std::ofstream iterfile(iters.str(), std::ios_base::app);
+
+	if(rank==0){ std::cout << "Solve " << ls << " + " << pc << std::endl;}
+	std::shared_ptr<dolfin::NewtonSolver> solver = std::make_shared<dolfin::NewtonSolver>();
+	solver->parameters["error_on_nonconvergence"] = false;
+	solver->parameters["convergence_criterion"] = restype;
+	solver->parameters["linear_solver"] = ls;
+	solver->parameters["preconditioner"] = pc;
+	solver->parameters["relative_tolerance"] = tol;
+	solver->parameters["absolute_tolerance"] = tol;
+	solver->parameters("krylov_solver")["relative_tolerance"] = tol;
+	solver->parameters("krylov_solver")["absolute_tolerance"] = tol;
+	dolfin::Timer t("BBB solve " + ls + " + " + pc);
+	auto r = solver->solve(*problem, *u->vector());
+	t.stop();
+	if(rank == 0){ iterfile << ls << " + " << pc << "," << r.first << "," << solver->krylov_iterations() << "," << std::get<0>(t.elapsed()) << "," <<
+		solver->relative_residual() << "," << solver->residual() << std::endl; }
+	iterfile.close();
+}
+
+void runCG(int rank, int nprocs, std::shared_ptr<dolfin::Mesh> mesh, std::string pc, double tol, std::string restype){
+	std::shared_ptr<dolfin::Expression> D3 = std::make_shared<TensorSpatial3D>(rank, 0.013, 0.0013, create_10on10on10_vm());
+	std::shared_ptr<dolfin::Expression> init3D = std::make_shared<InitializerSphere>(0.5, 0.5, 0.5, 0.1, 1);
+	std::shared_ptr<FisherProblem> problem = std::make_shared<FisherProblem>(rank, mesh, D3, 0.025, 0.0000001, 1);
+	auto us = problem->getUs();
+	std::shared_ptr<dolfin::Function> u0 = us.at(0);
+	std::shared_ptr<dolfin::Function> u = us.at(1);
+	*u0 = *init3D;
+	*u = *init3D;
+
+	std::stringstream iters;
+	iters << "cg-convergence-" << nprocs << "-tol-" << tol << "-" << restype << ".csv";
+	std::ofstream iterfile(iters.str(), std::ios_base::app);
+
+	if(rank==0){ std::cout << "Solve cg with preconditioner " << pc << std::endl;}
+	std::shared_ptr<dolfin::PETScKrylovSolver> krylov = std::make_shared<dolfin::PETScKrylovSolver>("cg", pc);
+	krylov->set_nonzero_guess(true);
+	std::shared_ptr<dolfin::NewtonSolver> solver = std::make_shared<dolfin::NewtonSolver>(
+			problem->getMesh()->mpi_comm(), krylov, dolfin::PETScFactory::instance());
+	solver->set_relaxation_parameter(0.9);
+	solver->parameters["error_on_nonconvergence"] = false;
+	solver->parameters["convergence_criterion"] = restype;
+	solver->parameters["relative_tolerance"] = tol;
+	solver->parameters["absolute_tolerance"] = tol;
+	solver->parameters("krylov_solver")["relative_tolerance"] = tol;
+	solver->parameters("krylov_solver")["absolute_tolerance"] = tol;
+
+	// setup krylov residual historys
+	PetscInt size = 1000;
+	PetscReal *a;
+	PetscCalloc1(size, &a);
+	KSPSetResidualHistory(krylov->ksp(), a, 1000, PETSC_TRUE);
+	// solve
+	dolfin::Timer t("BBB solve cg + " + pc);
+	auto r = solver->solve(*problem, *u->vector());
+	t.stop();
+	// get residual data
+	PetscInt used = 0;
+	PetscReal *residuals;
+	KSPGetResidualHistory(krylov->ksp(), &residuals, &used);
+	if(rank == 0){ iterfile << "preconditioner, " << pc << std::endl <<
+			"Newton abs residual, " << solver->relative_residual() << std::endl <<
+			"Newton rel residual, " << solver->residual() << std::endl <<
+			"Newton iterations," << r.first << std::endl <<
+			"Krylov iterations, " << solver->krylov_iterations() << std::endl <<
+			"Elapsed time, " << std::get<0>(t.elapsed()) << std::endl <<
+			"Iteration residuals, ";
+		for(int i = 0; i < used; i++){
+			iterfile << residuals[i] << ",";
+		}
+		iterfile << std::endl << std::endl;
+	}
+
+	iterfile.close();
+	PetscFree(a);
+}
+
+void runRichardson(int rank, int nprocs, std::shared_ptr<dolfin::Mesh> mesh, std::string pc, double tol, std::string restype){
+	std::shared_ptr<dolfin::Expression> D3 = std::make_shared<TensorSpatial3D>(rank, 0.013, 0.0013, create_10on10on10_vm());
+	std::shared_ptr<dolfin::Expression> init3D = std::make_shared<InitializerSphere>(0.5, 0.5, 0.5, 0.1, 1);
+	std::shared_ptr<FisherProblem> problem = std::make_shared<FisherProblem>(rank, mesh, D3, 0.025, 0.0000001, 1);
+	auto us = problem->getUs();
+	std::shared_ptr<dolfin::Function> u0 = us.at(0);
+	std::shared_ptr<dolfin::Function> u = us.at(1);
+	*u0 = *init3D;
+	*u = *init3D;
+
+	std::stringstream iters;
+	iters << "richardson-convergence-" << nprocs << "-tol-" << tol << "-" << restype << ".csv";
+	std::ofstream iterfile(iters.str(), std::ios_base::app);
+
+	if(rank==0){ std::cout << "Solve richardson with preconditioner " << pc << std::endl;}
+	std::shared_ptr<dolfin::PETScKrylovSolver> krylov = std::make_shared<dolfin::PETScKrylovSolver>("richardson", pc);
+	//krylov->set_nonzero_guess(true);
+	std::shared_ptr<dolfin::NewtonSolver> solver = std::make_shared<dolfin::NewtonSolver>(
+			problem->getMesh()->mpi_comm(), krylov, dolfin::PETScFactory::instance());
+	//solver->set_relaxation_parameter(0.9);
+	solver->parameters["error_on_nonconvergence"] = false;
+	solver->parameters["convergence_criterion"] = restype;
+	solver->parameters["relative_tolerance"] = tol;
+	solver->parameters["absolute_tolerance"] = tol;
+	solver->parameters("krylov_solver")["relative_tolerance"] = tol;
+	solver->parameters("krylov_solver")["absolute_tolerance"] = tol;
+
+	// setup krylov residual historys
+	PetscInt size = 1000;
+	PetscReal *a;
+	PetscCalloc1(size, &a);
+	KSPSetResidualHistory(krylov->ksp(), a, 1000, PETSC_TRUE);
+	// solve
+	dolfin::Timer t("BBB solve richardson + " + pc);
+	auto r = solver->solve(*problem, *u->vector());
+	t.stop();
+	// get residual data
+	PetscInt used = 0;
+	PetscReal *residuals;
+	KSPGetResidualHistory(krylov->ksp(), &residuals, &used);
+	if(rank == 0){ iterfile << "preconditioner, " << pc << std::endl <<
+			"Newton abs residual, " << solver->relative_residual() << std::endl <<
+			"Newton rel residual, " << solver->residual() << std::endl <<
+			"Newton iterations," << r.first << std::endl <<
+			"Krylov iterations, " << solver->krylov_iterations() << std::endl <<
+			"Elapsed time, " << std::get<0>(t.elapsed()) << std::endl <<
+			"Iteration residuals, ";
+		for(int i = 0; i < used; i++){
+			std::cout << "test: " << used << " " << residuals[i] << std::endl;
+			iterfile << residuals[i] << ",";
+		}
+		iterfile << std::endl << std::endl;
+	}
+
+	iterfile.close();
+	PetscFree(a);
+}
+
 // automatic performance assestment of FisherSolver
 int main(int argc, char* argv[]){
 	int provided;
@@ -129,6 +209,8 @@ int main(int argc, char* argv[]){
 	application_parameters.add("type", 2);
 	application_parameters.add("dolflog", 30);
 	application_parameters.add("tol", 0.00000001);
+	application_parameters.add("residual", "incremental");
+
 
 
 	// Update from command line
@@ -143,6 +225,7 @@ int main(int argc, char* argv[]){
 	const int type = application_parameters["type"];
 	const int dolflog = application_parameters["dolflog"];
 	const double tol = application_parameters["tol"];
+	const std::string residual = application_parameters["residual"];
 
 	 // Set mesh partitioner
 	 dolfin::parameters["mesh_partitioner"] = "SCOTCH";
@@ -153,18 +236,18 @@ int main(int argc, char* argv[]){
 
 	// create and prepate 3D problem
 	// 3D: tetrahedras and 1 quantity of interessed is assumed
-	std::shared_ptr<dolfin::Expression> D3 = std::make_shared<TensorSpatial3D>(rank, 0.013, 0.0013, create_10on10on10_vm());
-	std::shared_ptr<dolfin::Expression> init3D = std::make_shared<InitializerSphere>(0.5, 0.5, 0.5, 0.1, 1);
 	dolfin::Timer t1("AAA create mesh 3D");
 	int nxyz = pow((1.0 * totalDofs / 1.30) / 6, 1.0/3.0);
-	std::shared_ptr<dolfin::Mesh> mesh3D = std::make_shared<dolfin::Mesh>(dolfin::UnitCubeMesh(nxyz, nxyz, nxyz));
+	std::shared_ptr<dolfin::Mesh> mesh = std::make_shared<dolfin::Mesh>(dolfin::UnitCubeMesh(nxyz, nxyz, nxyz));
 	t1.stop();
-	std::shared_ptr<FisherProblem> problem3 = std::make_shared<FisherProblem>(rank, mesh3D, D3, 0.025, 0.0000001, 1);
-	auto us3 = problem3->getUs();
-	std::shared_ptr<dolfin::Function> u03 = us3.at(0);
-	std::shared_ptr<dolfin::Function> u3 = us3.at(1);
-	*u03 = *init3D;
-	*u3 = *init3D;
+	std::shared_ptr<dolfin::Expression> D3 = std::make_shared<TensorSpatial3D>(rank, 0.013, 0.0013, create_10on10on10_vm());
+	std::shared_ptr<dolfin::Expression> init3D = std::make_shared<InitializerSphere>(0.5, 0.5, 0.5, 0.1, 1);
+	std::shared_ptr<FisherProblem> problem = std::make_shared<FisherProblem>(rank, mesh, D3, 0.025, 0.0000001, 1);
+	auto us = problem->getUs();
+	std::shared_ptr<dolfin::Function> u0 = us.at(0);
+	std::shared_ptr<dolfin::Function> u = us.at(1);
+	*u0 = *init3D;
+	*u = *init3D;
 
 	// Print simulation summary to console
 	if (rank == 0 && output)
@@ -176,9 +259,9 @@ int main(int argc, char* argv[]){
 		"  Problem type:   "   << (type == 1 ? "all" : (type == 2 ? "cg as linsolver" : "unknown")) << " (3D)" << std::endl <<
 		"  Scaling type:   "   << scaling_type << std::endl <<
 		"  Num processes:  "  << nprocs << std::endl <<
-		"  Mesh elements:  " <<  mesh3D->num_cells() << " (3D)" << std::endl <<
-		"  Total dof:      " << us3.at(0)->function_space()->dim() << " (3D)" << std::endl <<
-		"  Average dof per rank: " << us3.at(0)->function_space()->dim()/dolfin::MPI::size(mesh3D->mpi_comm()) << " (3D)" << std::endl <<
+		"  Mesh elements:  " <<  mesh->num_cells() << " (3D)" << std::endl <<
+		"  Total dof:      " << us.at(0)->function_space()->dim() << " (3D)" << std::endl <<
+		"  Average dof per rank: " << us.at(0)->function_space()->dim()/dolfin::MPI::size(mesh->mpi_comm()) << " (3D)" << std::endl <<
 		"----------------------------------------------------------------" << std::endl;
 		std::cout << ss.str() << std::endl;
 		file << ss.str();
@@ -197,40 +280,51 @@ int main(int argc, char* argv[]){
 	// tpye 1: run all, track time and iterations
 	if(type == 1){
 		std::stringstream iters;
-		iters << "type-1-all-iterations-time-test-procs-" << nprocs << "-tol" << tol << ".csv";
+		iters << "type-1-all-iterations-time-test-procs-" << nprocs << "-tol" << tol << "-" << residual << ".csv";
 		std::ofstream iterfile(iters.str(), std::ios_base::trunc);
-		iterfile << "name, newton iterations, krylov iterations, time for solve()" << std::endl;
+		iterfile << "name, newton iterations, krylov iterations, time for solve(), newton relative residual, newton abs residual" << std::endl;
 		iterfile.close();
 
-		runNewton(rank, nprocs, u3, problem3,  "gmres", "petsc_amg", tol);
-		runNewton(rank, nprocs, u3, problem3,  "gmres", "jacobi", tol);
-		runNewton(rank, nprocs, u3, problem3,  "gmres", "hypre_amg", tol);
-		runNewton(rank, nprocs, u3, problem3,  "gmres", "hypre_euclid", tol);
-		runNewton(rank, nprocs, u3, problem3,  "cg", "petsc_amg", tol);
-		runNewton(rank, nprocs, u3, problem3,  "cg", "jacobi", tol);
-		runNewton(rank, nprocs, u3, problem3,  "cg", "hypre_amg", tol);
-		runNewton(rank, nprocs, u3, problem3,  "cg", "hypre_euclid", tol);
-		runNewton(rank, nprocs, u3, problem3,  "richardson", "petsc_amg", tol);
-		runNewton(rank, nprocs, u3, problem3,  "richardson", "hypre_amg", tol);
-		runNewton(rank, nprocs, u3, problem3,  "richardson", "hypre_euclid", tol);
-		runNewton(rank, nprocs, u3, problem3,  "bicgstab", "hypre_amg", tol);
-		runNewton(rank, nprocs, u3, problem3,  "bicgstab", "hypre_euclid", tol);
-		runNewton(rank, nprocs, u3, problem3,  "minres", "hypre_amg", tol);
-		runNewton(rank, nprocs, u3, problem3,  "minres", "hypre_euclid", tol);
-		runNewton(rank, nprocs, u3, problem3,  "tfqmr", "hypre_amg", tol);
-		runNewton(rank, nprocs, u3, problem3,  "tfqmr", "hypre_euclid", tol);
+		runNewton(rank, nprocs, mesh,  "gmres", "petsc_amg", tol, residual);
+		runNewton(rank, nprocs,  mesh,  "gmres", "jacobi", tol, residual);
+		runNewton(rank, nprocs,  mesh,  "gmres", "hypre_amg", tol, residual);
+		runNewton(rank, nprocs,  mesh,  "gmres", "hypre_euclid", tol, residual);
+		runNewton(rank, nprocs,  mesh,  "cg", "petsc_amg", tol, residual);
+		runNewton(rank, nprocs,  mesh,  "cg", "jacobi", tol, residual);
+		runNewton(rank, nprocs,  mesh,  "cg", "hypre_amg", tol, residual);
+		runNewton(rank, nprocs,  mesh,  "cg", "hypre_euclid", tol, residual);
+		runNewton(rank, nprocs,  mesh,  "richardson", "petsc_amg", tol, residual);
+		runNewton(rank, nprocs,  mesh,  "richardson", "hypre_amg", tol, residual);
+		runNewton(rank, nprocs,  mesh,  "richardson", "hypre_euclid", tol, residual);
+		runNewton(rank, nprocs,  mesh,  "bicgstab", "hypre_amg", tol, residual);
+		runNewton(rank, nprocs,  mesh,  "bicgstab", "hypre_euclid", tol, residual);
+		runNewton(rank, nprocs,  mesh,  "minres", "hypre_amg", tol, residual);
+		runNewton(rank, nprocs,  mesh,  "minres", "hypre_euclid", tol, residual);
+		runNewton(rank, nprocs,  mesh,  "tfqmr", "hypre_amg", tol, residual);
+		runNewton(rank, nprocs,  mesh,  "tfqmr", "hypre_euclid", tol, residual);
 	}
 	// type 2: test only preconditioners for cg
 	else if(type == 2){
 		std::stringstream iters;
-		iters << "cg-convergence-" << nprocs << "-tol-" << tol << ".csv";
+		iters << "cg-convergence-" << nprocs << "-tol-" << tol << "-" << residual << ".csv";
 		std::ofstream iterfile(iters.str(), std::ios_base::trunc);
 		iterfile.close();
 
-		runCG(rank, nprocs, u3, problem3, "jacobi", tol);
-		runCG(rank, nprocs, u3, problem3, "petsc_amg", tol);
-		runCG(rank, nprocs, u3, problem3, "hypre_amg", tol);
-		runCG(rank, nprocs, u3, problem3, "hypre_euclid", tol);
+		runCG(rank, nprocs, mesh, "jacobi", tol, residual);
+		runCG(rank, nprocs, mesh, "petsc_amg", tol, residual);
+		runCG(rank, nprocs, mesh, "hypre_amg", tol, residual);
+		runCG(rank, nprocs, mesh, "hypre_euclid", tol, residual);
+	}
+	// type 3: test only preconditioners for richardson
+	else if(type == 3){
+		std::stringstream iters;
+		iters << "richardson-convergence-" << nprocs << "-tol-" << tol << "-" << residual << ".csv";
+		std::ofstream iterfile(iters.str(), std::ios_base::trunc);
+		iterfile.close();
+
+		runRichardson(rank, nprocs, mesh, "petsc_amg", tol, residual);
+		runRichardson(rank, nprocs, mesh, "hypre_amg", tol, residual);
+		runRichardson(rank, nprocs, mesh, "hypre_euclid", tol, residual);
 	}
 	else{
 		if(rank == 0){ std::cout << "don't know what type to run" << std::endl;}
