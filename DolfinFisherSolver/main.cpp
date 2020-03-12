@@ -34,7 +34,7 @@ std::vector<std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>> 
 	std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> vm_w;
 	std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> vm_g;
 
-	for(int i = 0; i < 16; i++){
+	for(int i = 0; i < 11; i++){
 		auto ok = get_10on10_test_cm();
 		vm_w.push_back(ok[0]);
 		vm_g.push_back(ok[1]);

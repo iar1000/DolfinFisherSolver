@@ -37,7 +37,7 @@ FisherProblem::FisherProblem(int rank, std::shared_ptr<dolfin::Mesh> mesh, std::
 	theta_ = std::make_shared<dolfin::Constant>(theta); // theta of time discretization
 	// collect coefficients into groups
 	std::map<std::string, std::shared_ptr<const dolfin::GenericFunction>> coefsJ =
-		{{"u", u_}, {"rho", rho_}, {"D", D_} , {"dt", dt_}, {"theta", theta_}};
+		{{"u", u_}, {"rho", rho_}, {"D", D_} , {"dt", dt_}};
 	std::map<std::string, std::shared_ptr<const dolfin::GenericFunction>> coefsF =
 			coefsJ;
 	coefsF.insert({"u0", u0_});

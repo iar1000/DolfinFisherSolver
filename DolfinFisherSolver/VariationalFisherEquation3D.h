@@ -7386,7 +7386,7 @@ public:
 
   const std::vector<bool> & enabled_coefficients() const final override
   {
-static const std::vector<bool> enabled({true, true, true, true, true, true});
+static const std::vector<bool> enabled({true, true, true, true, true});
 return enabled;
   }
 
@@ -7419,7 +7419,7 @@ return enabled;
     // FE* dimensions: [entities][points][dofs]
     // PI* dimensions: [entities][dofs][dofs] or [entities][dofs]
     // PM* dimensions: [entities][dofs][dofs]
-    alignas(32) static const double FE25_C0_D001_Q24[1][24][7] =
+    alignas(32) static const double FE21_C0_D001_Q24[1][24][7] =
         { { { 0.1415885149633935, -0.1415885149633977, 0.8584114850366085, 1.424765544890186, 0.0, -0.8584114850366069, -1.42476554489018 },
             { -0.4247655448901795, -0.1415885149633977, 0.8584114850366085, 0.8584114850366129, 0.5663540598535733, -0.8584114850366071, -0.8584114850366072 },
             { 0.1415885149633935, 0.424765544890176, 0.8584114850366072, 0.8584114850366134, -0.566354059853573, -0.8584114850366067, -0.8584114850366072 },
@@ -7444,7 +7444,7 @@ return enabled;
             { 0.7453559924999313, 0.0786893258332596, 2.412022659166598, 0.2546440075000767, -0.8240453183331949, -2.412022659166598, -0.2546440075000701 },
             { 0.7453559924999305, 1.412022659166594, 0.2546440075000673, 1.078689325833271, -2.157378651666528, -0.2546440075000691, -1.078689325833264 },
             { 0.7453559924999308, -0.7453559924999347, 1.078689325833267, 2.412022659166603, 0.0, -1.078689325833264, -2.412022659166596 } } };
-    alignas(32) static const double FE25_C0_D010_Q24[1][24][7] =
+    alignas(32) static const double FE21_C0_D010_Q24[1][24][7] =
         { { { 0.1415885149633942, -0.1415885149633959, 0.8584114850366078, 1.424765544890186, -0.8584114850366075, 0.0, -1.42476554489018 },
             { -0.4247655448901789, -0.141588514963396, 0.8584114850366078, 0.8584114850366125, -0.8584114850366075, 0.5663540598535725, -0.8584114850366076 },
             { 0.1415885149633942, -0.1415885149633957, 1.424765544890181, 0.8584114850366116, -1.424765544890181, 0.0, -0.8584114850366071 },
@@ -7469,7 +7469,7 @@ return enabled;
             { 0.7453559924999313, 1.412022659166594, 1.078689325833265, 0.2546440075000762, -1.078689325833264, -2.157378651666527, -0.2546440075000713 },
             { 0.7453559924999313, -0.745355992499932, 2.412022659166599, 1.078689325833266, -2.412022659166599, 0.0, -1.078689325833263 },
             { 0.7453559924999311, 0.07868932583326058, 0.2546440075000707, 2.412022659166603, -0.2546440075000702, -0.8240453183331952, -2.412022659166597 } } };
-    alignas(32) static const double FE25_C0_D100_Q24[1][24][7] =
+    alignas(32) static const double FE21_C0_D100_Q24[1][24][7] =
         { { { 0.1415885149633939, 0.4247655448901789, 0.858411485036607, 0.8584114850366074, -0.8584114850366072, -0.8584114850366076, -0.5663540598535729 },
             { -0.424765544890179, -0.141588514963394, 0.858411485036607, 0.8584114850366074, -0.8584114850366072, -0.8584114850366076, 0.5663540598535729 },
             { 0.1415885149633941, -0.1415885149633942, 1.42476554489018, 0.8584114850366072, -1.424765544890181, -0.8584114850366075, 0.0 },
@@ -7494,7 +7494,7 @@ return enabled;
             { 0.7453559924999315, -0.745355992499931, 1.078689325833264, 2.412022659166598, -1.078689325833264, -2.412022659166599, 0.0 },
             { 0.745355992499931, 0.07868932583326249, 2.412022659166598, 0.2546440075000699, -2.412022659166599, -0.25464400750007, -0.8240453183331939 },
             { 0.7453559924999302, 1.412022659166595, 0.2546440075000697, 1.078689325833264, -0.2546440075000698, -1.078689325833265, -2.157378651666525 } } };
-    alignas(32) static const double FE25_C0_Q24[1][24][10] =
+    alignas(32) static const double FE21_C0_Q24[1][24][10] =
         { { { -0.1224940865538076, -0.1024467789842685, -0.1224940865538076, -0.1224940865538077, 0.1842175694106881, 0.3057587768045423, 0.3057587768045423, 0.1842175694106882, 0.184217569410688, 0.3057587768045424 },
             { -0.1024467789842685, -0.1224940865538076, -0.1224940865538076, -0.1224940865538077, 0.1842175694106881, 0.1842175694106881, 0.1842175694106881, 0.3057587768045423, 0.3057587768045423, 0.3057587768045424 },
             { -0.1224940865538076, -0.1224940865538075, -0.1224940865538076, -0.1024467789842687, 0.3057587768045424, 0.3057587768045424, 0.1842175694106881, 0.3057587768045424, 0.184217569410688, 0.1842175694106881 },
@@ -7530,53 +7530,51 @@ return enabled;
     const double J_c6 = coordinate_dofs[2] * FE8_C0_D001_Q24[0][0][0] + coordinate_dofs[5] * FE8_C0_D001_Q24[0][0][1];
     const double J_c3 = coordinate_dofs[1] * FE8_C0_D001_Q24[0][0][0] + coordinate_dofs[4] * FE8_C0_D001_Q24[0][0][1];
     const double J_c2 = coordinate_dofs[0] * FE8_C0_D001_Q24[0][0][0] + coordinate_dofs[9] * FE8_C0_D001_Q24[0][0][1];
-    alignas(32) double sp[46];
-    sp[0] = (1 + -1 * w[5][0]) * w[3][0];
-    sp[1] = w[3][0] * w[5][0];
-    sp[2] = J_c4 * J_c8;
-    sp[3] = J_c5 * J_c7;
-    sp[4] = sp[2] + -1 * sp[3];
-    sp[5] = J_c0 * sp[4];
-    sp[6] = J_c5 * J_c6;
-    sp[7] = J_c3 * J_c8;
-    sp[8] = sp[6] + -1 * sp[7];
-    sp[9] = J_c1 * sp[8];
-    sp[10] = sp[5] + sp[9];
-    sp[11] = J_c3 * J_c7;
-    sp[12] = J_c4 * J_c6;
-    sp[13] = sp[11] + -1 * sp[12];
-    sp[14] = J_c2 * sp[13];
-    sp[15] = sp[10] + sp[14];
-    sp[16] = sp[4] / sp[15];
-    sp[17] = J_c3 * (-1 * J_c8);
-    sp[18] = sp[6] + sp[17];
-    sp[19] = sp[18] / sp[15];
-    sp[20] = sp[13] / sp[15];
-    sp[21] = J_c2 * J_c7;
-    sp[22] = J_c8 * (-1 * J_c1);
-    sp[23] = sp[21] + sp[22];
-    sp[24] = sp[23] / sp[15];
-    sp[25] = J_c0 * J_c8;
-    sp[26] = J_c6 * (-1 * J_c2);
-    sp[27] = sp[25] + sp[26];
-    sp[28] = sp[27] / sp[15];
-    sp[29] = J_c1 * J_c6;
-    sp[30] = J_c0 * J_c7;
-    sp[31] = sp[29] + -1 * sp[30];
-    sp[32] = sp[31] / sp[15];
-    sp[33] = J_c1 * J_c5;
-    sp[34] = J_c2 * J_c4;
-    sp[35] = sp[33] + -1 * sp[34];
-    sp[36] = sp[35] / sp[15];
-    sp[37] = J_c2 * J_c3;
-    sp[38] = J_c0 * J_c5;
-    sp[39] = sp[37] + -1 * sp[38];
-    sp[40] = sp[39] / sp[15];
-    sp[41] = J_c0 * J_c4;
-    sp[42] = J_c1 * J_c3;
-    sp[43] = sp[41] + -1 * sp[42];
-    sp[44] = sp[43] / sp[15];
-    sp[45] = std::abs(sp[15]);
+    alignas(32) double sp[44];
+    sp[0] = J_c4 * J_c8;
+    sp[1] = J_c5 * J_c7;
+    sp[2] = sp[0] + -1 * sp[1];
+    sp[3] = J_c0 * sp[2];
+    sp[4] = J_c5 * J_c6;
+    sp[5] = J_c3 * J_c8;
+    sp[6] = sp[4] + -1 * sp[5];
+    sp[7] = J_c1 * sp[6];
+    sp[8] = sp[3] + sp[7];
+    sp[9] = J_c3 * J_c7;
+    sp[10] = J_c4 * J_c6;
+    sp[11] = sp[9] + -1 * sp[10];
+    sp[12] = J_c2 * sp[11];
+    sp[13] = sp[8] + sp[12];
+    sp[14] = sp[2] / sp[13];
+    sp[15] = J_c3 * (-1 * J_c8);
+    sp[16] = sp[4] + sp[15];
+    sp[17] = sp[16] / sp[13];
+    sp[18] = sp[11] / sp[13];
+    sp[19] = J_c2 * J_c7;
+    sp[20] = J_c8 * (-1 * J_c1);
+    sp[21] = sp[19] + sp[20];
+    sp[22] = sp[21] / sp[13];
+    sp[23] = J_c0 * J_c8;
+    sp[24] = J_c6 * (-1 * J_c2);
+    sp[25] = sp[23] + sp[24];
+    sp[26] = sp[25] / sp[13];
+    sp[27] = J_c1 * J_c6;
+    sp[28] = J_c0 * J_c7;
+    sp[29] = sp[27] + -1 * sp[28];
+    sp[30] = sp[29] / sp[13];
+    sp[31] = J_c1 * J_c5;
+    sp[32] = J_c2 * J_c4;
+    sp[33] = sp[31] + -1 * sp[32];
+    sp[34] = sp[33] / sp[13];
+    sp[35] = J_c2 * J_c3;
+    sp[36] = J_c0 * J_c5;
+    sp[37] = sp[35] + -1 * sp[36];
+    sp[38] = sp[37] / sp[13];
+    sp[39] = J_c0 * J_c4;
+    sp[40] = J_c1 * J_c3;
+    sp[41] = sp[39] + -1 * sp[40];
+    sp[42] = sp[41] / sp[13];
+    sp[43] = std::abs(sp[13]);
     alignas(32) double BF0[10] = {};
     alignas(32) double BF1[7] = {};
     alignas(32) double BF2[7] = {};
@@ -7585,117 +7583,73 @@ return enabled;
     {
         // Quadrature loop body setup (num_points=24)
         // Unstructured varying computations for num_points=24
-        double w0 = 0.0;
-        for (int ic = 0; ic < 10; ++ic)
-            w0 += w[0][ic] * FE25_C0_Q24[0][iq][ic];
         double w1 = 0.0;
         for (int ic = 0; ic < 10; ++ic)
-            w1 += w[1][ic] * FE25_C0_Q24[0][iq][ic];
-        const double w0_d0 = w[0][0] * FE25_C0_D100_Q24[0][iq][0] + w[0][1] * FE25_C0_D100_Q24[0][iq][1] + w[0][5] * FE25_C0_D100_Q24[0][iq][2] + w[0][6] * FE25_C0_D100_Q24[0][iq][3] + w[0][7] * FE25_C0_D100_Q24[0][iq][4] + w[0][8] * FE25_C0_D100_Q24[0][iq][5] + w[0][9] * FE25_C0_D100_Q24[0][iq][6];
-        const double w0_d1 = w[0][0] * FE25_C0_D010_Q24[0][iq][0] + w[0][2] * FE25_C0_D010_Q24[0][iq][1] + w[0][4] * FE25_C0_D010_Q24[0][iq][2] + w[0][6] * FE25_C0_D010_Q24[0][iq][3] + w[0][7] * FE25_C0_D010_Q24[0][iq][4] + w[0][8] * FE25_C0_D010_Q24[0][iq][5] + w[0][9] * FE25_C0_D010_Q24[0][iq][6];
-        const double w0_d2 = w[0][0] * FE25_C0_D001_Q24[0][iq][0] + w[0][3] * FE25_C0_D001_Q24[0][iq][1] + w[0][4] * FE25_C0_D001_Q24[0][iq][2] + w[0][5] * FE25_C0_D001_Q24[0][iq][3] + w[0][7] * FE25_C0_D001_Q24[0][iq][4] + w[0][8] * FE25_C0_D001_Q24[0][iq][5] + w[0][9] * FE25_C0_D001_Q24[0][iq][6];
+            w1 += w[1][ic] * FE21_C0_Q24[0][iq][ic];
+        double w0 = 0.0;
+        for (int ic = 0; ic < 10; ++ic)
+            w0 += w[0][ic] * FE21_C0_Q24[0][iq][ic];
+        const double w1_d0 = w[1][0] * FE21_C0_D100_Q24[0][iq][0] + w[1][1] * FE21_C0_D100_Q24[0][iq][1] + w[1][5] * FE21_C0_D100_Q24[0][iq][2] + w[1][6] * FE21_C0_D100_Q24[0][iq][3] + w[1][7] * FE21_C0_D100_Q24[0][iq][4] + w[1][8] * FE21_C0_D100_Q24[0][iq][5] + w[1][9] * FE21_C0_D100_Q24[0][iq][6];
+        const double w1_d1 = w[1][0] * FE21_C0_D010_Q24[0][iq][0] + w[1][2] * FE21_C0_D010_Q24[0][iq][1] + w[1][4] * FE21_C0_D010_Q24[0][iq][2] + w[1][6] * FE21_C0_D010_Q24[0][iq][3] + w[1][7] * FE21_C0_D010_Q24[0][iq][4] + w[1][8] * FE21_C0_D010_Q24[0][iq][5] + w[1][9] * FE21_C0_D010_Q24[0][iq][6];
+        const double w1_d2 = w[1][0] * FE21_C0_D001_Q24[0][iq][0] + w[1][3] * FE21_C0_D001_Q24[0][iq][1] + w[1][4] * FE21_C0_D001_Q24[0][iq][2] + w[1][5] * FE21_C0_D001_Q24[0][iq][3] + w[1][7] * FE21_C0_D001_Q24[0][iq][4] + w[1][8] * FE21_C0_D001_Q24[0][iq][5] + w[1][9] * FE21_C0_D001_Q24[0][iq][6];
         double w4 = 0.0;
         for (int ic = 0; ic < 10; ++ic)
-            w4 += w[4][ic] * FE25_C0_Q24[0][iq][ic];
-        const double w1_d0 = w[1][0] * FE25_C0_D100_Q24[0][iq][0] + w[1][1] * FE25_C0_D100_Q24[0][iq][1] + w[1][5] * FE25_C0_D100_Q24[0][iq][2] + w[1][6] * FE25_C0_D100_Q24[0][iq][3] + w[1][7] * FE25_C0_D100_Q24[0][iq][4] + w[1][8] * FE25_C0_D100_Q24[0][iq][5] + w[1][9] * FE25_C0_D100_Q24[0][iq][6];
-        const double w1_d1 = w[1][0] * FE25_C0_D010_Q24[0][iq][0] + w[1][2] * FE25_C0_D010_Q24[0][iq][1] + w[1][4] * FE25_C0_D010_Q24[0][iq][2] + w[1][6] * FE25_C0_D010_Q24[0][iq][3] + w[1][7] * FE25_C0_D010_Q24[0][iq][4] + w[1][8] * FE25_C0_D010_Q24[0][iq][5] + w[1][9] * FE25_C0_D010_Q24[0][iq][6];
-        const double w1_d2 = w[1][0] * FE25_C0_D001_Q24[0][iq][0] + w[1][3] * FE25_C0_D001_Q24[0][iq][1] + w[1][4] * FE25_C0_D001_Q24[0][iq][2] + w[1][5] * FE25_C0_D001_Q24[0][iq][3] + w[1][7] * FE25_C0_D001_Q24[0][iq][4] + w[1][8] * FE25_C0_D001_Q24[0][iq][5] + w[1][9] * FE25_C0_D001_Q24[0][iq][6];
-        alignas(32) double sv24[83];
-        sv24[0] = sp[0] * w0;
-        sv24[1] = (1 + -1 * w0) * sv24[0];
-        sv24[2] = sp[1] * w1;
-        sv24[3] = (1 + -1 * w1) * sv24[2];
-        sv24[4] = -1 * sv24[1] + -1 * sv24[3];
-        sv24[5] = -1 * w0 + w1;
-        sv24[6] = sv24[5] / w[2][0];
-        sv24[7] = sv24[4] + sv24[6];
-        sv24[8] = w0_d0 * sp[16];
-        sv24[9] = w0_d1 * sp[19];
-        sv24[10] = sv24[8] + sv24[9];
-        sv24[11] = w0_d2 * sp[20];
-        sv24[12] = sv24[10] + sv24[11];
-        sv24[13] = sv24[12] * sp[16];
-        sv24[14] = sv24[12] * sp[19];
-        sv24[15] = sv24[12] * sp[20];
-        sv24[16] = w0_d0 * sp[24];
-        sv24[17] = w0_d1 * sp[28];
-        sv24[18] = sv24[16] + sv24[17];
-        sv24[19] = w0_d2 * sp[32];
-        sv24[20] = sv24[18] + sv24[19];
-        sv24[21] = sv24[20] * sp[24];
-        sv24[22] = sv24[20] * sp[28];
-        sv24[23] = sv24[20] * sp[32];
-        sv24[24] = sv24[21] + sv24[13];
-        sv24[25] = sv24[22] + sv24[14];
-        sv24[26] = sv24[15] + sv24[23];
-        sv24[27] = w0_d0 * sp[36];
-        sv24[28] = w0_d1 * sp[40];
-        sv24[29] = sv24[27] + sv24[28];
-        sv24[30] = w0_d2 * sp[44];
-        sv24[31] = sv24[29] + sv24[30];
-        sv24[32] = sv24[31] * sp[36];
-        sv24[33] = sv24[31] * sp[40];
-        sv24[34] = sv24[31] * sp[44];
-        sv24[35] = sv24[24] + sv24[32];
-        sv24[36] = sv24[25] + sv24[33];
-        sv24[37] = sv24[26] + sv24[34];
-        sv24[38] = (1 + -1 * w[5][0]) * w4;
-        sv24[39] = sv24[35] * sv24[38];
-        sv24[40] = sv24[36] * sv24[38];
-        sv24[41] = sv24[37] * sv24[38];
-        sv24[42] = w1_d0 * sp[16];
-        sv24[43] = w1_d1 * sp[19];
-        sv24[44] = sv24[42] + sv24[43];
-        sv24[45] = w1_d2 * sp[20];
-        sv24[46] = sv24[44] + sv24[45];
-        sv24[47] = sv24[46] * sp[16];
-        sv24[48] = sv24[46] * sp[19];
-        sv24[49] = sv24[46] * sp[20];
-        sv24[50] = w1_d0 * sp[24];
-        sv24[51] = w1_d1 * sp[28];
-        sv24[52] = sv24[50] + sv24[51];
-        sv24[53] = w1_d2 * sp[32];
-        sv24[54] = sv24[52] + sv24[53];
-        sv24[55] = sv24[54] * sp[24];
-        sv24[56] = sv24[54] * sp[28];
-        sv24[57] = sv24[54] * sp[32];
-        sv24[58] = sv24[55] + sv24[47];
-        sv24[59] = sv24[56] + sv24[48];
-        sv24[60] = sv24[49] + sv24[57];
-        sv24[61] = w1_d0 * sp[36];
-        sv24[62] = w1_d1 * sp[40];
-        sv24[63] = sv24[61] + sv24[62];
-        sv24[64] = w1_d2 * sp[44];
-        sv24[65] = sv24[63] + sv24[64];
-        sv24[66] = sv24[65] * sp[36];
-        sv24[67] = sv24[65] * sp[40];
-        sv24[68] = sv24[65] * sp[44];
-        sv24[69] = sv24[58] + sv24[66];
-        sv24[70] = sv24[59] + sv24[67];
-        sv24[71] = sv24[60] + sv24[68];
-        sv24[72] = w4 * w[5][0];
-        sv24[73] = sv24[69] * sv24[72];
-        sv24[74] = sv24[70] * sv24[72];
-        sv24[75] = sv24[71] * sv24[72];
-        sv24[76] = sv24[39] + sv24[73];
-        sv24[77] = sv24[40] + sv24[74];
-        sv24[78] = sv24[41] + sv24[75];
-        sv24[79] = sv24[7] * sp[45];
-        sv24[80] = sv24[76] * sp[45];
-        sv24[81] = sv24[77] * sp[45];
-        sv24[82] = sv24[78] * sp[45];
-        const double fw0 = sv24[79] * weights24[iq];
+            w4 += w[4][ic] * FE21_C0_Q24[0][iq][ic];
+        alignas(32) double sv24[42];
+        sv24[0] = w1 * w[3][0];
+        sv24[1] = (1 + -1 * w1) * sv24[0];
+        sv24[2] = -1 * w0 + w1;
+        sv24[3] = sv24[2] / w[2][0];
+        sv24[4] = -1 * sv24[1] + sv24[3];
+        sv24[5] = w1_d0 * sp[14];
+        sv24[6] = w1_d1 * sp[17];
+        sv24[7] = sv24[5] + sv24[6];
+        sv24[8] = w1_d2 * sp[18];
+        sv24[9] = sv24[7] + sv24[8];
+        sv24[10] = sv24[9] * sp[14];
+        sv24[11] = sv24[9] * sp[17];
+        sv24[12] = sv24[9] * sp[18];
+        sv24[13] = w1_d0 * sp[22];
+        sv24[14] = w1_d1 * sp[26];
+        sv24[15] = sv24[13] + sv24[14];
+        sv24[16] = w1_d2 * sp[30];
+        sv24[17] = sv24[15] + sv24[16];
+        sv24[18] = sv24[17] * sp[22];
+        sv24[19] = sv24[17] * sp[26];
+        sv24[20] = sv24[17] * sp[30];
+        sv24[21] = sv24[18] + sv24[10];
+        sv24[22] = sv24[19] + sv24[11];
+        sv24[23] = sv24[12] + sv24[20];
+        sv24[24] = w1_d0 * sp[34];
+        sv24[25] = w1_d1 * sp[38];
+        sv24[26] = sv24[24] + sv24[25];
+        sv24[27] = w1_d2 * sp[42];
+        sv24[28] = sv24[26] + sv24[27];
+        sv24[29] = sv24[28] * sp[34];
+        sv24[30] = sv24[28] * sp[38];
+        sv24[31] = sv24[28] * sp[42];
+        sv24[32] = sv24[21] + sv24[29];
+        sv24[33] = sv24[22] + sv24[30];
+        sv24[34] = sv24[23] + sv24[31];
+        sv24[35] = sv24[32] * w4;
+        sv24[36] = sv24[33] * w4;
+        sv24[37] = sv24[34] * w4;
+        sv24[38] = sv24[4] * sp[43];
+        sv24[39] = sv24[35] * sp[43];
+        sv24[40] = sv24[36] * sp[43];
+        sv24[41] = sv24[37] * sp[43];
+        const double fw0 = sv24[38] * weights24[iq];
         for (int i = 0; i < 10; ++i)
-            BF0[i] += fw0 * FE25_C0_Q24[0][iq][i];
-        const double fw1 = sv24[80] * weights24[iq];
+            BF0[i] += fw0 * FE21_C0_Q24[0][iq][i];
+        const double fw1 = sv24[39] * weights24[iq];
         for (int i = 0; i < 7; ++i)
-            BF1[i] += fw1 * FE25_C0_D100_Q24[0][iq][i];
-        const double fw2 = sv24[81] * weights24[iq];
+            BF1[i] += fw1 * FE21_C0_D100_Q24[0][iq][i];
+        const double fw2 = sv24[40] * weights24[iq];
         for (int i = 0; i < 7; ++i)
-            BF2[i] += fw2 * FE25_C0_D010_Q24[0][iq][i];
-        const double fw3 = sv24[82] * weights24[iq];
+            BF2[i] += fw2 * FE21_C0_D010_Q24[0][iq][i];
+        const double fw3 = sv24[41] * weights24[iq];
         for (int i = 0; i < 7; ++i)
-            BF3[i] += fw3 * FE25_C0_D001_Q24[0][iq][i];
+            BF3[i] += fw3 * FE21_C0_D001_Q24[0][iq][i];
     }
     std::fill(A, A + 10, 0.0);
     static const int DM0[7] = { 0, 1, 5, 6, 7, 8, 9 };
@@ -7730,7 +7684,7 @@ public:
 
   const std::vector<bool> & enabled_coefficients() const final override
   {
-static const std::vector<bool> enabled({true, true, true, true, true});
+static const std::vector<bool> enabled({true, true, true, true});
 return enabled;
   }
 
@@ -7763,7 +7717,7 @@ return enabled;
     // FE* dimensions: [entities][points][dofs]
     // PI* dimensions: [entities][dofs][dofs] or [entities][dofs]
     // PM* dimensions: [entities][dofs][dofs]
-    alignas(32) static const double FE22_C0_D001_Q24[1][24][7] =
+    alignas(32) static const double FE21_C0_D001_Q24[1][24][7] =
         { { { 0.1415885149633935, -0.1415885149633977, 0.8584114850366085, 1.424765544890186, 0.0, -0.8584114850366069, -1.42476554489018 },
             { -0.4247655448901795, -0.1415885149633977, 0.8584114850366085, 0.8584114850366129, 0.5663540598535733, -0.8584114850366071, -0.8584114850366072 },
             { 0.1415885149633935, 0.424765544890176, 0.8584114850366072, 0.8584114850366134, -0.566354059853573, -0.8584114850366067, -0.8584114850366072 },
@@ -7788,7 +7742,7 @@ return enabled;
             { 0.7453559924999313, 0.0786893258332596, 2.412022659166598, 0.2546440075000767, -0.8240453183331949, -2.412022659166598, -0.2546440075000701 },
             { 0.7453559924999305, 1.412022659166594, 0.2546440075000673, 1.078689325833271, -2.157378651666528, -0.2546440075000691, -1.078689325833264 },
             { 0.7453559924999308, -0.7453559924999347, 1.078689325833267, 2.412022659166603, 0.0, -1.078689325833264, -2.412022659166596 } } };
-    alignas(32) static const double FE22_C0_D010_Q24[1][24][7] =
+    alignas(32) static const double FE21_C0_D010_Q24[1][24][7] =
         { { { 0.1415885149633942, -0.1415885149633959, 0.8584114850366078, 1.424765544890186, -0.8584114850366075, 0.0, -1.42476554489018 },
             { -0.4247655448901789, -0.141588514963396, 0.8584114850366078, 0.8584114850366125, -0.8584114850366075, 0.5663540598535725, -0.8584114850366076 },
             { 0.1415885149633942, -0.1415885149633957, 1.424765544890181, 0.8584114850366116, -1.424765544890181, 0.0, -0.8584114850366071 },
@@ -7813,7 +7767,7 @@ return enabled;
             { 0.7453559924999313, 1.412022659166594, 1.078689325833265, 0.2546440075000762, -1.078689325833264, -2.157378651666527, -0.2546440075000713 },
             { 0.7453559924999313, -0.745355992499932, 2.412022659166599, 1.078689325833266, -2.412022659166599, 0.0, -1.078689325833263 },
             { 0.7453559924999311, 0.07868932583326058, 0.2546440075000707, 2.412022659166603, -0.2546440075000702, -0.8240453183331952, -2.412022659166597 } } };
-    alignas(32) static const double FE22_C0_D100_Q24[1][24][7] =
+    alignas(32) static const double FE21_C0_D100_Q24[1][24][7] =
         { { { 0.1415885149633939, 0.4247655448901789, 0.858411485036607, 0.8584114850366074, -0.8584114850366072, -0.8584114850366076, -0.5663540598535729 },
             { -0.424765544890179, -0.141588514963394, 0.858411485036607, 0.8584114850366074, -0.8584114850366072, -0.8584114850366076, 0.5663540598535729 },
             { 0.1415885149633941, -0.1415885149633942, 1.42476554489018, 0.8584114850366072, -1.424765544890181, -0.8584114850366075, 0.0 },
@@ -7838,7 +7792,7 @@ return enabled;
             { 0.7453559924999315, -0.745355992499931, 1.078689325833264, 2.412022659166598, -1.078689325833264, -2.412022659166599, 0.0 },
             { 0.745355992499931, 0.07868932583326249, 2.412022659166598, 0.2546440075000699, -2.412022659166599, -0.25464400750007, -0.8240453183331939 },
             { 0.7453559924999302, 1.412022659166595, 0.2546440075000697, 1.078689325833264, -0.2546440075000698, -1.078689325833265, -2.157378651666525 } } };
-    alignas(32) static const double FE22_C0_Q24[1][24][10] =
+    alignas(32) static const double FE21_C0_Q24[1][24][10] =
         { { { -0.1224940865538076, -0.1024467789842685, -0.1224940865538076, -0.1224940865538077, 0.1842175694106881, 0.3057587768045423, 0.3057587768045423, 0.1842175694106882, 0.184217569410688, 0.3057587768045424 },
             { -0.1024467789842685, -0.1224940865538076, -0.1224940865538076, -0.1224940865538077, 0.1842175694106881, 0.1842175694106881, 0.1842175694106881, 0.3057587768045423, 0.3057587768045423, 0.3057587768045424 },
             { -0.1224940865538076, -0.1224940865538075, -0.1224940865538076, -0.1024467789842687, 0.3057587768045424, 0.3057587768045424, 0.1842175694106881, 0.3057587768045424, 0.184217569410688, 0.1842175694106881 },
@@ -7874,82 +7828,81 @@ return enabled;
     const double J_c6 = coordinate_dofs[2] * FE8_C0_D001_Q24[0][0][0] + coordinate_dofs[5] * FE8_C0_D001_Q24[0][0][1];
     const double J_c3 = coordinate_dofs[1] * FE8_C0_D001_Q24[0][0][0] + coordinate_dofs[4] * FE8_C0_D001_Q24[0][0][1];
     const double J_c2 = coordinate_dofs[0] * FE8_C0_D001_Q24[0][0][0] + coordinate_dofs[9] * FE8_C0_D001_Q24[0][0][1];
-    alignas(32) double sp[75];
-    sp[0] = w[2][0] * w[4][0];
-    sp[1] = J_c4 * J_c8;
-    sp[2] = J_c5 * J_c7;
-    sp[3] = sp[1] + -1 * sp[2];
-    sp[4] = J_c0 * sp[3];
-    sp[5] = J_c5 * J_c6;
-    sp[6] = J_c3 * J_c8;
-    sp[7] = sp[5] + -1 * sp[6];
-    sp[8] = J_c1 * sp[7];
-    sp[9] = sp[4] + sp[8];
-    sp[10] = J_c3 * J_c7;
-    sp[11] = J_c4 * J_c6;
-    sp[12] = sp[10] + -1 * sp[11];
-    sp[13] = J_c2 * sp[12];
-    sp[14] = sp[9] + sp[13];
-    sp[15] = sp[3] / sp[14];
-    sp[16] = J_c3 * (-1 * J_c8);
-    sp[17] = sp[5] + sp[16];
-    sp[18] = sp[17] / sp[14];
-    sp[19] = sp[12] / sp[14];
-    sp[20] = sp[15] * sp[15];
-    sp[21] = sp[15] * sp[18];
-    sp[22] = sp[19] * sp[15];
-    sp[23] = sp[18] * sp[18];
-    sp[24] = sp[19] * sp[18];
-    sp[25] = sp[19] * sp[19];
-    sp[26] = J_c2 * J_c7;
-    sp[27] = J_c8 * (-1 * J_c1);
-    sp[28] = sp[26] + sp[27];
-    sp[29] = sp[28] / sp[14];
-    sp[30] = J_c0 * J_c8;
-    sp[31] = J_c6 * (-1 * J_c2);
-    sp[32] = sp[30] + sp[31];
-    sp[33] = sp[32] / sp[14];
-    sp[34] = J_c1 * J_c6;
-    sp[35] = J_c0 * J_c7;
-    sp[36] = sp[34] + -1 * sp[35];
-    sp[37] = sp[36] / sp[14];
-    sp[38] = sp[29] * sp[29];
-    sp[39] = sp[29] * sp[33];
-    sp[40] = sp[29] * sp[37];
-    sp[41] = sp[33] * sp[33];
-    sp[42] = sp[33] * sp[37];
-    sp[43] = sp[37] * sp[37];
+    alignas(32) double sp[74];
+    sp[0] = J_c4 * J_c8;
+    sp[1] = J_c5 * J_c7;
+    sp[2] = sp[0] + -1 * sp[1];
+    sp[3] = J_c0 * sp[2];
+    sp[4] = J_c5 * J_c6;
+    sp[5] = J_c3 * J_c8;
+    sp[6] = sp[4] + -1 * sp[5];
+    sp[7] = J_c1 * sp[6];
+    sp[8] = sp[3] + sp[7];
+    sp[9] = J_c3 * J_c7;
+    sp[10] = J_c4 * J_c6;
+    sp[11] = sp[9] + -1 * sp[10];
+    sp[12] = J_c2 * sp[11];
+    sp[13] = sp[8] + sp[12];
+    sp[14] = sp[2] / sp[13];
+    sp[15] = J_c3 * (-1 * J_c8);
+    sp[16] = sp[4] + sp[15];
+    sp[17] = sp[16] / sp[13];
+    sp[18] = sp[11] / sp[13];
+    sp[19] = sp[14] * sp[14];
+    sp[20] = sp[14] * sp[17];
+    sp[21] = sp[18] * sp[14];
+    sp[22] = sp[17] * sp[17];
+    sp[23] = sp[18] * sp[17];
+    sp[24] = sp[18] * sp[18];
+    sp[25] = J_c2 * J_c7;
+    sp[26] = J_c8 * (-1 * J_c1);
+    sp[27] = sp[25] + sp[26];
+    sp[28] = sp[27] / sp[13];
+    sp[29] = J_c0 * J_c8;
+    sp[30] = J_c6 * (-1 * J_c2);
+    sp[31] = sp[29] + sp[30];
+    sp[32] = sp[31] / sp[13];
+    sp[33] = J_c1 * J_c6;
+    sp[34] = J_c0 * J_c7;
+    sp[35] = sp[33] + -1 * sp[34];
+    sp[36] = sp[35] / sp[13];
+    sp[37] = sp[28] * sp[28];
+    sp[38] = sp[28] * sp[32];
+    sp[39] = sp[28] * sp[36];
+    sp[40] = sp[32] * sp[32];
+    sp[41] = sp[32] * sp[36];
+    sp[42] = sp[36] * sp[36];
+    sp[43] = sp[37] + sp[19];
     sp[44] = sp[38] + sp[20];
     sp[45] = sp[39] + sp[21];
     sp[46] = sp[40] + sp[22];
     sp[47] = sp[41] + sp[23];
-    sp[48] = sp[42] + sp[24];
-    sp[49] = sp[25] + sp[43];
-    sp[50] = J_c1 * J_c5;
-    sp[51] = J_c2 * J_c4;
-    sp[52] = sp[50] + -1 * sp[51];
-    sp[53] = sp[52] / sp[14];
-    sp[54] = J_c2 * J_c3;
-    sp[55] = J_c0 * J_c5;
-    sp[56] = sp[54] + -1 * sp[55];
-    sp[57] = sp[56] / sp[14];
-    sp[58] = J_c0 * J_c4;
-    sp[59] = J_c1 * J_c3;
-    sp[60] = sp[58] + -1 * sp[59];
-    sp[61] = sp[60] / sp[14];
-    sp[62] = sp[53] * sp[53];
-    sp[63] = sp[53] * sp[57];
-    sp[64] = sp[61] * sp[53];
-    sp[65] = sp[57] * sp[57];
-    sp[66] = sp[61] * sp[57];
-    sp[67] = sp[61] * sp[61];
+    sp[48] = sp[24] + sp[42];
+    sp[49] = J_c1 * J_c5;
+    sp[50] = J_c2 * J_c4;
+    sp[51] = sp[49] + -1 * sp[50];
+    sp[52] = sp[51] / sp[13];
+    sp[53] = J_c2 * J_c3;
+    sp[54] = J_c0 * J_c5;
+    sp[55] = sp[53] + -1 * sp[54];
+    sp[56] = sp[55] / sp[13];
+    sp[57] = J_c0 * J_c4;
+    sp[58] = J_c1 * J_c3;
+    sp[59] = sp[57] + -1 * sp[58];
+    sp[60] = sp[59] / sp[13];
+    sp[61] = sp[52] * sp[52];
+    sp[62] = sp[52] * sp[56];
+    sp[63] = sp[60] * sp[52];
+    sp[64] = sp[56] * sp[56];
+    sp[65] = sp[60] * sp[56];
+    sp[66] = sp[60] * sp[60];
+    sp[67] = sp[43] + sp[61];
     sp[68] = sp[44] + sp[62];
     sp[69] = sp[45] + sp[63];
     sp[70] = sp[46] + sp[64];
     sp[71] = sp[47] + sp[65];
     sp[72] = sp[48] + sp[66];
-    sp[73] = sp[49] + sp[67];
-    sp[74] = std::abs(sp[14]);
+    sp[73] = std::abs(sp[13]);
     alignas(32) double BF0[10][10] = {};
     alignas(32) double BF1[7][7] = {};
     alignas(32) double BF2[7][7] = {};
@@ -7966,96 +7919,95 @@ return enabled;
         // Unstructured varying computations for num_points=24
         double w0 = 0.0;
         for (int ic = 0; ic < 10; ++ic)
-            w0 += w[0][ic] * FE22_C0_Q24[0][iq][ic];
+            w0 += w[0][ic] * FE21_C0_Q24[0][iq][ic];
         double w3 = 0.0;
         for (int ic = 0; ic < 10; ++ic)
-            w3 += w[3][ic] * FE22_C0_Q24[0][iq][ic];
-        alignas(32) double sv24[18];
-        sv24[0] = (1 + -1 * w0) * sp[0];
-        sv24[1] = sp[0] * w0;
+            w3 += w[3][ic] * FE21_C0_Q24[0][iq][ic];
+        alignas(32) double sv24[17];
+        sv24[0] = (1 + -1 * w0) * w[2][0];
+        sv24[1] = w0 * w[2][0];
         sv24[2] = -1.0 * sv24[1] + sv24[0];
         sv24[3] = -1 * sv24[2] + 1.0 / w[1][0];
-        sv24[4] = w3 * w[4][0];
-        sv24[5] = sp[68] * sv24[4];
-        sv24[6] = sp[69] * sv24[4];
-        sv24[7] = sp[70] * sv24[4];
-        sv24[8] = sp[71] * sv24[4];
-        sv24[9] = sp[72] * sv24[4];
-        sv24[10] = sp[73] * sv24[4];
-        sv24[11] = sv24[3] * sp[74];
-        sv24[12] = sv24[5] * sp[74];
-        sv24[13] = sv24[6] * sp[74];
-        sv24[14] = sv24[7] * sp[74];
-        sv24[15] = sv24[8] * sp[74];
-        sv24[16] = sv24[9] * sp[74];
-        sv24[17] = sv24[10] * sp[74];
-        const double fw0 = sv24[11] * weights24[iq];
+        sv24[4] = sp[67] * w3;
+        sv24[5] = sp[68] * w3;
+        sv24[6] = sp[69] * w3;
+        sv24[7] = sp[70] * w3;
+        sv24[8] = sp[71] * w3;
+        sv24[9] = sp[72] * w3;
+        sv24[10] = sv24[3] * sp[73];
+        sv24[11] = sv24[4] * sp[73];
+        sv24[12] = sv24[5] * sp[73];
+        sv24[13] = sv24[6] * sp[73];
+        sv24[14] = sv24[7] * sp[73];
+        sv24[15] = sv24[8] * sp[73];
+        sv24[16] = sv24[9] * sp[73];
+        const double fw0 = sv24[10] * weights24[iq];
         alignas(32) double TF0[10];
         for (int i = 0; i < 10; ++i)
-            TF0[i] = fw0 * FE22_C0_Q24[0][iq][i];
+            TF0[i] = fw0 * FE21_C0_Q24[0][iq][i];
         for (int i = 0; i < 10; ++i)
             for (int j = 0; j < 10; ++j)
-                BF0[i][j] += TF0[i] * FE22_C0_Q24[0][iq][j];
-        const double fw1 = sv24[12] * weights24[iq];
+                BF0[i][j] += TF0[i] * FE21_C0_Q24[0][iq][j];
+        const double fw1 = sv24[11] * weights24[iq];
         alignas(32) double TF1[7];
         for (int i = 0; i < 7; ++i)
-            TF1[i] = fw1 * FE22_C0_D100_Q24[0][iq][i];
+            TF1[i] = fw1 * FE21_C0_D100_Q24[0][iq][i];
         for (int i = 0; i < 7; ++i)
             for (int j = 0; j < 7; ++j)
-                BF1[i][j] += TF1[i] * FE22_C0_D100_Q24[0][iq][j];
-        const double fw2 = sv24[13] * weights24[iq];
+                BF1[i][j] += TF1[i] * FE21_C0_D100_Q24[0][iq][j];
+        const double fw2 = sv24[12] * weights24[iq];
         alignas(32) double TF2[7];
         for (int i = 0; i < 7; ++i)
-            TF2[i] = fw2 * FE22_C0_D100_Q24[0][iq][i];
+            TF2[i] = fw2 * FE21_C0_D100_Q24[0][iq][i];
         for (int i = 0; i < 7; ++i)
             for (int j = 0; j < 7; ++j)
-                BF2[i][j] += TF2[i] * FE22_C0_D010_Q24[0][iq][j];
-        const double fw3 = sv24[14] * weights24[iq];
+                BF2[i][j] += TF2[i] * FE21_C0_D010_Q24[0][iq][j];
+        const double fw3 = sv24[13] * weights24[iq];
         alignas(32) double TF3[7];
         for (int i = 0; i < 7; ++i)
-            TF3[i] = fw3 * FE22_C0_D100_Q24[0][iq][i];
+            TF3[i] = fw3 * FE21_C0_D100_Q24[0][iq][i];
         for (int i = 0; i < 7; ++i)
             for (int j = 0; j < 7; ++j)
-                BF3[i][j] += TF3[i] * FE22_C0_D001_Q24[0][iq][j];
+                BF3[i][j] += TF3[i] * FE21_C0_D001_Q24[0][iq][j];
         alignas(32) double TF4[7];
         for (int i = 0; i < 7; ++i)
-            TF4[i] = fw2 * FE22_C0_D010_Q24[0][iq][i];
+            TF4[i] = fw2 * FE21_C0_D010_Q24[0][iq][i];
         for (int i = 0; i < 7; ++i)
             for (int j = 0; j < 7; ++j)
-                BF4[i][j] += TF4[i] * FE22_C0_D100_Q24[0][iq][j];
-        const double fw4 = sv24[15] * weights24[iq];
+                BF4[i][j] += TF4[i] * FE21_C0_D100_Q24[0][iq][j];
+        const double fw4 = sv24[14] * weights24[iq];
         alignas(32) double TF5[7];
         for (int i = 0; i < 7; ++i)
-            TF5[i] = fw4 * FE22_C0_D010_Q24[0][iq][i];
+            TF5[i] = fw4 * FE21_C0_D010_Q24[0][iq][i];
         for (int i = 0; i < 7; ++i)
             for (int j = 0; j < 7; ++j)
-                BF5[i][j] += TF5[i] * FE22_C0_D010_Q24[0][iq][j];
-        const double fw5 = sv24[16] * weights24[iq];
+                BF5[i][j] += TF5[i] * FE21_C0_D010_Q24[0][iq][j];
+        const double fw5 = sv24[15] * weights24[iq];
         alignas(32) double TF6[7];
         for (int i = 0; i < 7; ++i)
-            TF6[i] = fw5 * FE22_C0_D010_Q24[0][iq][i];
+            TF6[i] = fw5 * FE21_C0_D010_Q24[0][iq][i];
         for (int i = 0; i < 7; ++i)
             for (int j = 0; j < 7; ++j)
-                BF6[i][j] += TF6[i] * FE22_C0_D001_Q24[0][iq][j];
+                BF6[i][j] += TF6[i] * FE21_C0_D001_Q24[0][iq][j];
         alignas(32) double TF7[7];
         for (int i = 0; i < 7; ++i)
-            TF7[i] = fw3 * FE22_C0_D001_Q24[0][iq][i];
+            TF7[i] = fw3 * FE21_C0_D001_Q24[0][iq][i];
         for (int i = 0; i < 7; ++i)
             for (int j = 0; j < 7; ++j)
-                BF7[i][j] += TF7[i] * FE22_C0_D100_Q24[0][iq][j];
+                BF7[i][j] += TF7[i] * FE21_C0_D100_Q24[0][iq][j];
         alignas(32) double TF8[7];
         for (int i = 0; i < 7; ++i)
-            TF8[i] = fw5 * FE22_C0_D001_Q24[0][iq][i];
+            TF8[i] = fw5 * FE21_C0_D001_Q24[0][iq][i];
         for (int i = 0; i < 7; ++i)
             for (int j = 0; j < 7; ++j)
-                BF8[i][j] += TF8[i] * FE22_C0_D010_Q24[0][iq][j];
-        const double fw6 = sv24[17] * weights24[iq];
+                BF8[i][j] += TF8[i] * FE21_C0_D010_Q24[0][iq][j];
+        const double fw6 = sv24[16] * weights24[iq];
         alignas(32) double TF9[7];
         for (int i = 0; i < 7; ++i)
-            TF9[i] = fw6 * FE22_C0_D001_Q24[0][iq][i];
+            TF9[i] = fw6 * FE21_C0_D001_Q24[0][iq][i];
         for (int i = 0; i < 7; ++i)
             for (int j = 0; j < 7; ++j)
-                BF9[i][j] += TF9[i] * FE22_C0_D001_Q24[0][iq][j];
+                BF9[i][j] += TF9[i] * FE21_C0_D001_Q24[0][iq][j];
     }
     std::fill(A, A + 100, 0.0);
     static const int DM0[7] = { 0, 1, 5, 6, 7, 8, 9 };
@@ -8112,7 +8064,7 @@ public:
 
   const char * signature() const final override
   {
-    return "ff090af225c6a13098afda592c970684c34ccf84d5067c6bf3a9fdd60b4e778fa937053f53799647ffbc72675883d4c7a2790f4bd140e4ac631430d7588376a1";
+    return "a668963e7c363364886096295b8bb8b7a22a9421150be6f74abd919b207d5b9c5d96b0dc32c995292ff4d7e05d1db45a33088789cc9604b18436851ac4a7fc1f";
   }
 
   std::size_t rank() const final override
@@ -8122,16 +8074,16 @@ public:
 
   std::size_t num_coefficients() const final override
   {
-    return 6;
+    return 5;
   }
 
   std::size_t original_coefficient_position(std::size_t i) const final override
   {
-    if (i >= 6)
+    if (i >= 5)
     {
         throw std::runtime_error("Invalid original coefficient index.");
     }
-    static const std::vector<std::size_t> position = {0, 1, 2, 3, 4, 5};
+    static const std::vector<std::size_t> position = {0, 1, 2, 3, 4};
     return position[i];
   }
 
@@ -8166,8 +8118,6 @@ public:
         return new variationalfisherequation3d_finite_element_2();
     case 5:
         return new variationalfisherequation3d_finite_element_3();
-    case 6:
-        return new variationalfisherequation3d_finite_element_2();
     default:
         return nullptr;
     }
@@ -8189,8 +8139,6 @@ public:
         return new variationalfisherequation3d_dofmap_2();
     case 5:
         return new variationalfisherequation3d_dofmap_3();
-    case 6:
-        return new variationalfisherequation3d_dofmap_2();
     default:
         return nullptr;
     }
@@ -8375,7 +8323,7 @@ public:
 
   const char * signature() const final override
   {
-    return "27f4a6584340aad490137e4fd98410f5fbc4c2a91314808206afb31259b2eb3f4e45ab77058d55075513283c6078a1af429da13221caff5dd43882667e8eef82";
+    return "52491a0d23be5213eaeebfd486762ebb536f954ebb8aa8f07074ea7dd3e0e1ef1adfa7126476f649a2fda5e2c61f21e16f7612887afaa93480666466e574e6f0";
   }
 
   std::size_t rank() const final override
@@ -8385,16 +8333,16 @@ public:
 
   std::size_t num_coefficients() const final override
   {
-    return 5;
+    return 4;
   }
 
   std::size_t original_coefficient_position(std::size_t i) const final override
   {
-    if (i >= 5)
+    if (i >= 4)
     {
         throw std::runtime_error("Invalid original coefficient index.");
     }
-    static const std::vector<std::size_t> position = {1, 2, 3, 4, 5};
+    static const std::vector<std::size_t> position = {1, 2, 3, 4};
     return position[i];
   }
 
@@ -8429,8 +8377,6 @@ public:
         return new variationalfisherequation3d_finite_element_2();
     case 5:
         return new variationalfisherequation3d_finite_element_3();
-    case 6:
-        return new variationalfisherequation3d_finite_element_2();
     default:
         return nullptr;
     }
@@ -8452,8 +8398,6 @@ public:
         return new variationalfisherequation3d_dofmap_2();
     case 5:
         return new variationalfisherequation3d_dofmap_3();
-    case 6:
-        return new variationalfisherequation3d_dofmap_2();
     default:
         return nullptr;
     }
@@ -8718,30 +8662,6 @@ public:
 
 };
 
-class CoefficientSpace_theta: public dolfin::FunctionSpace
-{
-public:
-
-  // Constructor for standard function space
-  CoefficientSpace_theta(std::shared_ptr<const dolfin::Mesh> mesh):
-    dolfin::FunctionSpace(mesh,
-                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalfisherequation3d_finite_element_2>()),
-                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalfisherequation3d_dofmap_2>(), *mesh))
-  {
-    // Do nothing
-  }
-
-  // Constructor for constrained function space
-  CoefficientSpace_theta(std::shared_ptr<const dolfin::Mesh> mesh, std::shared_ptr<const dolfin::SubDomain> constrained_domain):
-    dolfin::FunctionSpace(mesh,
-                          std::make_shared<const dolfin::FiniteElement>(std::make_shared<variationalfisherequation3d_finite_element_2>()),
-                          std::make_shared<const dolfin::DofMap>(std::make_shared<variationalfisherequation3d_dofmap_2>(), *mesh, constrained_domain))
-  {
-    // Do nothing
-  }
-
-};
-
 class CoefficientSpace_u: public dolfin::FunctionSpace
 {
 public:
@@ -8844,15 +8764,13 @@ typedef CoefficientSpace_rho Form_F_FunctionSpace_4;
 
 typedef CoefficientSpace_D Form_F_FunctionSpace_5;
 
-typedef CoefficientSpace_theta Form_F_FunctionSpace_6;
-
 class Form_F: public dolfin::Form
 {
 public:
 
   // Constructor
   Form_F(std::shared_ptr<const dolfin::FunctionSpace> V0):
-    dolfin::Form(1, 6), u0(*this, 0), u(*this, 1), dt(*this, 2), rho(*this, 3), D(*this, 4), theta(*this, 5)
+    dolfin::Form(1, 5), u0(*this, 0), u(*this, 1), dt(*this, 2), rho(*this, 3), D(*this, 4)
   {
     _function_spaces[0] = V0;
 
@@ -8860,8 +8778,8 @@ public:
   }
 
   // Constructor
-  Form_F(std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> u0, std::shared_ptr<const dolfin::GenericFunction> u, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> rho, std::shared_ptr<const dolfin::GenericFunction> D, std::shared_ptr<const dolfin::GenericFunction> theta):
-    dolfin::Form(1, 6), u0(*this, 0), u(*this, 1), dt(*this, 2), rho(*this, 3), D(*this, 4), theta(*this, 5)
+  Form_F(std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> u0, std::shared_ptr<const dolfin::GenericFunction> u, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> rho, std::shared_ptr<const dolfin::GenericFunction> D):
+    dolfin::Form(1, 5), u0(*this, 0), u(*this, 1), dt(*this, 2), rho(*this, 3), D(*this, 4)
   {
     _function_spaces[0] = V0;
 
@@ -8870,7 +8788,6 @@ public:
     this->dt = dt;
     this->rho = rho;
     this->D = D;
-    this->theta = theta;
 
     _ufc_form = std::make_shared<const variationalfisherequation3d_form_0>();
   }
@@ -8892,8 +8809,6 @@ public:
       return 3;
     else if (name == "D")
       return 4;
-    else if (name == "theta")
-      return 5;
 
     dolfin::dolfin_error("generated code for class Form",
                          "access coefficient data",
@@ -8916,8 +8831,6 @@ public:
       return "rho";
     case 4:
       return "D";
-    case 5:
-      return "theta";
     }
 
     dolfin::dolfin_error("generated code for class Form",
@@ -8934,7 +8847,6 @@ public:
   typedef Form_F_FunctionSpace_3 CoefficientSpace_dt;
   typedef Form_F_FunctionSpace_4 CoefficientSpace_rho;
   typedef Form_F_FunctionSpace_5 CoefficientSpace_D;
-  typedef Form_F_FunctionSpace_6 CoefficientSpace_theta;
 
   // Coefficients
   dolfin::CoefficientAssigner u0;
@@ -8942,7 +8854,6 @@ public:
   dolfin::CoefficientAssigner dt;
   dolfin::CoefficientAssigner rho;
   dolfin::CoefficientAssigner D;
-  dolfin::CoefficientAssigner theta;
 };
 
 class MultiMeshForm_F: public dolfin::MultiMeshForm
@@ -8951,7 +8862,7 @@ public:
 
   // Constructor
   MultiMeshForm_F(std::shared_ptr<const dolfin::MultiMeshFunctionSpace> V0):
-    dolfin::MultiMeshForm(V0), u0(*this, 0), u(*this, 1), dt(*this, 2), rho(*this, 3), D(*this, 4), theta(*this, 5)
+    dolfin::MultiMeshForm(V0), u0(*this, 0), u(*this, 1), dt(*this, 2), rho(*this, 3), D(*this, 4)
   {
     // Create and add standard forms
     std::size_t num_parts = V0->num_parts(); // assume all equal and pick first
@@ -8969,8 +8880,8 @@ public:
   }
 
   // Constructor
-  MultiMeshForm_F(std::shared_ptr<const dolfin::MultiMeshFunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> u0, std::shared_ptr<const dolfin::GenericFunction> u, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> rho, std::shared_ptr<const dolfin::GenericFunction> D, std::shared_ptr<const dolfin::GenericFunction> theta):
-    dolfin::MultiMeshForm(V0), u0(*this, 0), u(*this, 1), dt(*this, 2), rho(*this, 3), D(*this, 4), theta(*this, 5)
+  MultiMeshForm_F(std::shared_ptr<const dolfin::MultiMeshFunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> u0, std::shared_ptr<const dolfin::GenericFunction> u, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> rho, std::shared_ptr<const dolfin::GenericFunction> D):
+    dolfin::MultiMeshForm(V0), u0(*this, 0), u(*this, 1), dt(*this, 2), rho(*this, 3), D(*this, 4)
   {
     // Create and add standard forms
     std::size_t num_parts = V0->num_parts(); // assume all equal and pick first
@@ -8989,7 +8900,6 @@ public:
     this->dt = dt;
     this->rho = rho;
     this->D = D;
-    this->theta = theta;
 
   }
 
@@ -9010,8 +8920,6 @@ public:
       return 3;
     else if (name == "D")
       return 4;
-    else if (name == "theta")
-      return 5;
 
     dolfin::dolfin_error("generated code for class Form",
                          "access coefficient data",
@@ -9034,8 +8942,6 @@ public:
       return "rho";
     case 4:
       return "D";
-    case 5:
-      return "theta";
     }
 
     dolfin::dolfin_error("generated code for class Form",
@@ -9052,7 +8958,6 @@ public:
   typedef Form_F_FunctionSpace_3 CoefficientSpace_dt;
   typedef Form_F_FunctionSpace_4 CoefficientSpace_rho;
   typedef Form_F_FunctionSpace_5 CoefficientSpace_D;
-  typedef Form_F_FunctionSpace_6 CoefficientSpace_theta;
 
   // Coefficients
   dolfin::MultiMeshCoefficientAssigner u0;
@@ -9060,7 +8965,6 @@ public:
   dolfin::MultiMeshCoefficientAssigner dt;
   dolfin::MultiMeshCoefficientAssigner rho;
   dolfin::MultiMeshCoefficientAssigner D;
-  dolfin::MultiMeshCoefficientAssigner theta;
 };
 
 class Form_J_FunctionSpace_0: public dolfin::FunctionSpace
@@ -9159,15 +9063,13 @@ typedef CoefficientSpace_rho Form_J_FunctionSpace_4;
 
 typedef CoefficientSpace_D Form_J_FunctionSpace_5;
 
-typedef CoefficientSpace_theta Form_J_FunctionSpace_6;
-
 class Form_J: public dolfin::Form
 {
 public:
 
   // Constructor
   Form_J(std::shared_ptr<const dolfin::FunctionSpace> V1, std::shared_ptr<const dolfin::FunctionSpace> V0):
-    dolfin::Form(2, 5), u(*this, 0), dt(*this, 1), rho(*this, 2), D(*this, 3), theta(*this, 4)
+    dolfin::Form(2, 4), u(*this, 0), dt(*this, 1), rho(*this, 2), D(*this, 3)
   {
     _function_spaces[0] = V0;
     _function_spaces[1] = V1;
@@ -9176,8 +9078,8 @@ public:
   }
 
   // Constructor
-  Form_J(std::shared_ptr<const dolfin::FunctionSpace> V1, std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> u, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> rho, std::shared_ptr<const dolfin::GenericFunction> D, std::shared_ptr<const dolfin::GenericFunction> theta):
-    dolfin::Form(2, 5), u(*this, 0), dt(*this, 1), rho(*this, 2), D(*this, 3), theta(*this, 4)
+  Form_J(std::shared_ptr<const dolfin::FunctionSpace> V1, std::shared_ptr<const dolfin::FunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> u, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> rho, std::shared_ptr<const dolfin::GenericFunction> D):
+    dolfin::Form(2, 4), u(*this, 0), dt(*this, 1), rho(*this, 2), D(*this, 3)
   {
     _function_spaces[0] = V0;
     _function_spaces[1] = V1;
@@ -9186,7 +9088,6 @@ public:
     this->dt = dt;
     this->rho = rho;
     this->D = D;
-    this->theta = theta;
 
     _ufc_form = std::make_shared<const variationalfisherequation3d_form_1>();
   }
@@ -9206,8 +9107,6 @@ public:
       return 2;
     else if (name == "D")
       return 3;
-    else if (name == "theta")
-      return 4;
 
     dolfin::dolfin_error("generated code for class Form",
                          "access coefficient data",
@@ -9228,8 +9127,6 @@ public:
       return "rho";
     case 3:
       return "D";
-    case 4:
-      return "theta";
     }
 
     dolfin::dolfin_error("generated code for class Form",
@@ -9247,14 +9144,12 @@ public:
   typedef Form_J_FunctionSpace_3 CoefficientSpace_dt;
   typedef Form_J_FunctionSpace_4 CoefficientSpace_rho;
   typedef Form_J_FunctionSpace_5 CoefficientSpace_D;
-  typedef Form_J_FunctionSpace_6 CoefficientSpace_theta;
 
   // Coefficients
   dolfin::CoefficientAssigner u;
   dolfin::CoefficientAssigner dt;
   dolfin::CoefficientAssigner rho;
   dolfin::CoefficientAssigner D;
-  dolfin::CoefficientAssigner theta;
 };
 
 class MultiMeshForm_J: public dolfin::MultiMeshForm
@@ -9263,7 +9158,7 @@ public:
 
   // Constructor
   MultiMeshForm_J(std::shared_ptr<const dolfin::MultiMeshFunctionSpace> V1, std::shared_ptr<const dolfin::MultiMeshFunctionSpace> V0):
-    dolfin::MultiMeshForm(V1, V0), u(*this, 0), dt(*this, 1), rho(*this, 2), D(*this, 3), theta(*this, 4)
+    dolfin::MultiMeshForm(V1, V0), u(*this, 0), dt(*this, 1), rho(*this, 2), D(*this, 3)
   {
     // Create and add standard forms
     std::size_t num_parts = V0->num_parts(); // assume all equal and pick first
@@ -9281,8 +9176,8 @@ public:
   }
 
   // Constructor
-  MultiMeshForm_J(std::shared_ptr<const dolfin::MultiMeshFunctionSpace> V1, std::shared_ptr<const dolfin::MultiMeshFunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> u, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> rho, std::shared_ptr<const dolfin::GenericFunction> D, std::shared_ptr<const dolfin::GenericFunction> theta):
-    dolfin::MultiMeshForm(V1, V0), u(*this, 0), dt(*this, 1), rho(*this, 2), D(*this, 3), theta(*this, 4)
+  MultiMeshForm_J(std::shared_ptr<const dolfin::MultiMeshFunctionSpace> V1, std::shared_ptr<const dolfin::MultiMeshFunctionSpace> V0, std::shared_ptr<const dolfin::GenericFunction> u, std::shared_ptr<const dolfin::GenericFunction> dt, std::shared_ptr<const dolfin::GenericFunction> rho, std::shared_ptr<const dolfin::GenericFunction> D):
+    dolfin::MultiMeshForm(V1, V0), u(*this, 0), dt(*this, 1), rho(*this, 2), D(*this, 3)
   {
     // Create and add standard forms
     std::size_t num_parts = V0->num_parts(); // assume all equal and pick first
@@ -9300,7 +9195,6 @@ public:
     this->dt = dt;
     this->rho = rho;
     this->D = D;
-    this->theta = theta;
 
   }
 
@@ -9319,8 +9213,6 @@ public:
       return 2;
     else if (name == "D")
       return 3;
-    else if (name == "theta")
-      return 4;
 
     dolfin::dolfin_error("generated code for class Form",
                          "access coefficient data",
@@ -9341,8 +9233,6 @@ public:
       return "rho";
     case 3:
       return "D";
-    case 4:
-      return "theta";
     }
 
     dolfin::dolfin_error("generated code for class Form",
@@ -9360,14 +9250,12 @@ public:
   typedef Form_J_FunctionSpace_3 CoefficientSpace_dt;
   typedef Form_J_FunctionSpace_4 CoefficientSpace_rho;
   typedef Form_J_FunctionSpace_5 CoefficientSpace_D;
-  typedef Form_J_FunctionSpace_6 CoefficientSpace_theta;
 
   // Coefficients
   dolfin::MultiMeshCoefficientAssigner u;
   dolfin::MultiMeshCoefficientAssigner dt;
   dolfin::MultiMeshCoefficientAssigner rho;
   dolfin::MultiMeshCoefficientAssigner D;
-  dolfin::MultiMeshCoefficientAssigner theta;
 };
 
 // Class typedefs
