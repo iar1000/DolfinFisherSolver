@@ -22,7 +22,9 @@ class FisherNewtonContainer : public ProblemSolverContainer
 	std::vector<dolfin::Form> Ms_;						// initialize all dimension forms in the beginning
 	int MIndex_;										// decide later which to use
 	// solver specific variables
-	std::shared_ptr<dolfin::NewtonSolver> solver_;
+	std::shared_ptr<dolfin::NewtonSolver> newtonSolver_;
+	std::shared_ptr<dolfin::PETScKrylovSolver> krylovSolver_;
+
 
 
 public:

@@ -29,7 +29,7 @@ FisherProblem::FisherProblem(int rank, std::shared_ptr<dolfin::Mesh> mesh, std::
 	// initialize problem parameters
 	u0_ = std::make_shared<dolfin::Function>(V); 		// function holding concentration values at t=n
 	u_ = std::make_shared<dolfin::Function>(V); 	 	// function holding concentration values at t=n+1
-	u_low_ = std::make_shared<dolfin::Function>(V); ;	// function holding concentration values after low resolution run
+	u_low_ = std::make_shared<dolfin::Function>(V); 	// function holding concentration values after low resolution run
 	u_temp_ = std::make_shared<dolfin::Function>(V); 	// function holding temporary concentration values
 	rho_ = std::make_shared<dolfin::Constant>(rho); 	// reaction coefficient
 	D_ = D; 											// diffusion tensor
@@ -37,10 +37,11 @@ FisherProblem::FisherProblem(int rank, std::shared_ptr<dolfin::Mesh> mesh, std::
 	theta_ = std::make_shared<dolfin::Constant>(theta); // theta of time discretization
 	// collect coefficients into groups
 	std::map<std::string, std::shared_ptr<const dolfin::GenericFunction>> coefsJ =
-		{{"u", u_}, {"rho", rho_}, {"D", D_} , {"dt", dt_}};
+		{{"u", u_}, {"D", D_} , {"rho", rho_}, {"dt", dt_}}; //
 	std::map<std::string, std::shared_ptr<const dolfin::GenericFunction>> coefsF =
 			coefsJ;
 	coefsF.insert({"u0", u0_});
+
 	// attach coefficients to forms
 	J->set_coefficients(coefsJ);
 	F->set_coefficients(coefsF);
@@ -48,8 +49,7 @@ FisherProblem::FisherProblem(int rank, std::shared_ptr<dolfin::Mesh> mesh, std::
 	V_ = V;
 	F_ = F; 	// ?
 	J_ = J;		// Jacobian of F
-
-	};
+};
 
 void FisherProblem::F(dolfin::GenericVector& b, const dolfin::GenericVector& x){
 	dolfin::assemble(b, *F_);

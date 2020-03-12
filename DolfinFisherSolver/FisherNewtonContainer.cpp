@@ -9,7 +9,6 @@ FisherNewtonContainer::FisherNewtonContainer(int rank,
 {
 	rank_ = rank;
 	problem_ = std::make_shared<FisherProblem>(rank, mesh, D, rho, dt, theta);
-	solver_ = std::make_shared<dolfin::NewtonSolver>();
 	mesh_ = mesh;
 	initializer_ = initialCondition;
 
@@ -47,18 +46,22 @@ FisherNewtonContainer::FisherNewtonContainer(int rank)
 
 void FisherNewtonContainer::initializeSolver(bool verbose, double newtontolrel, double newtontolabs, int newtonmaxiter,
 		double krylovtolrel, double krylovtolabs, int krylovmaxiter, std::string ls, std::string pc){
-	// set default solver parameters
-	solver_->parameters["error_on_nonconvergence"] = false; // make sure no error is thrown when not converged
-	solver_->parameters["convergence_criterion"] = "incremental";
-	solver_->parameters["maximum_iterations"] = newtonmaxiter;
-	solver_->parameters["relative_tolerance"] = newtontolrel;
-	solver_->parameters["absolute_tolerance"] = newtontolabs;
-	solver_->parameters["linear_solver"] = ls;
-	solver_->parameters["preconditioner"] = pc;
-	solver_->parameters("krylov_solver")["maximum_iterations"] = krylovmaxiter;
-	solver_->parameters("krylov_solver")["relative_tolerance"] = krylovtolrel;
-	solver_->parameters("krylov_solver")["absolute_tolerance"] = krylovtolabs;
-	if(rank_ == 0 && verbose){	std::cout << solver_->parameters.str(true) << std::endl; };
+	// instanciate krylov solver
+	krylovSolver_ = std::make_shared<dolfin::PETScKrylovSolver>(ls, pc);
+	std::cout << krylovSolver_->parameters.str(true);
+
+	newtonSolver_ = std::make_shared<dolfin::NewtonSolver>();
+	newtonSolver_->parameters["error_on_nonconvergence"] = false; // make sure no error is thrown when not converged
+	newtonSolver_->parameters["convergence_criterion"] = "incremental";
+	newtonSolver_->parameters["maximum_iterations"] = newtonmaxiter;
+	newtonSolver_->parameters["relative_tolerance"] = newtontolrel;
+	newtonSolver_->parameters["absolute_tolerance"] = newtontolabs;
+	newtonSolver_->parameters["linear_solver"] = ls;
+	newtonSolver_->parameters["preconditioner"] = pc;
+	newtonSolver_->parameters("krylov_solver")["maximum_iterations"] = krylovmaxiter;
+	newtonSolver_->parameters("krylov_solver")["relative_tolerance"] = krylovtolrel;
+	newtonSolver_->parameters("krylov_solver")["absolute_tolerance"] = krylovtolabs;
+	if(rank_ == 0 && verbose){	std::cout << newtonSolver_->parameters.str(true) << std::endl; };
 }
 
 int FisherNewtonContainer::solve(double t){
@@ -67,7 +70,7 @@ int FisherNewtonContainer::solve(double t){
 
 	// solve problem from state u0_ and store in u_
 	if(hasTracker_){ tracker_->startTime(); }
-	auto results = solver_->solve(*problem_, *u_->vector());
+	auto results = newtonSolver_->solve(*problem_, *u_->vector());
 	if(hasTracker_){ tracker_->endTime(); }
 
 	// update u0_ to new state
@@ -75,9 +78,9 @@ int FisherNewtonContainer::solve(double t){
 
 	// retrieve and save iteration data from solver
 	double newtonIterations = static_cast<double>(results.first);
-	double krylovIterations = static_cast<double>(solver_->krylov_iterations());
+	double krylovIterations = static_cast<double>(newtonSolver_->krylov_iterations());
 	double converged = static_cast<double>(results.second);
-	double residual = solver_->residual();
+	double residual = newtonSolver_->residual();
 	std::vector<double> data = {t, *dt_, residual, newtonIterations, krylovIterations, converged};
 	if(hasTracker_){ tracker_->addIterationData(data); }
 
@@ -100,12 +103,12 @@ std::pair<int, double> FisherNewtonContainer::solveAdaptive(double t, double dt,
 
 	// solve problem with low precision
 	*dt_ = dt;
-	auto results = solver_->solve(*problem_, *u_->vector());
+	auto results = newtonSolver_->solve(*problem_, *u_->vector());
 	// retrieve and save low precision iteration data from solver
 	double newtonIterations = static_cast<double>(results.first);
-	double krylovIterations = static_cast<double>(solver_->krylov_iterations());
+	double krylovIterations = static_cast<double>(newtonSolver_->krylov_iterations());
 	double converged = static_cast<double>(results.second);
-	double residual = solver_->residual();
+	double residual = newtonSolver_->residual();
 	std::vector<double> data = {t, dt, residual, newtonIterations, krylovIterations, converged};
 	if(hasTracker_){ tracker_->addIterationData(data); }
 	// save low precision result
@@ -113,9 +116,9 @@ std::pair<int, double> FisherNewtonContainer::solveAdaptive(double t, double dt,
 
 	// solve problem with high precision in two half steps
 	*dt_ = dt/2;
-	results = solver_->solve(*problem_, *u_->vector());
+	results = newtonSolver_->solve(*problem_, *u_->vector());
 	*u0_->vector() = *u_->vector();
-	results = solver_->solve(*problem_, *u_->vector());
+	results = newtonSolver_->solve(*problem_, *u_->vector());
 
 	// u_unchanged is inital function
 	// u_low is low low quallity run
