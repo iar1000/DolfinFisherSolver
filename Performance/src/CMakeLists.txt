@@ -60,6 +60,5 @@ endif()
 
 # Executable
 add_executable(${PROJECT_NAME} main.cpp ../../DolfinFisherSolver/RuntimeTracker.cpp ../../DolfinFisherSolver/FisherNewtonContainer.cpp ../../DolfinFisherSolver/Tensors.cpp ../../DolfinFisherSolver/Initializers.cpp ../../DolfinFisherSolver/FisherProblem.cpp)
-
 # Target libraries
 target_link_libraries(${PROJECT_NAME} ${DOLFIN_LIBRARIES})
