@@ -41,7 +41,7 @@ std::vector<std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>> 
 
 
 void runNewton(std::string filepath, int rank, int nprocs, std::shared_ptr<dolfin::Mesh> mesh, std::string ls, std::string pc, double tol, std::string restype,
-		bool constTensor, double diffCoef1, double diffCoef2, double reactCoef){
+		bool constTensor, double diffCoef1, double diffCoef2, double reactCoef, bool krylovZeroStart){
 	// Diffusion Tensor
 	std::shared_ptr<dolfin::Expression> D3;
 	if(constTensor){ D3 = std::make_shared<TensorConstant>(rank, diffCoef1); }
@@ -63,7 +63,9 @@ void runNewton(std::string filepath, int rank, int nprocs, std::shared_ptr<dolfi
 	std::shared_ptr<dolfin::PETScKrylovSolver> krylov = std::make_shared<dolfin::PETScKrylovSolver>(ls, pc);
 	std::shared_ptr<dolfin::NewtonSolver> solver = std::make_shared<dolfin::NewtonSolver>(
 			problem->getMesh()->mpi_comm(), krylov, dolfin::PETScFactory::instance());
-	//KSPSetInitialGuessNonzero(krylov->ksp(),PETSC_TRUE);
+	if(krylovZeroStart){
+		KSPSetInitialGuessNonzero(krylov->ksp(),PETSC_TRUE);
+	}
 	krylov->set_from_options();
 	solver->parameters["error_on_nonconvergence"] = false;
 	solver->parameters["convergence_criterion"] = restype;
@@ -185,7 +187,7 @@ void runBug(int rank, int nprocs, std::shared_ptr<dolfin::Mesh> mesh, std::strin
 	PetscFree(a);
 }
 
-static std::vector<std::pair<std::string, std::string>> combis{
+static std::vector<std::pair<std::string, std::string>> combis_exc_euclid{
 	{"gmres", "petsc_amg"}, {"gmres", "hypre_amg"}, {"gmres", "jacobi"},
 	{"cg", "petsc_amg"}, {"cg", "hypre_amg"}, {"cg", "jacobi"},
 	{"richardson", "petsc_amg"}, {"richardson", "hypre_amg"},
@@ -193,14 +195,16 @@ static std::vector<std::pair<std::string, std::string>> combis{
 	{"minres", "hypre_amg"},
 	{"tfqmr", "hypre_amg"}
 };
-/*{"gmres", "petsc_amg"}, {"gmres", "hypre_amg"}, {"gmres", "hypre_euclid"}, {"gmres", "jacobi"},
+static std::vector<std::pair<std::string, std::string>> combis{
+	{"gmres", "petsc_amg"}, {"gmres", "hypre_amg"}, {"gmres", "hypre_euclid"}, {"gmres", "jacobi"},
 	{"cg", "petsc_amg"}, {"cg", "hypre_amg"}, {"cg", "hypre_euclid"}, {"cg", "jacobi"},
 	{"richardson", "petsc_amg"}, {"richardson", "hypre_amg"}, {"richardson", "hypre_euclid"},
 	{"bicgstab", "hypre_amg"}, {"bicgstab", "hypre_euclid"},
 	{"minres", "hypre_amg"}, {"minres", "hypre_euclid"},
-	{"tfqmr", "hypre_amg"}, {"tfqmr", "hypre_euclid"} */
+	{"tfqmr", "hypre_amg"}, {"tfqmr", "hypre_euclid"}
+};
 
-static std::string plot_standart_1 = "ls, pc, tensor, coefs, newton iterations, krylov iterations, time for solve(), newton relative residual, newton abs residual, residuals \n";
+static std::string plot_standart_5 = "ls, pc, tensor, coefs, newton iterations, krylov iterations, time for solve(), newton relative residual, newton abs residual, residuals \n";
 
 // automatic performance assestment of FisherSolver
 int main(int argc, char* argv[]){
@@ -225,6 +229,8 @@ int main(int argc, char* argv[]){
 	application_parameters.add("diffCoef1", 0.013);
 	application_parameters.add("diffCoef2", 0.0013);
 	application_parameters.add("reactCoef", 0.025);
+	application_parameters.add("krylovnonzero", false);
+
 
 	// Update from command line
 	application_parameters.parse(argc, argv);
@@ -244,6 +250,7 @@ int main(int argc, char* argv[]){
 	const double diffCoef1 = application_parameters["diffCoef1"];
 	const double diffCoef2 = application_parameters["diffCoef2"];
 	const double reactCoef = application_parameters["reactCoef"];
+	const double krylovnonzero = application_parameters["krylovnonzero"];
 
 	 // Set mesh partitioner
 	 dolfin::parameters["mesh_partitioner"] = "SCOTCH";
@@ -298,10 +305,15 @@ int main(int argc, char* argv[]){
 	// tpye 1: run all, track time and iterations
 	if(type == 1){
 		std::stringstream iters;
-		iters << "performance-data-all-procs-" << nprocs << "-tol" << tol << "-" << residual_type << ".csv";
+		iters << "weak-scaling-all-procs-" << nprocs << "-tol" << tol << "-krylovnonzerostart-" << krylovnonzero << ".csv";
 		std::ofstream iterfile(iters.str(), std::ios_base::trunc);
+		iterfile << plot_standart_5;
 		iterfile.close();
 
+		for(int i = 0; i < combis.size(); i++){
+			runNewton(iters.str(), rank, nprocs, mesh,  combis.at(i).first, combis.at(i).second, tol, residual_type,
+					false, diffCoef1, diffCoef2, reactCoef, krylovnonzero);
+		}
 	}
 	// type 4: showing the bug when setting the tolerance of the PETSc krylov solver
 	// can be run with any solver but "richardson", dofs don't matter
@@ -320,16 +332,16 @@ int main(int argc, char* argv[]){
 	// type 5: convergence test with standart coefficents with constant D and spatial dependent D
 	else if(type == 5){
 		std::stringstream iters;
-		iters << "performance-complexity-inc-procs-" << nprocs << "-tol" << tol << "-" << residual_type << ".csv";
+		iters << "performance-complexity-inc-procs-" << nprocs << "-tol" << tol << "-krylovnonzerostart-" << krylovnonzero << ".csv";
 		std::ofstream iterfile(iters.str(), std::ios_base::trunc);
-		iterfile << plot_standart_1;
+		iterfile << plot_standart_5;
 		iterfile.close();
 
-		for(int i = 0; i < combis.size(); i++){
+		for(int i = 0; i < combis_exc_euclid.size(); i++){
 			runNewton(iters.str(), rank, nprocs, mesh,  combis.at(i).first, combis.at(i).second, tol, residual_type,
-					true, diffCoef1, diffCoef2, reactCoef);
+					true, diffCoef1, diffCoef2, reactCoef, krylovnonzero);
 			runNewton(iters.str(), rank, nprocs, mesh,  combis.at(i).first, combis.at(i).second, tol, residual_type,
-					false, diffCoef1, diffCoef2, reactCoef);
+					false, diffCoef1, diffCoef2, reactCoef, krylovnonzero);
 		}
 
 	}
