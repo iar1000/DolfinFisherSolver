@@ -250,7 +250,7 @@ int main(int argc, char* argv[]){
 	const double diffCoef1 = application_parameters["diffCoef1"];
 	const double diffCoef2 = application_parameters["diffCoef2"];
 	const double reactCoef = application_parameters["reactCoef"];
-	const double krylovnonzero = application_parameters["krylovnonzero"];
+	const bool krylovnonzero = application_parameters["krylovnonzero"];
 
 	 // Set mesh partitioner
 	 dolfin::parameters["mesh_partitioner"] = "SCOTCH";
