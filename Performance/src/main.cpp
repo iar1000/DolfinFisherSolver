@@ -288,6 +288,7 @@ int main(int argc, char* argv[]){
 		"  Num processes:  "  << nprocs << std::endl <<
 		"  Mesh elements:  " <<  mesh->num_cells() << " (3D)" << std::endl <<
 		"  Total dof:      " << us.at(0)->function_space()->dim() << " (3D)" << std::endl <<
+		"  cells in each direction: " << nxyz << std::endl <<
 		"  Average dof per rank: " << us.at(0)->function_space()->dim()/dolfin::MPI::size(mesh->mpi_comm()) << " (3D)" << std::endl <<
 		"----------------------------------------------------------------" << std::endl;
 		std::cout << ss.str() << std::endl;

@@ -9,6 +9,9 @@ TOL=0.00000001
 TYPE=1
 KRYLNONZERO=0
 
+bsub -n 96 -R "rusage[scratch=10000, mem=10000]" mpirun ./PerformanceTest --ndofs 500000 --tol 0.00000001 --type 1 --krylovnonzero 1
+
+
 # overwrite default by command line arguments
 while [[ "$#" -gt 0 ]]; do case $1 in
   -dof|--ndofs) NDOFS="$2"; shift;;
