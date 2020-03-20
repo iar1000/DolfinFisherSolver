@@ -48,8 +48,6 @@ void FisherNewtonContainer::initializeSolver(bool verbose, double newtontolrel, 
 		double krylovtolrel, double krylovtolabs, int krylovmaxiter, std::string ls, std::string pc){
 	// instanciate krylov solver
 	krylovSolver_ = std::make_shared<dolfin::PETScKrylovSolver>(ls, pc);
-	std::cout << krylovSolver_->parameters.str(true);
-
 	newtonSolver_ = std::make_shared<dolfin::NewtonSolver>();
 	newtonSolver_->parameters["error_on_nonconvergence"] = false; // make sure no error is thrown when not converged
 	newtonSolver_->parameters["convergence_criterion"] = "residual";
@@ -84,9 +82,18 @@ int FisherNewtonContainer::solve(double t){
 	// finish current iteration
 	if(hasTracker_){ tracker_->endIteration(); }
 
+	// save function in h5 format for performance testing reasons
+	if(fmod(t,1) == 0){
+		std::stringstream ss;
+		ss << "dofs-" << u_->function_space()->dim() << "-u-at-"<< t << ".h5";
+		auto hdf5 = dolfin::HDF5File(MPI_COMM_WORLD, ss.str(), std::string("w"));
+		hdf5.write(*u_, "/u", false);
+	}
+
 	// return convergence info
 	return converged;
 }
+
 
 std::pair<int, double> FisherNewtonContainer::solveAdaptive(double t, double dt, double tol){
 	// start tracking new iteration if available
