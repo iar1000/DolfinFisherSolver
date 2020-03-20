@@ -52,15 +52,12 @@ void FisherNewtonContainer::initializeSolver(bool verbose, double newtontolrel, 
 
 	newtonSolver_ = std::make_shared<dolfin::NewtonSolver>();
 	newtonSolver_->parameters["error_on_nonconvergence"] = false; // make sure no error is thrown when not converged
-	newtonSolver_->parameters["convergence_criterion"] = "incremental";
+	newtonSolver_->parameters["convergence_criterion"] = "residual";
 	newtonSolver_->parameters["maximum_iterations"] = newtonmaxiter;
 	newtonSolver_->parameters["relative_tolerance"] = newtontolrel;
 	newtonSolver_->parameters["absolute_tolerance"] = newtontolabs;
 	newtonSolver_->parameters["linear_solver"] = ls;
 	newtonSolver_->parameters["preconditioner"] = pc;
-	newtonSolver_->parameters("krylov_solver")["maximum_iterations"] = krylovmaxiter;
-	newtonSolver_->parameters("krylov_solver")["relative_tolerance"] = krylovtolrel;
-	newtonSolver_->parameters("krylov_solver")["absolute_tolerance"] = krylovtolabs;
 	if(rank_ == 0 && verbose){	std::cout << newtonSolver_->parameters.str(true) << std::endl; };
 }
 
