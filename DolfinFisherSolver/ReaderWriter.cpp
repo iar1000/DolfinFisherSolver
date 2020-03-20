@@ -48,12 +48,11 @@ std::pair<std::string, std::string> ReaderWriter::loadMesh(std::string name)
 
 std::pair<bool, std::string> ReaderWriter::getFilePath(std::string subfolder, std::string filename, std::string suffix){
 	// check if output file type is supportet
-	std::string folderPath = outputParent_ + "/" + subfolder;
-	if(suffix == "pvd" ||		// output format for paraview
-			suffix == "txt"	||	// output format for infofile
+	if(	suffix == "txt"	||		// output format for infofile
 			suffix == "csv"		// output format for iteration data
 					){
 		// create sub-directory
+		std::string folderPath = outputParent_ + "/" + subfolder;
 		if(mkdir(folderPath.c_str(), 0777) == 0){
 			if(rank_ == 0){
 				std::cout << "INFO (getFilePath): created subfolder " << folderPath << std::endl;
@@ -75,12 +74,41 @@ std::pair<bool, std::string> ReaderWriter::getFilePath(std::string subfolder, st
 		std::string path = folderPath + "/" + filename + "." + suffix;
 		return std::pair<bool, std::string>(true, path);
 	}
+	else if(suffix == "pvd"){		// output format for paraview, create folder b.c. of pvd spam
+		// create sub-directory with pvd folder
+		std::string folderPath = outputParent_ + "/" + subfolder;
+		if(mkdir(folderPath.c_str(), 0777) == 0){
+			folderPath = outputParent_ + "/" + subfolder + "/pvd";
+			if(mkdir(folderPath.c_str(), 0777) == 0){
+				if(rank_ == 0){ std::cout << "INFO (getFilePath): created subfolder " << folderPath << std::endl; }
+			}
+		}
+		else{
+			if(errno == EEXIST){
+				folderPath = outputParent_ + "/" + subfolder + "/pvd";
+				if(mkdir(folderPath.c_str(), 0777) == 0){
+					if(rank_ == 0){ std::cout << "INFO (getFilePath): created subfolder " << folderPath << std::endl; }
+				}
+			}
+			else{
+				if(rank_ == 0){
+					std::cout << "INFO (getFilePath): failed creating subfolder " << folderPath << std::endl;
+					std::cout << "ERRNO: " << errno << std::endl;
+				}
+				return std::pair<bool, std::string>(false, folderPath + "/" + filename + "." + suffix);
+			}
+		}
+
+		// return path
+		std::string path = folderPath + "/" + filename + "." + suffix;
+		return std::pair<bool, std::string>(true, path);
+	}
 	// file format no supported
 	else{
 		if(rank_ == 0){
 			std::cout << "WARNING: no support for output format (yet) " << suffix << std::endl;
 		}
-		return std::pair<bool, std::string>(false, folderPath + "/" + filename + "." + suffix);
+		return std::pair<bool, std::string>(false, "false");
 	}
 }
 
