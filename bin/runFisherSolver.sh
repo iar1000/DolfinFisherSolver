@@ -38,6 +38,7 @@ while [[ "$#" -gt 0 ]]; do case $1 in
   -csv|--csvfile) CSV_NAME="$2"; shift;;
   -fr|--framerate) FRAMERATE="$2"; shift;;
   # overwrite .config
+  -m|--mesh) MESH_NAME="$2"; shift;;
   -dw|--diffusionwhite) DIFFUSION_W="$2"; shift;;
   -dg|--diffusiongrey) DIFFUSION_G="$2"; shift;;
   -rh|--rho) RHO="$2"; shift;;
