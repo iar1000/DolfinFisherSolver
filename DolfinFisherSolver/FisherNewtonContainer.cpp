@@ -38,7 +38,7 @@ FisherNewtonContainer::FisherNewtonContainer(int rank,
 
 	//mesh convergence study
 	last_t = 0;
-	sample_range = 0.001;
+	sample_range = 0.01;
 }
 
 FisherNewtonContainer::FisherNewtonContainer(int rank)
