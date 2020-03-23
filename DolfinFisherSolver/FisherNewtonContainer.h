@@ -25,7 +25,9 @@ class FisherNewtonContainer : public ProblemSolverContainer
 	std::shared_ptr<dolfin::NewtonSolver> newtonSolver_;
 	std::shared_ptr<dolfin::PETScKrylovSolver> krylovSolver_;
 
-
+	// mesh convergence study
+	double last_t;
+	double sample_range;
 
 public:
 	// constructor with parameters for fisher equation

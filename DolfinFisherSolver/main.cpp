@@ -95,9 +95,9 @@ int main(int argc, char* argv[]){
 	double newtontolrel = atof(argv[25]);
 	double newtontolabs = atof(argv[26]);
 	int newtonmaxiter = 50;
-	double krylovtolrel = atof(argv[27]);
-	double krylovtolabs = atof(argv[28]);
-	int krylovmaxiter = 50;
+	double krylovtolrel = atof(argv[27]);	// passed into Problem-Solver container, but not used
+	double krylovtolabs = atof(argv[28]);	// passed into Problem-Solver container, but not used
+	int krylovmaxiter = 50;					// passed into Problem-Solver container, but not used
 	std::string ls = argv[29];
 	std::string pc = argv[30];
 
@@ -208,7 +208,7 @@ int main(int argc, char* argv[]){
 	timings << dolfin::timings(dolfin::TimingClear::keep, s).str_latex();
 	timings.close();
 
-	MPI_Finalize(); //seems to trigger an abort
+	MPI_Finalize();
 }
 
 

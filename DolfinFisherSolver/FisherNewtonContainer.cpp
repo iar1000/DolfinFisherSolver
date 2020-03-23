@@ -35,6 +35,10 @@ FisherNewtonContainer::FisherNewtonContainer(int rank,
 	*u_ =  *initializer_;
 	*u_unchanged_ = *initializer_;
 	*u_low_ = *initializer_;
+
+	//mesh convergence study
+	last_t = 0;
+	sample_range = 0.001;
 }
 
 FisherNewtonContainer::FisherNewtonContainer(int rank)
@@ -81,14 +85,6 @@ int FisherNewtonContainer::solve(double t){
 
 	// finish current iteration
 	if(hasTracker_){ tracker_->endIteration(); }
-
-	// save function in h5 format for performance testing reasons
-	if(fmod(t,1) == 0){
-		std::stringstream ss;
-		ss << "dofs-" << u_->function_space()->dim() << "-u-at-"<< t << ".h5";
-		auto hdf5 = dolfin::HDF5File(MPI_COMM_WORLD, ss.str(), std::string("w"));
-		hdf5.write(*u_, "/u", false);
-	}
 
 	// return convergence info
 	return converged;
@@ -142,6 +138,17 @@ std::pair<int, double> FisherNewtonContainer::solveAdaptive(double t, double dt,
 
 	// end iteration
 	if(hasTracker_){ tracker_->endIteration(); }
+
+	// mesh convergence study
+	if(t > last_t - sample_range){
+		std::stringstream ss;
+		ss << "dofs-" << u_->function_space()->dim() << "-u-at-"<< t << ".h5";
+		auto hdf5 = dolfin::HDF5File(MPI_COMM_WORLD, ss.str(), std::string("w"));
+		hdf5.write(*u_, "/u", false);
+		if(t > last_t){
+			last_t = last_t + 1;
+		}
+	}
 
 	// return discretization criteria decision and nabla
 	std::pair<int, double> r;
