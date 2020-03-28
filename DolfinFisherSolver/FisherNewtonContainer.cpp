@@ -23,8 +23,8 @@ FisherNewtonContainer::FisherNewtonContainer(int rank,
 	dt_ = problem_->getDt();
 
 	// calculate helper parameters for timestep adaption
-	p_ = 2;
-	if(problem_->getTheta() == 0.5){ p_ = 1; };
+	p_ = 1;
+	if(problem_->getTheta() == 0.5){ p_ = 2; };
 	Ms_.push_back(L2Error2D::Functional(mesh_, u_low_, u_));
 	Ms_.push_back(L2Error3D::Functional(mesh_, u_low_, u_));
 	if(mesh_->geometry().dim() == 2){ MIndex_ = 0;}

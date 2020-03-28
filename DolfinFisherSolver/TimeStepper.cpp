@@ -136,9 +136,8 @@ void TimeStepper::adaptiveTimestepping(int verbose, double frameDuration, std::s
 		double nabla = results.second;
 
 		// update timestep
-		double fac = pow((adaptSafety_ * adaptTol_ / nabla), (1/p));
+		double fac = adaptSafety_ * pow((adaptTol_ / nabla), (1/p));
 		dtNew = fac * dt;
-		dt = dtNew;
 
 		// finish iteration if discretization error tolerance is met
 		// state in ProblemSolverContainer should be updated
@@ -177,6 +176,8 @@ void TimeStepper::adaptiveTimestepping(int verbose, double frameDuration, std::s
 						"	decrease of dt: " << dt << " -> " << dtNew << std::endl << std::endl;
 			}
 		}
+		// update dt
+		dt = dtNew;
 
 	}
 	// always save last state
