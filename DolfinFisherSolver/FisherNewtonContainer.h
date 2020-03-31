@@ -40,7 +40,7 @@ public:
 	// @override virtuals from ProblemSolverContainer
 	void initializeSolver(bool verbose, double newtontolrel, double newtontolabs, int newtonmaxiter,
 				double krylovtolrel, double krylovtolabs, int krylovmaxiter, std::string ls, std::string pc);
-	int solve(double t);
+	int solve(double t, double dt);
 	std::pair<int, double> solveAdaptive(double t, double dt, double tol);
 	double getP();
 	void attachTracker(RuntimeTracker* tracker);

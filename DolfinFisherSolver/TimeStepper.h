@@ -28,10 +28,11 @@ public:
 	 * framesPerTimeUnit:	> 0: number of frames saved to file per time unit
 	 * 						= 0: no frames saved as file
 	 * 						< 0: all frames saved to file
+	 * 	runLength:			<= 0: automatically set to 1
 	*/
 	RuntimeTracker run(int type, int verbose,
 			std::shared_ptr<dolfin::File> pvdFile, std::string csvPath, int framesPerTimeUnit,
-			ProblemSolverContainer* problemContainer, double T, double dt_init);
+			ProblemSolverContainer* problemContainer, double T, double dt_init, int dt_runlength);
 	std::string asString();	// @override PrintableComponent
 
 private:
@@ -41,8 +42,9 @@ private:
 			ProblemSolverContainer* problemContainer, double T, double dt_init);
 	// perform timestepping with adaptive dt
 	// return if T is reached or convergence with dt_min_ still failes
+	// dt_runlength: recalculate new timestep every "dt_runlength" iterations
 	void adaptiveTimestepping(int verbose, double frameDuration, std::shared_ptr<dolfin::File> pvdFile,
-			ProblemSolverContainer* problemContainer, double T, double dt_init);
+			ProblemSolverContainer* problemContainer, double T, double dt_init, int dt_runlength);
 };
 
 #endif

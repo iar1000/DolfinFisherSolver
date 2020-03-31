@@ -18,7 +18,7 @@ public:
 			double krylovtolrel, double krylovtolabs, int krylovmaxiter, std::string ls, std::string pc) = 0;
 	// solves the problem and updates internal parameters with results
 	// @return:
-	virtual int solve(double t) = 0;
+	virtual int solve(double t, double dt) = 0;
 	// solve the problem for time adaptive timestepping
 	// via richardson extrapolation with timestep size dt, discretization error toleranze tol
 	// @return pair (discretization tolerance met, discretization error nabla)

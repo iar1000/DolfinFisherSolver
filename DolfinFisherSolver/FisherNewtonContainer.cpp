@@ -63,17 +63,18 @@ void FisherNewtonContainer::initializeSolver(bool verbose, double newtontolrel, 
 	if(rank_ == 0 && verbose){	std::cout << newtonSolver_->parameters.str(true) << std::endl; };
 }
 
-int FisherNewtonContainer::solve(double t){
+int FisherNewtonContainer::solve(double t, double dt){
 	// start tracking new iteration if available
 	if(hasTracker_){ tracker_->newIteration(); }
 
-	// solve problem from state u0_ and store in u_
+	// store initial state for possible reset later
+	*u_unchanged_->vector() = *u0_->vector();
+
+	// solve problem from state u0_ and store in u_ with given dt
+	*dt_ = dt;
 	if(hasTracker_){ tracker_->startTime(); }
 	auto results = newtonSolver_->solve(*problem_, *u_->vector());
 	if(hasTracker_){ tracker_->endTime(); }
-
-	// update u0_ to new state
-	*u0_->vector() = *u_->vector();
 
 	// retrieve and save iteration data from solver
 	double newtonIterations = static_cast<double>(results.first);
@@ -85,6 +86,10 @@ int FisherNewtonContainer::solve(double t){
 
 	// finish current iteration
 	if(hasTracker_){ tracker_->endIteration(); }
+
+	// update u0_ depending on convergence
+	if(converged){ *u0_->vector() = *u_->vector(); }
+	else { *u0_->vector() = *u_unchanged_->vector(); }
 
 	// return convergence info
 	return converged;

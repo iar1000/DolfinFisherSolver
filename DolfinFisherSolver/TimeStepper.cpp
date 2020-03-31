@@ -5,8 +5,8 @@
 ////////////////////////////
 TimeStepper::TimeStepper(int rank, double dt_min, double dt_max, double rTol, double rSafe){
 	rank_ = rank;				// MPI rank of instantiating processor
-	dt_min_ = dt_min;		// minimum timestep
-	dt_max_ = dt_max;		// maximum timestep
+	dt_min_ = dt_min;		// minimum timestep (not used currently)
+	dt_max_ = dt_max;		// maximum timestep	(not used currently)
 	adaptTol_ = rTol;		// tolerance for timestep adaption via richardson extrapolation
 	adaptSafety_ = rSafe;	// safety factorfor timestep adaption via richardson extrapolation
 };
@@ -23,7 +23,7 @@ std::string TimeStepper::asString(){
 
 RuntimeTracker TimeStepper::run(int simulationType, int verbose,
 		std::shared_ptr<dolfin::File> pvdFile, std::string csvPath, int framesPerTimeUnit,
-		ProblemSolverContainer* problemContainer, double T, double dt_init)
+		ProblemSolverContainer* problemContainer, double T, double dt_init, int dt_runlength)
 {
 	// calculate time between two frames
 	// frameDuration is multiplied with #frames and compared to t decide when to take next frame
@@ -55,7 +55,7 @@ RuntimeTracker TimeStepper::run(int simulationType, int verbose,
 
 	// run correct simulation type
 	if(simulationType == 1){ constTimestepping(verbose, frameDuration, pvdFile, problemContainer, T, dt_init); }
-	else if(simulationType == 2){ adaptiveTimestepping(verbose, frameDuration, pvdFile, problemContainer, T, dt_init); }
+	else if(simulationType == 2){ adaptiveTimestepping(verbose, frameDuration, pvdFile, problemContainer, T, dt_init, dt_runlength); }
 	else{ if(rank_ == 0){ std::cout << "WARNING (Timestepper): unknown simulation type, no run!" << std::endl; }}
 
 	// stop tracking simulation
@@ -82,7 +82,7 @@ void TimeStepper::constTimestepping(int verbose, double frameDuration, std::shar
 	while(t < T){
 
 		// run iteration, continue on successful convergence
-		int converged = problemContainer->solve(t);
+		int converged = problemContainer->solve(t, dt);
 		if(!converged){
 			if(rank_ == 0){ std::cout << std::endl << "iteration failed to converge at t = " << t << std::endl; }
 			break;
@@ -113,19 +113,21 @@ void TimeStepper::constTimestepping(int verbose, double frameDuration, std::shar
 }
 
 void TimeStepper::adaptiveTimestepping(int verbose, double frameDuration, std::shared_ptr<dolfin::File> pvdFile,
-		ProblemSolverContainer* problemContainer, double T, double dt_init)
+		ProblemSolverContainer* problemContainer, double T, double dt_init, int dt_runlength)
 {
 	// set timestepping and helper variables
 	double t = 0;						// current time
 	double dt = dt_init;				// current timestep size
 	double dtNew = dt_init;				// adapted timestep size
+	int dt_steps = 0;					// count number of steps with current dt
+	bool dt_converged = false;			// if dt is stable for last 10 iterations then use dt_runlength
 	int frameNumber = 0;				// counter for outputed frames
 	int progress = 0;					// progress in %
 	double onePercent = T/100;			// duration of one % of the whole progress
 	double p = problemContainer->getP();// get theta dependend p for timestep adaption
 
 	// print start of timestepping
-	if(rank_ == 0){ std::cout << std::endl << "run temporal adaptive timestepping..." << std::endl << std::endl; }
+	if(rank_ == 0){ std::cout << std::endl << "run temporal adaptive timestepping with runlength " << dt_runlength << "..." <<  std::endl << std::endl; }
 
 	// perform timestepping
 	while(t < T){
@@ -149,8 +151,6 @@ void TimeStepper::adaptiveTimestepping(int verbose, double frameDuration, std::s
 
 			// update t
 			t += dt;
-
-			//@TOTO: add convergence checker of newton solver?
 
 			// write frame
 			if(t >= frameNumber * frameDuration){

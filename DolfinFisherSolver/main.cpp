@@ -90,16 +90,17 @@ int main(int argc, char* argv[]){
 	int timeAdaption = atoi(argv[22]);
 	double richTol = atof(argv[23]);
 	double richSafe = atof(argv[24]);
+	int dt_runlength = atoi(argv[25]);
 	// solver
 	///////////////////////////////////
-	double newtontolrel = atof(argv[25]);
-	double newtontolabs = atof(argv[26]);
+	double newtontolrel = atof(argv[26]);
+	double newtontolabs = atof(argv[27]);
 	int newtonmaxiter = 50;
-	double krylovtolrel = atof(argv[27]);	// passed into Problem-Solver container, but not used
-	double krylovtolabs = atof(argv[28]);	// passed into Problem-Solver container, but not used
+	double krylovtolrel = atof(argv[28]);	// passed into Problem-Solver container, but not used
+	double krylovtolabs = atof(argv[29]);	// passed into Problem-Solver container, but not used
 	int krylovmaxiter = 50;					// passed into Problem-Solver container, but not used
-	std::string ls = argv[29];
-	std::string pc = argv[30];
+	std::string ls = argv[30];
+	std::string pc = argv[31];
 
 	if(rank == 0 && verbose > 3){ std::cout << "load components..." << std::endl; };
 
@@ -195,7 +196,7 @@ int main(int argc, char* argv[]){
 	// run simulation
 	RuntimeTracker tracker3 = timeStepper.run(timeAdaption, verbose,
 			pvdFile, outCsvReturn.second, framesPerTimeUnit,
-			&problemContainer, T, dt_init);
+			&problemContainer, T, dt_init, dt_runlength);
 
 	// overwrite INFO file with post-simulation details
 	putput.addComponent(tracker3.asString());

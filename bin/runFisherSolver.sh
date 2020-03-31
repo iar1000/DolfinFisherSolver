@@ -48,6 +48,7 @@ while [[ "$#" -gt 0 ]]; do case $1 in
   -type|--dttype) TIMEADAPTION="$2"; shift;;
   -rs|--richsafe) RICHARDSONSAFETY="$2"; shift;;
   -rt|--richtol) RICHARDSONTOL="$2"; shift;;
+  -rl|--runlength) RUNLENGTH="$2"; shift;;
   -ls|--solver) KRYLOVSOLVER="$2"; shift;;
   -pc|--preconditioner) KRYLOVPREC="$2"; shift;;
     
@@ -68,6 +69,7 @@ echo "  REACTION PARAMETERS = $RHO"
 echo "  DISCRETIZATION PARAMETER = $THETA"
 echo "  TIMESTEPPING: to T=$TEND with dt=$DTSTART"
 echo "  TIMEADAPTION: $TIMEADAPTION (tol= $RICHARDSONTOL, safety= $RICHARDSONSAFETY)"
+echo "  RUNLENGTH: $RUNLENGTH"
 echo "  LINEAR SOLVER: $KRYLOVSOLVER, PRECONDITIONER: $KRYLOVPREC"
 
 mpirun -n "$MPI_PROCESS" ./FisherSolver \
@@ -75,7 +77,7 @@ mpirun -n "$MPI_PROCESS" ./FisherSolver \
 				"$CX" "$CY" "$CZ" "$RADIUS" "$VALUE" \
 				"$DTMIN" "$DTSTART" "$DTMAX" "$TEND" "$FRAMERATE" \
 				"$DIFFUSION_W" "$DIFFUSION_G" "$RHO" "$THETA"\
-				"$VERBOSE" "$TIMEADAPTION" "$RICHARDSONTOL" "$RICHARDSONSAFETY" \
+				"$VERBOSE" "$TIMEADAPTION" "$RICHARDSONTOL" "$RICHARDSONSAFETY" "RUNLENGTH"\
 				"$NEWTONRESIDUALTOLREL" "$NEWTONRESIDUALTOLABS" "$KRYLOVRESIDUALTOLREL" "$KRYLOVRESIDUALTOLABS" \
 				"$KRYLOVSOLVER" "$KRYLOVPREC"
 				
