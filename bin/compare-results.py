@@ -1,6 +1,5 @@
 from dolfin import *
 import numpy
-import os
 
 # script to plot result of mesh convergence study
 
@@ -29,6 +28,8 @@ V1 = FunctionSpace(mesh1, "Lagrange", 2)
 u1 = Function(V)
 times1 = ["0", "1.00055", "2.00204", "3.00102", "3.99718", "5.00022", "6.00874", "6.9997", "8.00835"]
 
+
+
 # Other solutions
 for t in range(0, 1):
     print("time ", t)
@@ -47,44 +48,32 @@ for t in range(0, 1):
     f1.read(u1, "/u")
     coords1 = mesh1.coordinates()
 
-    value10 = numpy.zeros(len(coords30), dtype=numpy.float_)
-    value11 = numpy.zeros(len(coords30), dtype=numpy.float_)
     # compare 30 to 30
-    for v in vertices(mesh30):
-        vertex_coordinate = coords30[v.index()]
-        # evaluate at the same point and store difference
-        value30[v.index()] = u30(vertex_coordinate)
-        value30[v.index()] = u30(vertex_coordinate)
-        # values_dif = [value_ref - value_this]
-        #print("value at {} is ref: {} this: {}".format(vertex_coordinate, value10[v.index()], value11[v.index()]))
-    print("norm: ", numpy.linalg.norm(value11 - value10))
-
-    value20 = numpy.zeros(len(coords10), dtype=numpy.float_)
-    value21 = numpy.zeros(len(coords10), dtype=numpy.float_)
+    value10 = numpy.zeros(len(coords1), dtype=numpy.float_)
+    value11 = numpy.zeros(len(coords1), dtype=numpy.float_)
     # compare 10 to 30
-    for v in vertices(mesh10):
-        vertex_coordinate = coords10[v.index()]
-        # evaluate at the same point and store difference
-        value20[v.index()] = u30(vertex_coordinate)
-        value21[v.index()] = u10(vertex_coordinate)
-        # values_dif = [value_ref - value_this]
-        #print("value at {} is ref: {} this: {}".format(vertex_coordinate, value20[v.index()], value21[v.index()]))
-    print("norm: ", numpy.linalg.norm(value20 - value21))
-
+    value20 = numpy.zeros(len(coords1), dtype=numpy.float_)
+    value21 = numpy.zeros(len(coords1), dtype=numpy.float_)
+    # compare 1 to 30
     value30 = numpy.zeros(len(coords1), dtype=numpy.float_)
     value31 = numpy.zeros(len(coords1), dtype=numpy.float_)
-    # compare 10 to 30
-    for v in vertices(mesh10):
+
+    for v in vertices(mesh1):
         vertex_coordinate = coords1[v.index()]
+
         # evaluate at the same point and store difference
+        value10[v.index()] = u30(vertex_coordinate)
+        value11[v.index()] = u30(vertex_coordinate)
+        value20[v.index()] = u30(vertex_coordinate)
+        value21[v.index()] = u10(vertex_coordinate)
         value30[v.index()] = u30(vertex_coordinate)
         value31[v.index()] = u1(vertex_coordinate)
-        # values_dif = [value_ref - value_this]
-        #print("value at {} is ref: {} this: {}".format(vertex_coordinate, value30[v.index()], value31[v.index()]))
+
+    print("norm: ", numpy.linalg.norm(value11 - value10))
+    print("norm: ", numpy.linalg.norm(value20 - value21))
     print("norm: ", numpy.linalg.norm(value30 - value31))
 
 
-    # print(value_this)
 # output
 # out = File("u{}.pvd".format(res))
 # out << u
