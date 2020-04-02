@@ -1,5 +1,6 @@
 from dolfin import *
 import numpy
+import pandas
 
 # script to plot result of mesh convergence study
 
@@ -28,10 +29,12 @@ V1 = FunctionSpace(mesh1, "Lagrange", 2)
 u1 = Function(V)
 times1 = ["0", "1.00055", "2.00204", "3.00102", "3.99718", "5.00022", "6.00874", "6.9997", "8.00835"]
 
-
+norm30 = []
+norm10 = []
+norm1 = []
 
 # Other solutions
-for t in range(0, 1):
+for t in range(0, 9):
     print("time ", t)
     # read in 30 solution of this timestep
     f30 = HDF5File(mesh30.mpi_comm(), "dofs-30664297-u-at-{}.h5".format(times30[t]), "r")
@@ -69,11 +72,12 @@ for t in range(0, 1):
         value30[v.index()] = u30(vertex_coordinate)
         value31[v.index()] = u1(vertex_coordinate)
 
-    print("norm: ", numpy.linalg.norm(value11 - value10))
-    print("norm: ", numpy.linalg.norm(value20 - value21))
-    print("norm: ", numpy.linalg.norm(value30 - value31))
+    norm30.append([numpy.linalg.norm(value11 - value10)])
+    norm10.append([numpy.linalg.norm(value20 - value21)])
+    norm1.append([numpy.linalg.norm(value30 - value31)])
 
+# write solution
+out = [norm30, norm10, norm1]
+df = pandas.DataFrame(out)
+df.to_csv("norms.csv")
 
-# output
-# out = File("u{}.pvd".format(res))
-# out << u
