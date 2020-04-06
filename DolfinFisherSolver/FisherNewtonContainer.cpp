@@ -60,6 +60,12 @@ void FisherNewtonContainer::initializeSolver(bool verbose, double newtontolrel, 
 	newtonSolver_->parameters["absolute_tolerance"] = newtontolabs;
 	newtonSolver_->parameters["linear_solver"] = ls;
 	newtonSolver_->parameters["preconditioner"] = pc;
+	// safe parameters
+	ls_ = ls;
+	pc_ = pc;
+	newton_tol_rel_ = newtontolrel;
+	newton_tol_abs_ = newtontolabs;
+
 	if(rank_ == 0 && verbose){	std::cout << newtonSolver_->parameters.str(true) << std::endl; };
 }
 
@@ -175,3 +181,14 @@ void FisherNewtonContainer::attachTracker(RuntimeTracker* tracker){
 void FisherNewtonContainer::output(double t, std::shared_ptr<dolfin::File> pvdFile){
 	*pvdFile << std::pair<const dolfin::Function*, double>( u0_.get() , t);
 }
+
+std::string FisherNewtonContainer::asString(){
+	std::stringstream ss3;
+	ss3 << "FisherNewtonContainer: Solver= " << ls_ << ", Preconditioner= " << pc_ << std::endl <<
+			"	Newton tolerance (abs/rel)= (" << newton_tol_abs_ << "/" << newton_tol_rel_ << ")" << std::endl << std::endl <<
+			"Mesh Specs:" << std::endl <<
+			"	euclidean dimension= " << mesh_->geometry().dim() << std::endl <<
+			"	total dof= " << u_->function_space()->dim() << std::endl;
+	return ss3.str();
+}
+
