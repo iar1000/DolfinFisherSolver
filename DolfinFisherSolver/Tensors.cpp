@@ -112,7 +112,6 @@ std::string TensorSpatial3D::asString(){
 	return ss.str();
 }
 
-// @TODO- Test
 void TensorSpatial3D::eval (dolfin::Array<double> &values, const dolfin::Array<double> &x) const{
 	double p[3] = {x.data()[0], x.data()[1], x.data()[2]};
 	double p_frac[3] = {p[0] - floor(p[0]), p[1] - floor(p[1]), p[2] - floor(p[2])};

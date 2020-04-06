@@ -43,6 +43,7 @@ std::pair<std::string, std::string> ReaderWriter::loadMesh(std::string name)
 	std::string format = tokens.at(1);
 	if(format == "h5"){ return std::pair<std::string,std::string>("h5", meshParent_ + "/" + name); }
 	else if(format == "xml"){ return std::pair<std::string,std::string>("xml", meshParent_ + "/" + name); }
+	else if(format == "xdmf"){ return std::pair<std::string,std::string>("xdmf", meshParent_ + "/" + name); }
 	else { return std::pair<std::string,std::string>("fail", "fail"); }
 }
 

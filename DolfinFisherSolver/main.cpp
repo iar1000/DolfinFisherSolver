@@ -11,6 +11,7 @@
 #include "Initializers.h"
 #include "Tensors.h"
 #include "ReaderWriter.h"
+#include "Brain.h"
 
 // create test value map for rect-10on10
 std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> get_10on10_test_cm()
@@ -127,6 +128,11 @@ int main(int argc, char* argv[]){
 		ss << "Mesh: " << meshName << " (" << mesh->geometry().dim() << "D)" << std::endl;
 		putput.addComponent(ss.str());
 	}
+	else if(meshInfo.first == "xdmf"){
+		mesh = std::make_shared<dolfin::Mesh>();
+		dolfin::XDMFFile(MPI_COMM_WORLD, meshInfo.second).read(*mesh);
+		//xdmf.read(*mesh);
+	}
 	else{
 		if(rank == 0){
 			std::cout << "WARNING (main) failed reading in mesh..." << std::endl;
@@ -134,7 +140,13 @@ int main(int argc, char* argv[]){
 		}
 	}
 	int dimensions = mesh->geometry().dim();
-	if(rank == 0 && verbose > 3){ std::cout << "	mesh loaded!" << std::endl; };
+	if(rank == 0 && verbose > 3){ std::cout << "	mesh (" << mesh->geometry().dim() << "D) loaded!" << std::endl; };
+
+	// create brain
+	Brain brain(rank, verbose, "../brain-data/brainweb");
+	brain.fitMesh(mesh);
+
+	return 1;
 
 	// create initial condition
 	std::shared_ptr<dolfin::Expression> initialCondition;
@@ -148,12 +160,16 @@ int main(int argc, char* argv[]){
 
 	// create diffusion tensor
 	std::shared_ptr<dolfin::Expression> D;
+	D = std::make_shared<TensorConstant>(rank, 0.1);
+	/*
 	if(dimensions == 2){ D = std::make_shared<TensorSpatial2D>(rank, Dw, Dg, get_10on10_test_cm());	}
 	else if(dimensions == 3){ D = std::make_shared<TensorSpatial3D>(rank, Dw, Dg, get_10on10on10_test_cm()); }
 	else{ return 0;	}
 	std::stringstream ss2;
-	ss2 << "Diffusion Tensor: D_white= " << Dw << ", D_grey= " << Dg << std::endl;
+	ss2 << "Diffusion Tensor: D_white= " << Dw << ", D_grey= " << Dg << std::endl
+			<< "Reaction Coefficient= " << rho << std::endl;
 	putput.addComponent(ss2.str());
+	*/
 	if(rank == 0 && verbose > 3){ std::cout << "	D tensor loaded!" << std::endl; };
 
 
@@ -162,12 +178,7 @@ int main(int argc, char* argv[]){
 			mesh, initialCondition, D, rho, theta, dt_init);
 	problemContainer.initializeSolver((verbose > 2 ? 1 : 0), newtontolrel, newtontolabs, newtonmaxiter,
 				krylovtolrel, krylovtolabs, krylovmaxiter, ls, pc);
-	std::stringstream ss3;
-	ss3 << "Containter:	Mesh, Initial condition, Diffusion Tensor from above" << std::endl <<
-			"		Reaction coefficient= " << rho << ", theta= " << theta << ", dt_init= " << dt_init << std::endl <<
-			"		Solver= " << ls << ", Preconditioner= " << pc << ", RelTol= (" << newtontolrel << "," << krylovtolrel <<
-			"), AbsTol= (" << newtontolabs << "," << krylovtolabs << ")" << std::endl;
-	putput.addComponent(ss3.str());
+	putput.addComponent(problemContainer.asString());
 	if(rank == 0 && verbose > 3){ std::cout << "	ProblemContainer loaded!" << std::endl; };
 
 	// create time stepper

@@ -119,42 +119,18 @@ void TimeStepper::adaptiveTimestepping(int verbose, double frameDuration, std::s
 	double t = 0;						// current time
 	double dt = dt_init;				// current timestep size
 	double dtNew = dt_init;				// adapted timestep size
-	int dt_steps = 1;					// count number of steps with current dt
-	bool dt_converged = false;			// if dt is stable for last 10 iterations then use dt_runlength
-	int good_consecutive_runs = 0;		// count consecutive successfull runs
-	int converged_limit = 10;			// limit when dt is assumed to be converged
 	int frameNumber = 0;				// counter for outputed frames
 	int progress = 0;					// progress in %
 	double onePercent = T/100;			// duration of one % of the whole progress
 	double p = problemContainer->getP();// get theta dependend p for timestep adaption
 
+
 	// print start of timestepping
 	if(rank_ == 0){ std::cout << std::endl << "run temporal adaptive timestepping with runlength " << dt_runlength << "..." <<  std::endl << std::endl; }
 
 	// perform timestepping
+	problemContainer->output(t, pvdFile);
 	while(t < T){
-
-		// check if richardson calculates new timestep or not
-		if(dt_converged){
-			if(dt_steps < dt_runlength){
-				if(rank_ == 0 && verbose > 3){
-					std::cout << "dt assumed to be converged, run " << dt_steps << " with dt= " << dt << std::endl;
-				}
-				int converged = problemContainer->solve(t, dt);
-				if(converged){
-					dt_steps ++;
-					continue;
-				}
-				// if not converged, calculate new timestep with richardson
-			}
-			// calculate new timestep at end of run, reset run
-			else{
-				if(rank_ == 0 && verbose > 3){
-					std::cout << "finnished run of " << dt_steps << ", new dt" << std::endl;
-				}
-				dt_steps = 1;
-			}
-		}
 
 		// run iteration
 		auto results = problemContainer->solveAdaptive(t, dt, adaptTol_);
@@ -175,15 +151,6 @@ void TimeStepper::adaptiveTimestepping(int verbose, double frameDuration, std::s
 
 			// update t
 			t += dt;
-
-			// update streak
-			if(!dt_converged){
-				good_consecutive_runs++;
-				if(good_consecutive_runs >= converged_limit){
-					dt_converged = true;
-				}
-			}
-
 
 			// write frame
 			if(t >= frameNumber * frameDuration){
@@ -208,11 +175,6 @@ void TimeStepper::adaptiveTimestepping(int verbose, double frameDuration, std::s
 						"	discretization error (nabla) = " << nabla << " ( > " << adaptTol_ << ")" << std::endl <<
 						"	decrease of dt: " << dt << " -> " << dtNew << " (" << fac << ")" << std::endl << std::endl;
 			}
-
-			// reset converged stream
-			good_consecutive_runs = 0;
-			dt_converged = false;
-
 		}
 		// update dt
 		dt = dtNew;

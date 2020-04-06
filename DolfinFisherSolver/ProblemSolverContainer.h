@@ -4,7 +4,7 @@
 #include "RuntimeTracker.h"
 
 // super-class to use for generic timestepper
-class ProblemSolverContainer
+class ProblemSolverContainer : public PrintableComponent
 {
 protected:
 	int rank_;

@@ -24,6 +24,10 @@ class FisherNewtonContainer : public ProblemSolverContainer
 	// solver specific variables
 	std::shared_ptr<dolfin::NewtonSolver> newtonSolver_;
 	std::shared_ptr<dolfin::PETScKrylovSolver> krylovSolver_;
+	std::string ls_;
+	std::string pc_;
+	double newton_tol_abs_;
+	double newton_tol_rel_;
 
 	// mesh convergence study
 	double last_t;
@@ -45,7 +49,8 @@ public:
 	double getP();
 	void attachTracker(RuntimeTracker* tracker);
 	void output(double t, std::shared_ptr<dolfin::File> pvdFile);
-
+	// @override virtuals from PrintableComponent
+	std::string asString();
 };
 
 #endif
