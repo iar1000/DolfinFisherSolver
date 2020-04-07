@@ -160,7 +160,7 @@ int main(int argc, char* argv[]){
 
 		std::stringstream ss4;
 		ss4 << "Translation Coordinates= " << translation.at(0) << ", " << translation.at(1) << ", " << translation.at(2) << std::endl <<
-					"Mesh to brainweb miss rate= " << (int)((double)optTransReturn.at(1) / (double)optTransReturn.at(0) * 100) << std::endl <<
+					"Mesh to brainweb miss rate in %= " << (int)((double)optTransReturn.at(1) / (double)optTransReturn.at(0) * 100) << std::endl <<
 					"\n\nRun intended to calculate translation data, no Fisher simulation run!\n\n";
 		putput.addComponent(ss4.str());
 		std::cout << ss4.str() << std::endl;
