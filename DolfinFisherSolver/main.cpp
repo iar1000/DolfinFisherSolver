@@ -144,7 +144,8 @@ int main(int argc, char* argv[]){
 
 	// create brain
 	Brain brain(rank, verbose, "../brain-data/brainweb");
-	brain.fitMesh(mesh);
+	auto translation = brain.greedyOptimalTranslation(mesh, 15, true);
+
 
 	return 1;
 

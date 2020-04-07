@@ -136,7 +136,7 @@ void Brain::readMesh(std::shared_ptr<dolfin::Mesh> mesh){
 	// extract important parameters
 	for(int i = 0; i < 3; i++){ lengths_mesh_[i] = max_mesh_[i] - min_mesh_[i]; }
 	// print dimensions
-	if(rank_ == 0 && verbose_ > 2){
+	if(rank_ == 0 && verbose_ > 3){
 		std::cout << "	mesh bounds: " << std::endl <<
 				"		x: [" << min_mesh_[0] << ", " << max_mesh_[0] << "]" << " (" << lengths_mesh_[0] << ")" << std::endl <<
 				"		y: [" << min_mesh_[1] << ", " << max_mesh_[1] << "]" << " (" << lengths_mesh_[1] << ")" << std::endl <<
@@ -224,16 +224,13 @@ void Brain::fitMesh(){
 	int eps = 15;
 	for(int i = 0; i < paths.size(); i++){
 		std::shared_ptr<dolfin::Mesh> mesh = std::make_shared<dolfin::Mesh>(paths.at(i));
-		auto result = greedyOptimalTranslation(mesh, eps);
-		if(rank_ == 0 && verbose_ > 2){
-			std::cout << paths.at(i) << "\n	best translation in misses " << (int)((double)result.at(1) / (double)result.at(0) * 100) << "%, translation: " <<
-					result.at(2) << ", " << result.at(3) << ", " << result.at(4) << std::endl << std::endl;
-		}
+		if(rank_ == 0 && verbose_ > 2){	std::cout << "greedy fit mesh " << paths.at(i) << std::endl; }
+		auto result = greedyOptimalTranslation(mesh, eps, false);
 	}
 
 }
 
-std::vector<int> Brain::greedyOptimalTranslation(std::shared_ptr<dolfin::Mesh> mesh, int eps){
+std::vector<int> Brain::greedyOptimalTranslation(std::shared_ptr<dolfin::Mesh> mesh, int eps, bool print){
 	if(rank_ == 0 && verbose_ > 2){	std::cout << "find optimal translation from mesh to brainweb within eps= " << eps << "..." << std::endl; }
 	// update internal mesh
 	readMesh(mesh);
@@ -243,7 +240,7 @@ std::vector<int> Brain::greedyOptimalTranslation(std::shared_ptr<dolfin::Mesh> m
 	fittedTranslation[0] = min_cm_[0] - (int)floor(min_mesh_[0]);
 	fittedTranslation[1] = min_cm_[1] - (int)floor(min_mesh_[1]);
 	fittedTranslation[2] = max_cm_[2] - (int)ceil(max_mesh_[2]);
-	if(rank_ == 0 && verbose_ > 2){ std::cout << "	bounding translation: " << fittedTranslation[0] << ", " << fittedTranslation[1] << ", " << fittedTranslation[2] << std::endl; }
+	if(rank_ == 0 && verbose_ > 3){ std::cout << "	bounding translation: " << fittedTranslation[0] << ", " << fittedTranslation[1] << ", " << fittedTranslation[2] << std::endl; }
 
 	// calculate bounds of translation
 	int x_start = (((int)floor(min_mesh_[0]) + fittedTranslation[0] - eps) > 0 ? (fittedTranslation[0] - eps) : (int)floor(min_mesh_[0]));
@@ -273,12 +270,19 @@ std::vector<int> Brain::greedyOptimalTranslation(std::shared_ptr<dolfin::Mesh> m
 					best.at(2) = x;
 					best.at(3) = y;
 					best.at(4) = z;
-					if(rank_ == 0 && verbose_ > 3){
-						std::cout << "		new best: " << result.at(0) << "  by translation " << x << " " << y << " " << z << std::endl;
-					}
 				}
 			}
 		}
+	}
+	// print to console
+	if(rank_ == 0 && verbose_ > 2){
+		std::cout << "best translation misses " << (int)((double)best.at(1) / (double)best.at(0) * 100) << "%, translation: " <<
+				best.at(2) << ", " << best.at(3) << ", " << best.at(4) << std::endl << std::endl;
+	}
+	// create datafolder with hits to later plot with python
+	if(print){
+		int translation[3] = {best.at(2), best.at(3), best.at(4)};
+		compareTranslated(mesh, translation, true);
 	}
 	return best;
 }
