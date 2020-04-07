@@ -69,11 +69,14 @@ class TensorSpatial3D : public dolfin::Expression, PrintableComponent
 {
 	double dw_;		// Diffusion coefficient for white matter
 	double dg_;		// Diffusion coefficient for grey matter
+	std::vector<int> translation_; // translation size x, y, z which is added to mesh coordinates to fit on brainweb matrices
 	std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> cmw_;	// Vector of concentration matrix of white matter
 	std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> cmg_;	// Vector of concentration matrix of grey matter
 public:
 	std::string asString(); 	// @override PrintableComponent
-	TensorSpatial3D(int rank, double dcw, double dcg, std::vector<std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>> cms);
+	TensorSpatial3D(int rank, double dcw, double dcg,
+			std::vector<std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>> cms,
+			std::vector<int> translation);
 	void eval (dolfin::Array<double> &values, const dolfin::Array<double> &x) const override;
 };
 

@@ -96,11 +96,13 @@ void TensorSpatial2D::eval (dolfin::Array<double> &values, const dolfin::Array<d
 
 // class TensorSpatial3D
 //////////////////////////////
-TensorSpatial3D::TensorSpatial3D(int rank, double dcw, double dcg, std::vector<std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>> cms){
-	dw_ = dcw;		// Diffusion coefficient for white matter
-	dg_ = dcg;		// Diffusion coefficient for grey matter
-	cmw_ = cms[0];	// Vector of concentration matrix of white matter
-	cmg_ = cms[1];	// Vector of concentration matrix of grey matter
+TensorSpatial3D::TensorSpatial3D(int rank, double dcw, double dcg,
+		std::vector<std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>> cms, std::vector<int> translation){
+	dw_ = dcw;						// Diffusion coefficient for white matter
+	dg_ = dcg;						// Diffusion coefficient for grey matter
+	translation_ = translation;		// translation vector
+	cmw_ = cms[0];					// Vector of concentration matrix of white matter
+	cmg_ = cms[1];					// Vector of concentration matrix of grey matter
 };
 
 std::string TensorSpatial3D::asString(){
@@ -113,7 +115,8 @@ std::string TensorSpatial3D::asString(){
 }
 
 void TensorSpatial3D::eval (dolfin::Array<double> &values, const dolfin::Array<double> &x) const{
-	double p[3] = {x.data()[0], x.data()[1], x.data()[2]};
+
+	double p[3] = {x.data()[0] + translation_.at(0), x.data()[1] + translation_.at(1), x.data()[2] + translation_.at(2)};
 	double p_frac[3] = {p[0] - floor(p[0]), p[1] - floor(p[1]), p[2] - floor(p[2])};
 
 	auto frontW = cmw_.at(floor(p[2]));
