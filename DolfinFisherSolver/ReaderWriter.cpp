@@ -22,12 +22,6 @@ ReaderWriter::ReaderWriter(int rank, std::string toOutput, std::string toMesh){
 	rank_ = rank;
 	outputParent_ = toOutput;
 	meshParent_ = toMesh;
-
-	if(rank_ == 0){
-		std::cout << "created ReaderWriter:" << std::endl <<
-				"	path to output parent = " << outputParent_ << std::endl <<
-				"	path to mesh parent = " << meshParent_ << std::endl;
-	}
 }
 
 std::pair<std::string, std::string> ReaderWriter::loadMesh(std::string name)

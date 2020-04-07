@@ -30,7 +30,7 @@ class Brain{
 	// read in mesh data
 	void readMesh(std::shared_ptr<dolfin::Mesh> mesh);
 	// compare virtual maps
-	std::vector<int> compareTranslated(std::shared_ptr<dolfin::Mesh> mesh, int translation[3], bool print);
+	std::vector<int> compareTranslated(std::shared_ptr<dolfin::Mesh> mesh, int translation[3], bool print, std::string print_name);
 	// print out the virtual maps
 	void printVectorMatrix(std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> data, std::string name);
 
@@ -40,7 +40,7 @@ public:
 	// find optimal translation within eps of the bounding traslation
 	// returns total tries, #misses, translations in x, y and z
 	// print: create folder with hit-data of best translation for plotting with python script "plot_brain.py"
-	std::vector<int> greedyOptimalTranslation(std::shared_ptr<dolfin::Mesh> mesh, int eps, bool print);
+	std::vector<int> greedyOptimalTranslation(std::shared_ptr<dolfin::Mesh> mesh, int eps, bool print, std::string print_name);
 	// fit the tissue concentration map on the different meshes and fit best one
 	// used to experiment on mesh
 	void fitMesh();

@@ -59,7 +59,7 @@ endif()
 
 
 # Executable
-add_executable(${PROJECT_NAME} main.cpp FisherNewtonContainer.cpp RuntimeTracker.cpp TimeStepper.cpp FisherProblem.cpp Initializers.cpp Tensors.cpp ReaderWriter.cpp)
+add_executable(${PROJECT_NAME} main.cpp Brain.cpp FisherNewtonContainer.cpp RuntimeTracker.cpp TimeStepper.cpp FisherProblem.cpp Initializers.cpp Tensors.cpp ReaderWriter.cpp)
 
 # Target libraries
 target_link_libraries(${PROJECT_NAME} ${DOLFIN_LIBRARIES})

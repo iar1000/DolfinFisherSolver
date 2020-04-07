@@ -26,8 +26,8 @@ CSV_NAME="iterationdata"
 # --framerate: number of frames saved to file per 1 time unit (TEND=10, FRAMERATE=30 => 300 FRAMES SAVED)
 FRAMERATE=30
 
-OUTPUT_PARENTFOLDER="../output" # path to output parent folder
-MESH_PARENTFOLDER="../mesh" # path to mesh parent folder
+OUTPUT_PARENTFOLDER="../output" 		# path to output parent folder
+MESH_PARENTFOLDER="../brain-data/mesh" 	# path to mesh parent folder
 
 # overwrite default by command line arguments
 while [[ "$#" -gt 0 ]]; do case $1 in
@@ -63,6 +63,7 @@ echo "  OUTPUT PATH= $OUTPUT_PARENTFOLDER/$FOLDER_NAME"
 echo "  OUTPUT FILE= $FILE_NAME (FRAME RATE= $FRAMERATE)"
 echo "  CSV FILE= $CSV_NAME"
 echo "  MESH PATH= $MESH_PARENTFOLDER/$MESH_NAME"
+echo "	CALCULATE TRANSLATION AND STOP= $CALCTRANS"
 echo "  INITIALIZATION @ ($CX, $CY, $CZ) VALUE $VALUE"
 echo "  DIFFUSION PARAMETERS= $DIFFUSION_W (W), $DIFFUSION_G (G)"
 echo "  REACTION PARAMETERS = $RHO"
@@ -79,6 +80,7 @@ mpirun -n "$MPI_PROCESS" ./FisherSolver \
 				"$DIFFUSION_W" "$DIFFUSION_G" "$RHO" "$THETA"\
 				"$VERBOSE" "$TIMEADAPTION" "$RICHARDSONTOL" "$RICHARDSONSAFETY" "$RUNLENGTH"\
 				"$NEWTONRESIDUALTOLREL" "$NEWTONRESIDUALTOLABS" "$KRYLOVRESIDUALTOLREL" "$KRYLOVRESIDUALTOLABS" \
-				"$KRYLOVSOLVER" "$KRYLOVPREC"
+				"$KRYLOVSOLVER" "$KRYLOVPREC" \
+				"$CALCTRANS" "$TRANSX" "$TRANSY" "$TRANSZ"
 				
 				

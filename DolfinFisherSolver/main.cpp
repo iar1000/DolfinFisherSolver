@@ -102,6 +102,10 @@ int main(int argc, char* argv[]){
 	int krylovmaxiter = 50;					// passed into Problem-Solver container, but not used
 	std::string ls = argv[30];
 	std::string pc = argv[31];
+	// translation of mesh values to brainweb concentration values
+	/////////////////////////////////////
+	int calcTrans = atoi(argv[32]);
+	std::vector<int> translation = {atoi(argv[33]), atoi(argv[34]), atoi(argv[35])};
 
 	if(rank == 0 && verbose > 3){ std::cout << "load components..." << std::endl; };
 
@@ -144,10 +148,37 @@ int main(int argc, char* argv[]){
 
 	// create brain
 	Brain brain(rank, verbose, "../brain-data/brainweb");
-	auto translation = brain.greedyOptimalTranslation(mesh, 15, true);
+	// calculate translation and return
+	if(calcTrans){
+		if(nprocs > 1 && rank == 0){
+			std::cout << "To calculate correct translation data, please run with only 1 processor. currently " << nprocs <<
+					"\n\nSimulation stopped, change number processors to 1 to proceed";
+			return 0;
+		}
+		auto optTransReturn = brain.greedyOptimalTranslation(mesh, 15, true, splitString(meshName, '.').at(0));
+		translation = {optTransReturn.at(2), optTransReturn.at(3), optTransReturn.at(4)};
+		std::cout << "Translation Coordinates= " << translation.at(0) << ", " << translation.at(1) << ", " << translation.at(2) << std::endl <<
+					"Mesh to brainweb miss rate= " << (int)((double)optTransReturn.at(1) / (double)optTransReturn.at(0) * 100) << std::endl <<
+					"\n\nRun intended to calculate translation data, no Fisher simulation run!\n\n";
+		return 0;
+	}
+	auto brainwebConcentrationMap = brain.getConcentrationMap();
+	std::stringstream ss3;
+	ss3 << "Virtual Brain: Concentration Map size= " << brainwebConcentrationMap.second << std::endl <<
+			"Translation Coordinates for mesh= " << translation.at(0) << ", " << translation.at(1) << ", " << translation.at(2) << std::endl;
+	putput.addComponent(ss3.str());
 
-
-	return 1;
+	// create diffusion tensor
+	std::shared_ptr<dolfin::Expression> D;
+	if(dimensions == 2){ D = std::make_shared<TensorSpatial2D>(rank, Dw, Dg, get_10on10_test_cm());	}			// @ No value map yet
+	else if(dimensions == 3){ D = std::make_shared<TensorSpatial3D>(rank, Dw, Dg, brainwebConcentrationMap.first, translation); }
+	else{ return 0;	}
+	std::stringstream ss2;
+	ss2 << "Diffusion Tensor: D_white= " << Dw << ", D_grey= " << Dg << std::endl
+			<< "Reaction Coefficient= " << rho << std::endl
+			<< "Translation= " << translation.at(0) << ", " << translation.at(1) << ", " << translation.at(2) << std::endl;
+	putput.addComponent(ss2.str());
+	if(rank == 0 && verbose > 3){ std::cout << "	D tensor loaded!" << std::endl; };
 
 	// create initial condition
 	std::shared_ptr<dolfin::Expression> initialCondition;
@@ -158,20 +189,6 @@ int main(int argc, char* argv[]){
 	ss << "InitialCondition: " << (dimensions == 2 ? "Circle" : "Sphere") << " at (" << cx << ", " << cy << ", " << cz << "), r= " << radius << ", v= " << value << std::endl;
 	putput.addComponent(ss.str());
 	if(rank == 0 && verbose > 3){ std::cout << "	initial condition loaded!" << std::endl; };
-
-	// create diffusion tensor
-	std::shared_ptr<dolfin::Expression> D;
-	D = std::make_shared<TensorConstant>(rank, 0.1);
-	/*
-	if(dimensions == 2){ D = std::make_shared<TensorSpatial2D>(rank, Dw, Dg, get_10on10_test_cm());	}
-	else if(dimensions == 3){ D = std::make_shared<TensorSpatial3D>(rank, Dw, Dg, get_10on10on10_test_cm()); }
-	else{ return 0;	}
-	std::stringstream ss2;
-	ss2 << "Diffusion Tensor: D_white= " << Dw << ", D_grey= " << Dg << std::endl
-			<< "Reaction Coefficient= " << rho << std::endl;
-	putput.addComponent(ss2.str());
-	*/
-	if(rank == 0 && verbose > 3){ std::cout << "	D tensor loaded!" << std::endl; };
 
 
 	// create FisherNewtonContainter

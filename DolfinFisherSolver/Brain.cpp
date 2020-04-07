@@ -144,10 +144,7 @@ void Brain::readMesh(std::shared_ptr<dolfin::Mesh> mesh){
 	}
 }
 
-std::vector<int> Brain::compareTranslated(std::shared_ptr<dolfin::Mesh> mesh, int translation[3], bool print){
-	if(rank_ == 0 && verbose_ > 3){
-		std::cout << "	compare brainweb to mesh fit, translation: " << translation[0] << ", " << translation[1] << ", " << translation[2] << std::endl;
-	}
+std::vector<int> Brain::compareTranslated(std::shared_ptr<dolfin::Mesh> mesh, int translation[3], bool print, std::string print_name){
 	// create empty comparison map
 	std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> worker;
 	for(int k = 0; k < dim_[2]; k++){
@@ -196,13 +193,9 @@ std::vector<int> Brain::compareTranslated(std::shared_ptr<dolfin::Mesh> mesh, in
 			}
 		}
 	}
-	// print
-	if(rank_ == 0 && verbose_ > 3){
-		std::cout << "		tries/white/grey/miss: " << tries << "/" << hit_white << "/" << hit_grey << "/" << miss << std::endl;
-	}
 	if(print){
 		std::stringstream ss;
-		ss << "fit-" << translation[0] << "-" << translation[1] << "-" << translation[2];
+		ss << print_name << "-" << translation[0] << "-" << translation[1] << "-" << translation[2];
 		printVectorMatrix(worker, ss.str());
 	}
 
@@ -225,13 +218,13 @@ void Brain::fitMesh(){
 	for(int i = 0; i < paths.size(); i++){
 		std::shared_ptr<dolfin::Mesh> mesh = std::make_shared<dolfin::Mesh>(paths.at(i));
 		if(rank_ == 0 && verbose_ > 2){	std::cout << "greedy fit mesh " << paths.at(i) << std::endl; }
-		auto result = greedyOptimalTranslation(mesh, eps, false);
+		auto result = greedyOptimalTranslation(mesh, eps, false, "paths-" + i);
 	}
 
 }
 
-std::vector<int> Brain::greedyOptimalTranslation(std::shared_ptr<dolfin::Mesh> mesh, int eps, bool print){
-	if(rank_ == 0 && verbose_ > 2){	std::cout << "find optimal translation from mesh to brainweb within eps= " << eps << "..." << std::endl; }
+std::vector<int> Brain::greedyOptimalTranslation(std::shared_ptr<dolfin::Mesh> mesh, int eps, bool print, std::string print_name){
+	if(rank_ == 0 && verbose_ > 2){	std::cout << "find optimal translation from " << print_name <<" to brainweb within eps= " << eps << "..." << std::endl; }
 	// update internal mesh
 	readMesh(mesh);
 
@@ -257,12 +250,14 @@ std::vector<int> Brain::greedyOptimalTranslation(std::shared_ptr<dolfin::Mesh> m
 	best.push_back(-1);					//  x
 	best.push_back(-1);					//  y
 	best.push_back(-1);					//  z
+	// print
+	if(rank_ == 0 && verbose_ > 3){ std::cout << "		best translation at missrate " << (int)((double)best.at(1) / (double)best.at(0) * 100) << "% " << std::flush;	}
 	for(int x = x_start; x < x_end; x++){
 		for(int y = y_start; y < y_end; y++){
 			for(int z = z_start; z < z_end; z++){
 				int translation[3] = {x, y, z};
 				// get result
-				auto result = compareTranslated(mesh, translation, false);
+				auto result = compareTranslated(mesh, translation, false, "shouldnotbe");
 				// compare to best
 				if(result.at(0) < best.at(1)){
 					best.at(0) = result.at(3);
@@ -270,19 +265,21 @@ std::vector<int> Brain::greedyOptimalTranslation(std::shared_ptr<dolfin::Mesh> m
 					best.at(2) = x;
 					best.at(3) = y;
 					best.at(4) = z;
+					if(rank_ == 0 && verbose_ > 3){	std::cout << (int)((double)best.at(1) / (double)best.at(0) * 100) << "% " << std::flush; }
 				}
 			}
 		}
 	}
+
 	// print to console
 	if(rank_ == 0 && verbose_ > 2){
-		std::cout << "best translation misses " << (int)((double)best.at(1) / (double)best.at(0) * 100) << "%, translation: " <<
+		std::cout << std::endl << "best translation misses " << (int)((double)best.at(1) / (double)best.at(0) * 100) << "%, translation: " <<
 				best.at(2) << ", " << best.at(3) << ", " << best.at(4) << std::endl << std::endl;
 	}
 	// create datafolder with hits to later plot with python
 	if(print){
 		int translation[3] = {best.at(2), best.at(3), best.at(4)};
-		compareTranslated(mesh, translation, true);
+		compareTranslated(mesh, translation, true, print_name);
 	}
 	return best;
 }
