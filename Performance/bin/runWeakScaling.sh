@@ -21,10 +21,10 @@ fncores=(24 36 48 96 120)
 
 for c in "${cores[@]}"; do
 	echo "submit $c core job"
-	bsub -n mpirun ./Performance-FisherSolver --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
+	bsub -n "$c" mpirun ./Performance-FisherSolver --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
 done
 
 for c in "${fncores[@]}"; do
 	echo "submit $c core job fullnode"
-	bsub -n -R fullnode mpirun ./Performance-FisherSolver --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
+	bsub -n "$c" -R fullnode mpirun ./Performance-FisherSolver --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
 done
