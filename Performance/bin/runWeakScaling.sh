@@ -1,25 +1,17 @@
 #!/bin/bash
 
-#script to automatically run performance tests for 1-96 cores
-
-SCRATCH=10000
-MEM=500000
-NDOFS=500000
-TOL=0.00000001
-TYPE=1
-KRYLNONZERO=0
+#script to run weak scaling of test
 
 bsub -n 96 -R "rusage[scratch=10000, mem=10000]" mpirun ./PerformanceTest --ndofs 500000 --tol 0.00000001 --type 1 --krylovnonzero 1
 
-
+ALL=1
+TOL=0.00000001
+KRYLNONZERO=0
 # overwrite default by command line arguments
 while [[ "$#" -gt 0 ]]; do case $1 in
-  -dof|--ndofs) NDOFS="$2"; shift;;
-  -me|--memory) MEM="$2"; shift;;
   -tol|--tolerance) TOL="$2"; shift;;
-  -t|--type) TYPE="$2"; shift;;
   -knz| --nonzero) KRYLNONZERO="$2"; shift;;
- 
+  -a| --all) ALL="$2"; shift;;
   *) echo "Unknown parameter passed: $1"; exit 1;;
 esac; shift; done
 

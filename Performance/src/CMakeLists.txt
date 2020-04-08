@@ -1,8 +1,8 @@
 
 cmake_minimum_required(VERSION 3.5)
 
-set(PROJECT_NAME PerformanceTest)
-set(EXECUTABLE_OUTPUT_PATH ..)
+set(PROJECT_NAME Performance-FisherSolver)
+set(EXECUTABLE_OUTPUT_PATH ../../bin)
 project(${PROJECT_NAME})
 
 # Set CMake behavior
@@ -59,6 +59,6 @@ endif()
 
 
 # Executable
-add_executable(${PROJECT_NAME} main.cpp ../../DolfinFisherSolver/RuntimeTracker.cpp ../../DolfinFisherSolver/FisherNewtonContainer.cpp ../../DolfinFisherSolver/Tensors.cpp ../../DolfinFisherSolver/Initializers.cpp ../../DolfinFisherSolver/FisherProblem.cpp)
+add_executable(${PROJECT_NAME} main.cpp ../../DolfinFisherSolver/Brain.cpp ../../DolfinFisherSolver/RuntimeTracker.cpp ../../DolfinFisherSolver/FisherNewtonContainer.cpp ../../DolfinFisherSolver/Tensors.cpp ../../DolfinFisherSolver/Initializers.cpp ../../DolfinFisherSolver/FisherProblem.cpp)
 # Target libraries
 target_link_libraries(${PROJECT_NAME} ${DOLFIN_LIBRARIES})
