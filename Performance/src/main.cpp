@@ -14,7 +14,7 @@ static std::string output_format = "ls, pc, dw, dg, rho, newton iterations, kryl
 static const std::vector<int> translation = {20, 23, 33};
 static const std::vector<int> initial_coordinates = {20, 90, 65};
 static const std::string out_dir = "../output/";
-static const std::string mesh_path = "../../mesh/lh-white-hull-flood-0-1-merge-5-dof-600k.xml";
+static const std::string mesh_path = "../../mesh/";
 
 
 void runTest(std::string filepath, int rank,
@@ -116,6 +116,7 @@ int main(int argc, char* argv[]){
 	// Default parameters
 	dolfin::Parameters application_parameters("application_parameters");
 	application_parameters.add("dolflog", 30);
+	application_parameters.add("meshname", "lh-white-hull-flood-0-1-merge-5-dof-unknown.xml");
 	application_parameters.add("type", 1);
 	application_parameters.add("name", "no-name");
 	application_parameters.add("newton_tol", 0.00000001);
@@ -131,6 +132,7 @@ int main(int argc, char* argv[]){
 	application_parameters.parse(argc, argv);
 
 	// extract parameters
+	const std::string meshname = application_parameters["meshname"];
 	const int type = application_parameters["type"];
 	const std::string name = application_parameters["name"];
 	const int dolflog = application_parameters["dolflog"];
@@ -149,7 +151,7 @@ int main(int argc, char* argv[]){
 	 int rank = dolfin::MPI::rank(MPI_COMM_WORLD);
 
 	 // create mesh and dummy variables for intel
-	 std::shared_ptr<dolfin::Mesh> mesh = std::make_shared<dolfin::Mesh>(mesh_path);
+	 std::shared_ptr<dolfin::Mesh> mesh = std::make_shared<dolfin::Mesh>(mesh_path + meshname);
 	 std::shared_ptr<Brain> brain = std::make_shared<Brain>(rank, 2, "../../brain-data/brainweb");
 	 std::shared_ptr<dolfin::Expression> dummy_D = std::make_shared<TensorConstant>(rank, 0.1);
 	 std::shared_ptr<FisherProblem> dummy_problem = std::make_shared<FisherProblem>(rank, mesh, dummy_D, 0.1, 0.1, 0.1);
