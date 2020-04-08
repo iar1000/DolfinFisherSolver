@@ -15,15 +15,15 @@ while [[ "$#" -gt 0 ]]; do case $1 in
 esac; shift; done
 
 # run speed test with variety of cores
-cores=(1 2 4 8 16)
+cores=(1 4 16)
 fncores=(24 36 48 96 120 168 240 360)
 
 for c in "${cores[@]}"; do
 	echo "submit $c core job"
-	bsub -n "$c" mpirun ./Performance-FisherSolver --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
+	bsub -n "$c" mpirun ./Performance-FisherSolver --name "speed" --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
 done
 
 for c in "${fncores[@]}"; do
 	echo "submit $c core job fullnode"
-	bsub -n "$c" -R fullnode mpirun ./Performance-FisherSolver --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
+	bsub -n "$c" -R fullnode mpirun ./Performance-FisherSolver --name "speed" --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
 done

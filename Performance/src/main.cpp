@@ -117,6 +117,7 @@ int main(int argc, char* argv[]){
 	dolfin::Parameters application_parameters("application_parameters");
 	application_parameters.add("dolflog", 30);
 	application_parameters.add("type", 1);
+	application_parameters.add("name", "no-name");
 	application_parameters.add("newton_tol", 0.00000001);
 	application_parameters.add("ls", "cg");
 	application_parameters.add("pc", "jacobi");
@@ -131,6 +132,7 @@ int main(int argc, char* argv[]){
 
 	// extract parameters
 	const int type = application_parameters["type"];
+	const std::string name = application_parameters["name"];
 	const int dolflog = application_parameters["dolflog"];
 	const double newton_tol = application_parameters["newton_tol"];
 	const std::string ls = application_parameters["ls"];
@@ -174,7 +176,7 @@ int main(int argc, char* argv[]){
 	// type 1: test all ls,pc combinations with standart parameters
 	if(type == 1){
 		std::stringstream iters;
-		iters << "performance-type-1-tol-" << newton_tol << "-nprocs-" << nprocs << "-dofpr-" << (ndofs / nprocs) << ".csv";
+		iters << name << "-type-1-tol-" << newton_tol << "-nprocs-" << nprocs << "-dofpr-" << (ndofs / nprocs) << ".csv";
 		std::ofstream iterfile(out_dir + iters.str(), std::ios_base::trunc);
 		iterfile << output_format;
 		iterfile.close();
