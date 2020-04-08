@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# source $HOME/usr/source_env.sh first before running this
+# source $HOME/usr/source_env.sh first before running this 
 
 rm -rf build
 mkdir -p build
