@@ -1,9 +1,8 @@
 #!/bin/bash
 
-#script to run weak scaling of test
+#script to run speed test
 
 # type 1: all combinations of ls and pc
-# type 2: only ...
 TYPE=1
 TOL=0.00000001
 KRYLNONZERO=0
@@ -15,9 +14,9 @@ while [[ "$#" -gt 0 ]]; do case $1 in
   *) echo "Unknown parameter passed: $1"; exit 1;;
 esac; shift; done
 
-# run weak scaling with variety of cores
+# run speed test with variety of cores
 cores=(1 2 4 8 16)
-fncores=(24 36 48 96 120)
+fncores=(24 36 48 96 120 168 240 360)
 
 for c in "${cores[@]}"; do
 	echo "submit $c core job"
