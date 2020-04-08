@@ -29,7 +29,7 @@ class Brain{
 	void readBrainweb();
 	// read in mesh data
 	void readMesh(std::shared_ptr<dolfin::Mesh> mesh);
-	// compare virtual maps
+	// compare virtual map
 	std::vector<int> compareTranslated(std::shared_ptr<dolfin::Mesh> mesh, int translation[3], bool print, std::string print_name);
 	// print out the virtual maps
 	void printVectorMatrix(std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> data, std::string name);

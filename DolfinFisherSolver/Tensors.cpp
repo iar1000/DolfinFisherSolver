@@ -121,16 +121,16 @@ void TensorSpatial3D::eval (dolfin::Array<double> &values, const dolfin::Array<d
 
 	auto frontW = cmw_.at(floor(p[2]));
 	auto backW = cmw_.at(ceil(p[2]));
-	double vw[8] = { frontW(floor(p[0]), floor(p[1])), frontW(floor(p[0]), ceil(p[1])),
-			frontW(ceil(p[0]), floor(p[1])), frontW(ceil(p[0]), ceil(p[1])),
-			backW(floor(p[0]), floor(p[1])), backW(floor(p[0]), ceil(p[1])),
-			backW(ceil(p[0]), floor(p[1])), backW(ceil(p[0]), ceil(p[1])) };
+	double vw[8] = { frontW(floor(p[1]), floor(p[0])), frontW(floor(p[1]), ceil(p[0])),
+			frontW(ceil(p[1]), floor(p[0])), frontW(ceil(p[1]), ceil(p[0])),
+			backW(floor(p[1]), floor(p[0])), backW(floor(p[1]), ceil(p[0])),
+			backW(ceil(p[1]), floor(p[0])), backW(ceil(p[1]), ceil(p[0])) };
 	auto frontG = cmg_.at(floor(p[2]));
 	auto backG = cmg_.at(ceil(p[2]));
-	double vg[8] = { frontG(floor(p[0]), floor(p[1])), frontG(floor(p[0]), ceil(p[1])),
-			frontG(ceil(p[0]), floor(p[1])), frontG(ceil(p[0]), ceil(p[1])),
-			backG(floor(p[0]), floor(p[1])), backG(floor(p[0]), ceil(p[1])),
-			backG(ceil(p[0]), floor(p[1])), backG(ceil(p[0]), ceil(p[1])) };
+	double vg[8] = { frontG(floor(p[1]), floor(p[0])), frontG(floor(p[1]), ceil(p[0])),
+			frontG(ceil(p[1]), floor(p[0])), frontG(ceil(p[1]), ceil(p[0])),
+			backG(floor(p[1]), floor(p[0])), backG(floor(p[1]), ceil(p[0])),
+			backG(ceil(p[1]), floor(p[0])), backG(ceil(p[1]), ceil(p[0])) };
 
 	double pw = trilinear_interpolation_v2(p_frac, vw);
 	double pg = trilinear_interpolation_v2(p_frac, vg);

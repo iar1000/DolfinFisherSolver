@@ -32,9 +32,9 @@ FisherNewtonContainer::FisherNewtonContainer(int rank,
 
 	// initialize concentration functions
 	*u0_ = *initializer_;
-	*u_ =  *initializer_;
-	*u_unchanged_ = *initializer_;
-	*u_low_ = *initializer_;
+	//*u_ =  *initializer_;
+	//*u_unchanged_ = *initializer_;
+	//*u_low_ = *initializer_;
 
 	//mesh convergence study
 	last_t = 0;
