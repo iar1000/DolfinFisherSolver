@@ -21,6 +21,6 @@ reaction=(0.000001 0.025 0.05 0.075 0.1 0.125 0.15)
 for d in "${diffusion[@]}"; do
 	for r in "${reaction[@]}"; do
 		echo "submit diffusion: $d, reaction: $r"
-		bsub -n 96 -R fullnode -W 24:00 mpirun ./Performance-FisherSolver --diffCoef1 "$d" --reactCoef "$r" --meshname "lh-white-hull-flood-0-1-merge-5-dof-600k.xml" --name "parameter" --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
+		bsub -o "parameter-$d-$r" -n 96 -R fullnode -W 24:00 mpirun ./Performance-FisherSolver --diffCoef1 "$d" --reactCoef "$r" --meshname "lh-white-hull-flood-0-1-merge-5-dof-600k.xml" --name "parameter" --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
 	done
 done
