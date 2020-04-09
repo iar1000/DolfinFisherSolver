@@ -29,10 +29,6 @@ class FisherNewtonContainer : public ProblemSolverContainer
 	double newton_tol_abs_;
 	double newton_tol_rel_;
 
-	// mesh convergence study
-	double last_t;
-	double sample_range;
-
 public:
 	// constructor with parameters for fisher equation
 	FisherNewtonContainer(int rank,

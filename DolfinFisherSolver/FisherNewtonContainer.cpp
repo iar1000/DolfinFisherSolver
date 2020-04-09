@@ -32,13 +32,9 @@ FisherNewtonContainer::FisherNewtonContainer(int rank,
 
 	// initialize concentration functions
 	*u0_ = *initializer_;
-	//*u_ =  *initializer_;
-	//*u_unchanged_ = *initializer_;
-	//*u_low_ = *initializer_;
-
-	//mesh convergence study
-	last_t = 0;
-	sample_range = 0.01;
+	*u_ =  *initializer_;
+	*u_unchanged_ = *initializer_;
+	*u_low_ = *initializer_;
 }
 
 FisherNewtonContainer::FisherNewtonContainer(int rank)
@@ -149,17 +145,6 @@ std::pair<int, double> FisherNewtonContainer::solveAdaptive(double t, double dt,
 
 	// end iteration
 	if(hasTracker_){ tracker_->endIteration(); }
-
-	// mesh convergence study
-	if(t > last_t - sample_range){
-		std::stringstream ss;
-		ss << "dofs-" << u_->function_space()->dim() << "-u-at-"<< t << ".h5";
-		auto hdf5 = dolfin::HDF5File(MPI_COMM_WORLD, ss.str(), std::string("w"));
-		hdf5.write(*u_, "/u", false);
-		if(t > last_t){
-			last_t = last_t + 1;
-		}
-	}
 
 	// return discretization criteria decision and nabla
 	std::pair<int, double> r;
