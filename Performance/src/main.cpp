@@ -33,9 +33,6 @@ void runTest(std::string filepath, int rank,
 	*u0 = *initial_condition;
 	*u = *initial_condition;
 
-	// output file
-	std::ofstream iterfile(filepath, std::ios_base::app);
-
 	if(rank==0){ std::cout << "Solve " << ls << " + " << pc <<  " -" << diffCoef1 << "-" << diffCoef2 << "-" << reactCoef << std::endl;}
 
 	// instantiate solver
@@ -70,6 +67,9 @@ void runTest(std::string filepath, int rank,
 
 	// output to file
 	if(rank == 0){
+		// output file
+		std::ofstream iterfile(filepath, std::ios_base::app);
+
 		iterfile << ls << "," << pc <<  "," <<
 		diffCoef1 << "," << diffCoef2 << "," << reactCoef << "," <<
 		r.first << "," <<
@@ -81,8 +81,8 @@ void runTest(std::string filepath, int rank,
 				iterfile << "," << residuals[i];
 		}
 		iterfile << std::endl;
+		iterfile.close();
 	}
-	iterfile.close();
 }
 
 
@@ -187,7 +187,7 @@ int main(int argc, char* argv[]){
 		for(int i = 0; i < combis.size(); i++){
 			runTest(out_dir + iters.str(), rank, mesh, brain,
 					combis.at(i).first, combis.at(i).second, newton_tol,
-					diffCoef1, diffCoef2, reactCoef, krylovnonzero);
+					diffCoef1, (diffCoef1/10), reactCoef, krylovnonzero);
 		}
 	}
 
