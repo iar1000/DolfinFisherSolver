@@ -20,10 +20,10 @@ fncores=(24 36 48 96 120 168 240 360)
 
 for c in "${cores[@]}"; do
 	echo "submit $c core job"
-	bsub -n "$c" -W 24:00 mpirun ./Performance-FisherSolver --meshname "lh-white-hull-flood-0-1-merge-5-dof-600k.xml" --name "speed" --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
+	bsub -o "speed-600-$c" -n "$c" -W 24:00 mpirun ./Performance-FisherSolver --meshname "lh-white-hull-flood-0-1-merge-5-dof-600k.xml" --name "speed" --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
 done
 
 for c in "${fncores[@]}"; do
 	echo "submit $c core job fullnode"
-	bsub -n "$c" -R fullnode -W 24:00 mpirun ./Performance-FisherSolver --meshname "lh-white-hull-flood-0-1-merge-5-dof-600k.xml" --name "speed" --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
+	bsub -o "speed-600-$c" -n "$c" -R fullnode -W 24:00 mpirun ./Performance-FisherSolver --meshname "lh-white-hull-flood-0-1-merge-5-dof-600k.xml" --name "speed" --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
 done
