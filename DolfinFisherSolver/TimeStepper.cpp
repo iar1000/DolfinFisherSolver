@@ -173,7 +173,7 @@ void TimeStepper::adaptiveTimestepping(int verbose, double frameDuration, std::s
 			if(rank_ == 0 && verbose > 2){
 				std::cout << "time discretiation error tolerance not met: " << std::endl <<
 						"	discretization error (nabla) = " << nabla << " ( > " << adaptTol_ << ")" << std::endl <<
-						"	decrease of dt: " << dt << " -> " << dtNew << " (" << fac << ")" << std::endl << std::endl;
+						"	decrease of dt: " << dt << " -> " << dtNew << " (" << (1.0/fac) << ")" << std::endl << std::endl;
 			}
 		}
 		// update dt
