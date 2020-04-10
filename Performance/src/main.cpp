@@ -7,6 +7,7 @@
 #include "../../DolfinFisherSolver/Initializers.h"
 #include "../../DolfinFisherSolver/FisherProblem.h"
 #include "../../DolfinFisherSolver/Brain.h"
+#include "../../DolfinFisherSolver/FisherNewtonContainer.h"
 
 
 // static variables
@@ -85,6 +86,72 @@ void runTest(std::string filepath, int rank,
 	}
 }
 
+void runConvergenceStudy(int rank, double dt){
+	std::shared_ptr<Brain> brain = std::make_shared<Brain>(rank, 2, "../../brain-data/brainweb");
+	std::shared_ptr<dolfin::Expression> initial_condition = std::make_shared<InitializerSphere>(initial_coordinates.at(0), initial_coordinates.at(1), initial_coordinates.at(2), 3, 1);
+	std::shared_ptr<dolfin::Expression> D = std::make_shared<TensorSpatial3D>(rank, 0.13, 0.013, brain->getConcentrationMap().first, translation);
+
+	//std::shared_ptr<dolfin::Mesh> mesh80 = std::make_shared<dolfin::Mesh>("../../mesh/lh-white-hull-flood-0-1-merge-5-dof-80k.xml");
+	//std::shared_ptr<dolfin::Mesh> mesh600 = std::make_shared<dolfin::Mesh>("../../mesh/lh-white-hull-flood-0-1-merge-5-dof-600k.xml");
+	//std::shared_ptr<dolfin::Mesh> mesh4700 = std::make_shared<dolfin::Mesh>("../../mesh/lh-white-hull-flood-0-1-merge-5-dof-4700k.xml");
+	//std::shared_ptr<dolfin::Mesh> mesh37000 = std::make_shared<dolfin::Mesh>("../../mesh/lh-white-hull-flood-0-1-merge-5-dof-37000k.xml");
+
+	int numMesh = 2;
+	std::shared_ptr<dolfin::Mesh> mesh80 = std::make_shared<dolfin::Mesh>("../../mesh/box-10on10on10-res-23.xml");
+	std::shared_ptr<dolfin::Mesh> mesh600 = std::make_shared<dolfin::Mesh>("../../mesh/box-10on10on10-res-29.xml");
+	//std::shared_ptr<dolfin::Mesh> mesh4700 = std::make_shared<dolfin::Mesh>("../../mesh/box-10on10on10-res-40.xml");
+	//std::shared_ptr<dolfin::Mesh> mesh37000 = std::make_shared<dolfin::Mesh>("../../mesh/box-10on10on10-res-50.xml");
+
+	// create fisher containers
+	std::vector<FisherNewtonContainer> containers;
+	containers.push_back(FisherNewtonContainer(rank,	mesh80, initial_condition, D, 0.025, 1, dt));
+	containers.push_back(FisherNewtonContainer(rank,	mesh600, initial_condition, D, 0.025, 1, dt));
+			//FisherNewtonContainer(rank,	mesh4700, initial_condition, D, 0.025, 1, dt),
+			//FisherNewtonContainer(rank,	mesh37000, initial_condition, D, 0.025, 1, dt)
+	for(int i = 0; i < numMesh; i++){
+		containers.at(i).initializeSolver(0, 0.00000001, 0.0000000001, 50,
+					0, 0, 50, "cg", "jacobi");
+	}
+
+	// get coordinates of lowest resolution mesh
+	std::vector<double> coordVec = mesh80->coordinates();
+	double* coordsArr = &coordVec[0];
+	int numPoints = coordVec.size() / 3;
+	dolfin::Array<double> coordinates(coordVec.size(), coordsArr);
+	dolfin::Array<double> values(numPoints);
+	std::cout << rank << " has #coordinates= " << coordVec.size() << std::endl;
+	double T = 10;
+	double t = 0;
+
+	while(t < T){
+		if(rank == 0){ std::cout << "run time t= " << t << std::endl; }
+		for(int i = 0; i < numMesh; i++){
+			if(rank == 0){ std::cout << "	solve mesh size  " << i << std::endl; }
+
+			// run iteration, continue on successful convergence
+			int converged = containers.at(i).solve(t, dt);
+			if(!converged){
+				if(rank == 0){ std::cout << std::endl << "iteration failed to converge at t = " << t << std::endl; }
+			}
+		}
+		// update t
+		t += dt;
+
+		if(rank == 0){ std::cout << "evaluate t= " << t << std::endl; }
+		for(int i = 0; i < numMesh; i++){
+			containers.at(i).getProblem()->getUs().at(0)->eval(values, coordinates);
+			std::ofstream csv;
+			std::stringstream name;
+			name << "mesh-" << i << "-t-" << t << "evaluations.csv";
+			csv.open(name.str(), std::ios_base::app);
+			for(int j = 0; j < coordVec.size(); j += 3){
+				csv << coordsArr[j] << "," << coordsArr[j+1] << "," << coordsArr[j+2] << "," << values[j/3] << std::endl;
+			}
+			csv.close();
+		}
+
+	}
+}
 
 
 static std::vector<std::pair<std::string, std::string>> combis_exc_euclid{
@@ -179,7 +246,7 @@ int main(int argc, char* argv[]){
 	if(type == 1){
 		std::stringstream iters;
 		iters << name << "-type-1-tol-" << newton_tol << "-nprocs-" << nprocs << "-dofpr-" << (ndofs / nprocs) << ".csv";
-		std::ofstream iterfile(out_dir + iters.str(), std::ios_base::trunc);
+		std::ofstream iterfile(out_dir + iters.str(), std::ios_base::app);
 		iterfile << output_format;
 		iterfile.close();
 
@@ -189,6 +256,9 @@ int main(int argc, char* argv[]){
 					combis.at(i).first, combis.at(i).second, newton_tol,
 					diffCoef1, (diffCoef1/10), reactCoef, krylovnonzero);
 		}
+	}
+	else if(type == 3){
+		runConvergenceStudy(rank, 0.00001);
 	}
 
 	else{
