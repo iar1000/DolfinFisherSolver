@@ -3,6 +3,7 @@
 #include <petscksp.h>
 #include <petscsys.h>
 #include <fstream>
+#include <string>
 #include "../../DolfinFisherSolver/Tensors.h"
 #include "../../DolfinFisherSolver/Initializers.h"
 #include "../../DolfinFisherSolver/FisherProblem.h"
@@ -218,7 +219,20 @@ int main(int argc, char* argv[]){
 	 int rank = dolfin::MPI::rank(MPI_COMM_WORLD);
 
 	 // create mesh and dummy variables for intel
-	 std::shared_ptr<dolfin::Mesh> mesh = std::make_shared<dolfin::Mesh>(mesh_path + meshname);
+	 std::shared_ptr<dolfin::Mesh> mesh;
+	 std::vector<std::string> tokens;
+	 std::stringstream ss(meshname);
+	 std::string token;
+	 while(std::getline(ss, token, '.')){ tokens.push_back(token); }
+	 if(tokens.at(1) == "h5"){
+		 mesh = std::make_shared<dolfin::Mesh>();
+		 auto hdf5 = dolfin::HDF5File(MPI_COMM_WORLD, mesh_path+meshname, std::string("r"));
+		 hdf5.read(*mesh, "/mesh", false);
+	 }
+	 else if(tokens.at(1) == "xml"){
+		 mesh = std::make_shared<dolfin::Mesh>(mesh_path + meshname);
+	 }
+	 else { std::cout << "wrong mesh format!" << std::endl; return 0; }
 	 std::shared_ptr<Brain> brain = std::make_shared<Brain>(rank, 2, "../../brain-data/brainweb");
 	 std::shared_ptr<dolfin::Expression> dummy_D = std::make_shared<TensorConstant>(rank, 0.1);
 	 std::shared_ptr<FisherProblem> dummy_problem = std::make_shared<FisherProblem>(rank, mesh, dummy_D, 0.1, 0.1, 0.1);
