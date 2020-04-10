@@ -6,24 +6,26 @@
 TYPE=1
 TOL=0.00000001
 KRYLNONZERO=0
+MESHSIZE=600
 # overwrite default by command line arguments
 while [[ "$#" -gt 0 ]]; do case $1 in
   -tol|--tolerance) TOL="$2"; shift;;
   -knz| --nonzero) KRYLNONZERO="$2"; shift;;
   -t| --type) TYPE="$2"; shift;;
+  -m| --size) MESHSIZE="$2"; shift;;
   *) echo "Unknown parameter passed: $1"; exit 1;;
 esac; shift; done
 
 # run speed test with variety of cores
 cores=(1 4 16)
-fncores=(24 36 48 96 120 168 240 360)
+fncores=(24 36 48 96 120 180 240 360 480 600)
 
 for c in "${cores[@]}"; do
 	echo "submit $c core job"
-	bsub -o "speed-600-$c" -n "$c" -W 24:00 mpirun ./Performance-FisherSolver --meshname "lh-white-hull-flood-0-1-merge-5-dof-600k.xml" --name "speed" --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
+	bsub -o "speed-${MESHSIZE}-$c" -n "$c" -W 24:00 mpirun ./Performance-FisherSolver --meshname "lh-white-hull-flood-0-1-merge-5-dof-${MESHSIZE}k.h5" --name "speed" --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
 done
 
 for c in "${fncores[@]}"; do
 	echo "submit $c core job fullnode"
-	bsub -o "speed-600-$c" -n "$c" -R fullnode -W 24:00 mpirun ./Performance-FisherSolver --meshname "lh-white-hull-flood-0-1-merge-5-dof-600k.xml" --name "speed" --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
+	bsub -o "speed-${MESHSIZE}-$c" -n "$c" -R fullnode -W 24:00 mpirun ./Performance-FisherSolver --meshname "lh-white-hull-flood-0-1-merge-5-dof-${MESHSIZE}k.h5" --name "speed" --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
 done
