@@ -36,6 +36,8 @@ public:
 			std::shared_ptr<dolfin::Expression> D, double rho, double theta, double dt);
 	// constructor loading parameters from seperate file
 	FisherNewtonContainer(int rank);
+	// get pointer to internal problem
+	std::shared_ptr<FisherProblem> getProblem();
 
 	// @override virtuals from ProblemSolverContainer
 	void initializeSolver(bool verbose, double newtontolrel, double newtontolabs, int newtonmaxiter,

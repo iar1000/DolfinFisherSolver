@@ -44,6 +44,7 @@ FisherNewtonContainer::FisherNewtonContainer(int rank)
 	}
 }
 
+
 void FisherNewtonContainer::initializeSolver(bool verbose, double newtontolrel, double newtontolabs, int newtonmaxiter,
 		double krylovtolrel, double krylovtolabs, int krylovmaxiter, std::string ls, std::string pc){
 	// instanciate krylov solver
@@ -154,6 +155,10 @@ std::pair<int, double> FisherNewtonContainer::solveAdaptive(double t, double dt,
 
 double FisherNewtonContainer::getP(){
 	return p_;
+}
+
+std::shared_ptr<FisherProblem> FisherNewtonContainer::getProblem(){
+	return problem_;
 }
 
 void FisherNewtonContainer::attachTracker(RuntimeTracker* tracker){
