@@ -5,6 +5,7 @@ DolfinFischerSolver/bin
 bin/FisherSolver
 **/output
 scaling-tests/
+test/
 
 # OS generated files #
 ######################
