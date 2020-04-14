@@ -1,5 +1,6 @@
 # Dolfin Fisher Solver
 
+## Setup and Use
 ### Installation requirements
 Following packages have been used during developement of this software:
 
@@ -39,5 +40,11 @@ If some of the parameters in the "FisherSolver.config" file are deleted or insta
 The provided /mesh folder is used as standart path for mesh files. This can be changed in "FisherSolver.config" and "runFisherSolver" files. 
 Compatible formats are "h5" and "xml" , but it is recommended from the FEniCS community to use "h5".  
 The "xml_to_h5.py" script can be used to transform .xml meshes to .h5 meshes. It takes the xml mesh name, for example "test-mesh.xml" as command line parameter and creates an .h5 version of the mesh with the name "test-mesh.h5"  
+
+The output of a simulation is written to /output folder. Running a simulation creates following output:
+1. INFO file summing up the simulation parameters. If the simulation is completet successfully, the runtime is also included.
+2. CSV file of the iteration data, including time elapsed during a specific iteration, residuals and iteration counts of the Newton and Krylov solvers, etc.
+3. A folder holding the generated PVD output files for post-processing
   
+## Code Overview
 
