@@ -285,10 +285,26 @@ std::vector<int> Brain::greedyOptimalTranslation(std::shared_ptr<dolfin::Mesh> m
 }
 
 std::pair<std::vector<std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>>, int*>
-	Brain::getConcentrationMap(){
-	std::pair<std::vector<std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>>, int*> p;
-	p = std::make_pair(cms_, dim_);
-	return p;
+	Brain::getConcentrationMap(int slice){
+	// case when all slices are needed (3D)
+	if(slice < 0 || slice > 180){
+		std::pair<std::vector<std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>>, int*> p;
+		p = std::make_pair(cms_, dim_);
+		return p;
+	}
+	// case if a specific slice is needed (2D)
+	else{
+		std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> slices;
+		slices.push_back(cms_.at(0).at(slice));
+		slices.push_back(cms_.at(1).at(slice));
+		std::vector<std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>> single_vec;
+		single_vec.push_back(slices);
+		std::pair<std::vector<std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>>, int*> p;
+		int* slice_dim = dim_;
+		slice_dim[2] = 1;
+		p = std::make_pair(single_vec, dim_);
+		return p;
+	}
 }
 
 void Brain::printVectorMatrix(std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> data, std::string name){
@@ -312,6 +328,71 @@ void Brain::printVectorMatrix(std::vector<Eigen::Matrix<double, Eigen::Dynamic, 
 				out << (data.at(zz)(p, q) * 255) << ",";
 			}
 			out << "\n";
+		}
+		out.close();
+	}
+}
+
+void Brain::printBooleanSliceForAlphaShape(){
+	if(rank_ == 0 && verbose_ > 3){ std::cout << "	create boolean matrix from in BrainWeb tissue data..." << std::endl; }
+	std::string greyPath = dataParentPath_ + "/phantom_1.0mm_normal_gry.rawb";
+	std::string whitePath = dataParentPath_ + "/phantom_1.0mm_normal_wht.rawb";
+	std::string paths[2] = {whitePath, greyPath};
+	int x = dim_[0];
+	int y = dim_[1];
+	int z = dim_[2];
+	int plane = x*y;
+	char *buf = new char[1];
+
+	// create empty concentration map
+	std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> worker;
+	for(int k = 0; k < z; k++){
+		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> slice = Eigen::MatrixXd::Zero(y, x);
+		worker.push_back(slice);
+	}
+	// collect all points in concentration map
+	for(int s = 0; s < 2; s++){
+		// read in tissue data
+		std::ifstream data(paths[s], std::ios::binary);
+		data.read(buf, 1);
+		int i = 0;
+		int slice_counter = 0;
+		int z_curr = 0;
+		while(data){
+			// information about current voxel
+			double x_curr = slice_counter%x;
+			double y_curr = slice_counter/x;
+			double value = ((double)((unsigned char)*buf));
+			// update value map
+			if(worker.at(z_curr)(y_curr, x_curr) == 0){
+				worker.at(z_curr)(y_curr, x_curr) = (value > 0 ? 1 : 0);
+			}
+			i++;
+			slice_counter++;
+			if(slice_counter == plane){
+				slice_counter = 0;
+				z_curr++;
+			}
+			data.read(buf, 1);
+		}
+		data.close();
+		if(rank_ == 0 && verbose_ > 3){ std::cout << "		" << i << " data points from " << paths[s] << std::endl; }
+	}
+	// go through concentration map and output points
+	if(rank_ == 0 && verbose_ > 3){
+		std::cout << "	output points to csv" << std::endl;
+	}
+	std::string ss = "../brain-data/brainweb/tissue-location";
+	mkdir(ss.c_str(), 0777);
+	for(int zz = 0; zz < z; zz++){
+		// output slice
+		std::stringstream s;
+		s << "../brain-data/brainweb/tissue-location/slice-" << zz << ".csv";
+		std::ofstream out(s.str(), std::ios::trunc);
+		for(int p = 0; p < y; p++){
+			for(int q = 0; q < x; q++){
+				if(worker.at(zz)(p, q) > 0){ out << q << "," << p << std::endl; }
+			}
 		}
 		out.close();
 	}

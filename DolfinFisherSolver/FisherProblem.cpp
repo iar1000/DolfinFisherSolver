@@ -2,6 +2,7 @@
 #include <chrono>
 
 #include "FisherProblem.h"
+#include "Tensors.h"
 #include "VariationalFisherEquation2D.h"
 #include "VariationalFisherEquation3D.h"
 
@@ -82,6 +83,7 @@ std::string FisherProblem::asString(){
 					"	  cell type = " << dolfin::CellType::type2string(mesh_->type().cell_type()) << std::endl <<
 					"	  num local cells = " << mesh_->num_cells() << std::endl <<
 					"	  num local vertices = " << mesh_->num_vertices() << std::endl <<
+					"     cell dofs = " << V_->dofmap()->cell_dimension(0) << std::endl <<
 					"	  global dof's = " << V_->dofmap()->global_dimension() << std::endl <<
 					"	D = pass by pointer <Expression>" << std::endl <<
 					"	rho = " << *rho_ << std::endl <<

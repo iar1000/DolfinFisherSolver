@@ -91,7 +91,7 @@ int main(int argc, char* argv[]){
 	int timeAdaption = atoi(argv[22]);
 	double richTol = atof(argv[23]);
 	double richSafe = atof(argv[24]);
-	int dt_runlength = atoi(argv[25]);
+	int dt_runlength = atoi(argv[25]);		// passed into Timestepper.run(), but not used
 	// solver
 	///////////////////////////////////
 	double newtontolrel = atof(argv[26]);
@@ -106,6 +106,7 @@ int main(int argc, char* argv[]){
 	/////////////////////////////////////
 	int calcTrans = atoi(argv[32]);
 	std::vector<int> translation = {atoi(argv[33]), atoi(argv[34]), atoi(argv[35])};
+	int sliceNumber = 60;
 
 	if(rank == 0 && verbose > 3){ std::cout << "load components..." << std::endl; };
 
@@ -120,22 +121,9 @@ int main(int argc, char* argv[]){
 		mesh = std::make_shared<dolfin::Mesh>();
 		auto hdf5 = dolfin::HDF5File(MPI_COMM_WORLD, meshInfo.second, std::string("r"));
 		hdf5.read(*mesh, "/mesh", false);
-		// add mesh to components list before returning
-		std::stringstream ss;
-		ss << "Mesh: " << meshName << " (" << mesh->geometry().dim() << "D)" << std::endl;
-		putput.addComponent(ss.str());
 	}
 	else if(meshInfo.first == "xml"){
 		mesh = std::make_shared<dolfin::Mesh>(meshInfo.second);
-		// add mesh to components list before returning
-		std::stringstream ss;
-		ss << "Mesh: " << meshName << " (" << mesh->geometry().dim() << "D)" << std::endl;
-		putput.addComponent(ss.str());
-	}
-	else if(meshInfo.first == "xdmf"){
-		mesh = std::make_shared<dolfin::Mesh>();
-		dolfin::XDMFFile(MPI_COMM_WORLD, meshInfo.second).read(*mesh);
-		//xdmf.read(*mesh);
 	}
 	else{
 		if(rank == 0){
@@ -143,13 +131,17 @@ int main(int argc, char* argv[]){
 			return 0;
 		}
 	}
+	// add mesh to components list before returning
+	std::stringstream meshstring;
+	meshstring << "Mesh: " << meshName << " (" << mesh->geometry().dim() << "D)" << std::endl;
+	putput.addComponent(meshstring.str());
 	int dimensions = mesh->geometry().dim();
 	if(rank == 0 && verbose > 3){ std::cout << "	mesh (" << mesh->geometry().dim() << "D) loaded!" << std::endl; };
 
 	// create brain
 	Brain brain(rank, verbose, "../brain-data/brainweb");
 	// calculate translation and return
-	if(calcTrans){
+	if(dimensions == 3 && calcTrans){
 		if(nprocs > 1 && rank == 0){
 			std::cout << "To calculate correct translation data, please run with only 1 processor. currently " << nprocs <<
 					"\n\nSimulation stopped, change number processors to 1 to proceed";
@@ -169,9 +161,22 @@ int main(int argc, char* argv[]){
 
 		return 0;
 	}
-	auto brainwebConcentrationMap = brain.getConcentrationMap();
+	// get concentration map
+	std::pair<std::vector<std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>>, int*> brainwebConcentrationMap;
+	if(dimensions == 3){ brainwebConcentrationMap = brain.getConcentrationMap(-1); }
+	else if(dimensions == 2){
+		// check if desired slice is in bounds
+		if(sliceNumber >= 0 && sliceNumber < 181){
+			brainwebConcentrationMap = brain.getConcentrationMap(sliceNumber);
+			// no translation necessary since mesh created directly from brainweb
+			for(int i = 0; i < 3; i++){
+				translation.at(i) = 0;
+			}
+		}
+		else{ if(rank == 0){ std::cout << "desired slice is not in bounds of brainweb atlas!" << std::endl; }}
+	}
 	std::stringstream ss3;
-	ss3 << "Virtual Brain: Concentration Map size= " << brainwebConcentrationMap.second << std::endl <<
+	ss3 << "Virtual Brain: Concentration Map size= " << brainwebConcentrationMap.second[0] << "x" << brainwebConcentrationMap.second[1] << "x" << brainwebConcentrationMap.second[2] << std::endl <<
 			"Translation Coordinates for mesh= " << translation.at(0) << ", " << translation.at(1) << ", " << translation.at(2) << std::endl;
 	putput.addComponent(ss3.str());
 

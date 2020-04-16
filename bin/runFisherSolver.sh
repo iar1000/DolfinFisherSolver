@@ -27,7 +27,7 @@ CSV_NAME="iterationdata"
 FRAMERATE=30
 
 OUTPUT_PARENTFOLDER="../output" 		# path to output parent folder
-MESH_PARENTFOLDER="../brain-data/mesh" 	# path to mesh parent folder
+MESH_PARENTFOLDER="../mesh" 	# path to mesh parent folder
 
 # overwrite default by command line arguments
 while [[ "$#" -gt 0 ]]; do case $1 in

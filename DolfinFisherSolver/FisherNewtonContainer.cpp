@@ -176,9 +176,7 @@ std::string FisherNewtonContainer::asString(){
 	std::stringstream ss3;
 	ss3 << "FisherNewtonContainer: Solver= " << ls_ << ", Preconditioner= " << pc_ << std::endl <<
 			"	Newton tolerance (abs/rel)= (" << newton_tol_abs_ << "/" << newton_tol_rel_ << ")" << std::endl << std::endl <<
-			"Mesh Specs:" << std::endl <<
-			"	euclidean dimension= " << mesh_->geometry().dim() << std::endl <<
-			"	total dof= " << u_->function_space()->dim() << std::endl;
+			problem_->asString();
 	return ss3.str();
 }
 
