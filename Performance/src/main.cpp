@@ -25,7 +25,7 @@ void runTest(std::string filepath, int rank,
 		double diffCoef1, double diffCoef2, double reactCoef,
 		bool krylovZeroStart){
 	// initialize problem
-	std::shared_ptr<dolfin::Expression> D = std::make_shared<TensorSpatial3D>(rank, diffCoef1, diffCoef2, brain->getConcentrationMap().first, translation);
+	std::shared_ptr<dolfin::Expression> D = std::make_shared<TensorSpatial3D>(rank, diffCoef1, diffCoef2, brain->getConcentrationMap(-1).first, translation);
 	//std::shared_ptr<dolfin::Expression> D = std::make_shared<TensorConstant>(rank, diffCoef1);
 	std::shared_ptr<FisherProblem> problem = std::make_shared<FisherProblem>(rank, mesh, D, reactCoef, 0.0000001, 1);
 	std::shared_ptr<dolfin::Expression> initial_condition = std::make_shared<InitializerSphere>(initial_coordinates.at(0), initial_coordinates.at(1), initial_coordinates.at(2), 3, 1);
@@ -57,9 +57,19 @@ void runTest(std::string filepath, int rank,
 	KSPSetResidualHistory(krylov->ksp(), a, 1000, PETSC_FALSE);
 
 	// solve
-	dolfin::Timer t("AAA solve " + ls + " + " + pc);
+	dolfin::Timer t1("AAA solve " + ls + " + " + pc + " w/o buffer");
 	auto r = solver->solve(*problem, *u->vector());
+	*u0->vector() = *u->vector();
+	t1.stop();
+	// solve
+	dolfin::Timer t("AAA solve " + ls + " + " + pc + " w buffer");
+	r = solver->solve(*problem, *u->vector());
 	t.stop();
+
+	if(rank == 0) {
+		std::cout << "	w/o buffer: " << std::get<0>(t1.elapsed()) << std::endl <<
+				"	w buffer: " << std::get<0>(t.elapsed()) << std::endl;
+	}
 
 	// get residual data
 	PetscInt used = 0;
@@ -179,7 +189,7 @@ int main(int argc, char* argv[]){
 		 "Test problem summary" << std::endl <<
 		"  Problem type:   "   << type << std::endl <<
 		"  Num processes:  "  << nprocs << std::endl <<
-		"  Mesh:           " << mesh_path << std::endl <<
+		"  Mesh:           " << mesh_path+meshname << std::endl <<
 		"  Mesh elements:  " <<  mesh->num_cells() << std::endl <<
 		"  Global dof:      " << ndofs << std::endl <<
 		"  Average dof per rank: " << ndofs/nprocs << std::endl <<
