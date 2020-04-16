@@ -1,5 +1,5 @@
 # Dolfin Fisher Solver
-
+The following code was written in the scope of a Bachelor Thesis to simulate tumor growth with the open-source library FEniCS.
 ## Setup and Use
 ### Installation requirements
 Following packages have been used during developement of this software:
@@ -46,5 +46,8 @@ The output of a simulation is written to /output folder. Running a simulation cr
 2. CSV file of the iteration data, including time elapsed during a specific iteration, residuals and iteration counts of the Newton and Krylov solvers, etc.
 3. A folder holding the generated PVD output files for post-processing
   
-## Code Overview
+## Project Structure
+The folder DolfinFisherSolver/ contains the source code for the simulation. A detailed description is inside the folder.  
+
+The folder Performance/ contains source code  and plotting scripts for performance testing of the simulation. The code is not as generic as the simulation itself and possibly needs a remake if the simulation is used for a different case.
 
