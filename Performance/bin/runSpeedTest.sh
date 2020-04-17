@@ -16,9 +16,23 @@ while [[ "$#" -gt 0 ]]; do case $1 in
   *) echo "Unknown parameter passed: $1"; exit 1;;
 esac; shift; done
 
-# run speed test with variety of cores
-cores=(1 4 16)
-fncores=(24 36 48 96 120 180 240 360 480 600)
+# run speed test with variety of cores for different mesh sizes
+if [ "$MESHSIZE" -eq 600 ]
+then
+	cores=(1 4 16)
+	fncores=(24 36 48 96 120 180 240 360)
+elif [ "$MESHSIZE" -eq 4700 ]
+then
+	cores=()
+	fncores=(36 48 96 120 180 240 360 480 540 600)
+elif [ "$MESHSIZE" -eq 37000 ]
+then
+	cores=()
+	fncores=(360 480 540 600 660 720 780 840)
+fi
+
+echo "${cores[*]}"
+echo "${fncores[*]}"
 
 for c in "${cores[@]}"; do
 	echo "submit $c core job"
