@@ -73,11 +73,15 @@ int FisherNewtonContainer::solve(double t, double dt){
 	// store initial state for possible reset later
 	*u_unchanged_->vector() = *u0_->vector();
 
-	// solve problem from state u0_ and store in u_ with given dt
+	// solve problem from state u0_ and store in u_
 	*dt_ = dt;
 	if(hasTracker_){ tracker_->startTime(); }
 	auto results = newtonSolver_->solve(*problem_, *u_->vector());
 	if(hasTracker_){ tracker_->endTime(); }
+
+	// normalize solution
+	*u_->vector() /= u_->vector()->max();
+
 
 	// retrieve and save iteration data from solver
 	double newtonIterations = static_cast<double>(results.first);
@@ -128,9 +132,8 @@ std::pair<int, double> FisherNewtonContainer::solveAdaptive(double t, double dt,
 	*u0_->vector() = *u_->vector();
 	results = newtonSolver_->solve(*problem_, *u_->vector());
 
-	// u_unchanged is inital function
-	// u_low is low low quallity run
-	// u is high quality run
+	// normalize solution
+	*u_->vector() /= u_->vector()->max();
 
 	// stop time
 	if(hasTracker_){ tracker_->endTime(); }
