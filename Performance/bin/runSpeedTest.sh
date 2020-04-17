@@ -28,7 +28,7 @@ then
 elif [ "$MESHSIZE" -eq 37000 ]
 then
 	cores=()
-	fncores=(360 480 540 600 660 720 780 840)
+	fncores=(360 480 540 600 720 840 960)
 fi
 
 echo "${cores[*]}"
