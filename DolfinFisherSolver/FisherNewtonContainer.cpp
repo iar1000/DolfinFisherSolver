@@ -132,15 +132,15 @@ std::pair<int, double> FisherNewtonContainer::solveAdaptive(double t, double dt,
 	*u0_->vector() = *u_->vector();
 	results = newtonSolver_->solve(*problem_, *u_->vector());
 
-	// normalize solution
-	*u_->vector() /= u_->vector()->max();
-
 	// stop time
 	if(hasTracker_){ tracker_->endTime(); }
 
 	// calculate discretization error nabla
 	double errorSqr = dolfin::assemble(Ms_.at(MIndex_));
 	double nabla = sqrt(errorSqr) / (pow(2.0,p_) - 1);
+
+	// normalize solution
+	*u_->vector() /= u_->vector()->max();
 
 	// update state if discretization error tolerance is met
 	if(nabla <= tol){ *u0_->vector() = *u_->vector(); }
