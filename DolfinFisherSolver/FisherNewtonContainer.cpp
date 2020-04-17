@@ -140,7 +140,9 @@ std::pair<int, double> FisherNewtonContainer::solveAdaptive(double t, double dt,
 	double nabla = sqrt(errorSqr) / (pow(2.0,p_) - 1);
 
 	// normalize solution
-	*u_->vector() /= u_->vector()->max();
+	double max_u = u_->vector()->max();   				// get the local max
+	max_u = dolfin::MPI::max(MPI_COMM_WORLD, max_u);  	// get the global max
+	*u_->vector() /= max_u;
 
 	// update state if discretization error tolerance is met
 	if(nabla <= tol){ *u0_->vector() = *u_->vector(); }
