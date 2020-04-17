@@ -162,6 +162,7 @@ int main(int argc, char* argv[]){
 	 int rank = dolfin::MPI::rank(MPI_COMM_WORLD);
 
 	 // create mesh and dummy variables for intel
+	 if(rank == 0){ std::cout << "setup performance test.." << std::endl; }
 	 std::shared_ptr<dolfin::Mesh> mesh;
 	 std::vector<std::string> tokens;
 	 std::stringstream ss(meshname);
@@ -197,6 +198,7 @@ int main(int argc, char* argv[]){
 		std::cout << ss.str() << std::endl;
 	}
 
+	if(rank == 0){ std::cout << "run performance tests..." << std::endl; }
 	dolfin::set_log_level(dolflog);
 
 	// type 1: test all ls,pc combinations with standart parameters

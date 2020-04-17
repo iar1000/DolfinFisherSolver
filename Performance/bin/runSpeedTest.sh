@@ -36,10 +36,10 @@ echo "${fncores[*]}"
 
 for c in "${cores[@]}"; do
 	echo "submit $c core job"
-	bsub -o "speed-${MESHSIZE}-$c" -n "$c" -W 24:00 mpirun ./Performance-FisherSolver --meshname "lh-white-hull-flood-0-1-merge-5-dof-${MESHSIZE}k.h5" --name "speed" --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
+	bsub -o "speed-${MESHSIZE}-$c" -n "$c"  mpirun ./Performance-FisherSolver --meshname "lh-white-hull-flood-0-1-merge-5-dof-${MESHSIZE}k.h5" --name "speed${MESHSIZE}" --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
 done
 
 for c in "${fncores[@]}"; do
 	echo "submit $c core job fullnode"
-	bsub -o "speed-${MESHSIZE}-$c" -n "$c" -R fullnode -W 24:00 mpirun ./Performance-FisherSolver --meshname "lh-white-hull-flood-0-1-merge-5-dof-${MESHSIZE}k.h5" --name "speed" --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
+	bsub -o "speed-${MESHSIZE}-$c" -n "$c" -R fullnode mpirun ./Performance-FisherSolver --meshname "lh-white-hull-flood-0-1-merge-5-dof-${MESHSIZE}k.h5" --name "speed" --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
 done
