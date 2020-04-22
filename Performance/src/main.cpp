@@ -191,7 +191,7 @@ int main(int argc, char* argv[]){
 		"  Problem type:   "   << type << std::endl <<
 		"  Num processes:  "  << nprocs << std::endl <<
 		"  Mesh:           " << mesh_path+meshname << std::endl <<
-		"  Mesh elements:  " <<  mesh->num_cells() << std::endl <<
+		"  Mesh elements (approx.):  " <<  mesh->num_cells() * nprocs << std::endl <<
 		"  Global dof:      " << ndofs << std::endl <<
 		"  Average dof per rank: " << ndofs/nprocs << std::endl <<
 		"----------------------------------------------------------------" << std::endl;
