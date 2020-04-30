@@ -50,3 +50,7 @@ The output of a simulation is written to /output folder. Running a simulation cr
 2. CSV file of the iteration data, including time elapsed during a specific iteration, residuals and iteration counts of the Newton and Krylov solvers, etc.
 3. A folder holding the generated PVD output files for post-processing
   
+## Further development
+The simulation solves a partial differential equation problem in variational form. To evolve the tumor in time this is done by solving the problem for many timesteps. The time stepping mechanism is implemented in the Timestepper. If you want to work on an own problem, create a class inheriting the ProblemSolverContainer to be able to use the Timestepper. What is solved in the problem, or how, is left to you.  
+The RuntimeTracker can be used to store data gathered in a time step, such as Residuals or Iteration counts in this case. What exact data you want to store is left to you, just pass a formatting string to the RuntimeTracker instance.  
+Make sure to check out the code on your own, you'll get what I explained here :)
