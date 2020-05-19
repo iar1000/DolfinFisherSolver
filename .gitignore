@@ -6,6 +6,7 @@ bin/FisherSolver
 **/output
 scaling-tests/
 test/
+ParameterInterference/runs
 
 # OS generated files #
 ######################
