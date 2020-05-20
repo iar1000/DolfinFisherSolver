@@ -5,7 +5,7 @@ import sys
 import os
 from datetime import date
 import numpy as np
-from decimal import Decimal
+import stat
 
 # https://stackoverflow.com/questions/2440692/formatting-floats-without-trailing-zeros
 def floatToString(inputValue):
@@ -21,10 +21,10 @@ rho_min = 0.025  # min rho
 rho_max = 0.25  # max rho
 rho_steps = 1  # discretization steps of parameter range
 initial_condition = [49, 130, 40, 3]  # x, y, z, radius
-translation = [0, 0, 0]
+translation = [25, 21, 30]
 # Solver arguments
-mesh_name = "lh-plial-hull-flood-0-1-merge-4-dof-5500k.h5"
-T_end = 10
+mesh_name = "lh-white-hull-flood-0-1-merge-5-dof-80k.h5"
+T_end = 0.001
 dt = 0.0001
 solver = "cg"
 preconditioner = "hypre_euclid"
@@ -136,15 +136,16 @@ esac; shift; done
 '''.format(framerate, mesh_name, dt, T_end, floatToString(rich_safe), floatToString(rich_tol), solver, preconditioner, floatToString(newton_abs),
            floatToString(newton_rel))
     submit_bash.write(command)
+os.chmod(parent_path + '/submit.sh', 0o755)
 
 # fill the case directories with run files
-fisher_path = "./"
-mesh_path = "../../mesh"
-runs_path = "../ParameterInference/"
+fisher_path = "../../../bin/"
+mesh_path = "../../../mesh"
+runs_path = "output"
 for c in case_dirs:
     # add to submission file
     with open(parent_path + '/submit.sh', 'a') as submit_bash:
-        command = '''bsub < {}/job.sh "$MESH_NAME" "$MPI_PROCESS" "$TEND" "$DTSTART" "$TIMEADAPTION" \\
+        command = '''{}/job.sh "$MESH_NAME" "$MPI_PROCESS" "$TEND" "$DTSTART" "$TIMEADAPTION" \\
         "$RICHARDSONSAFETY" "$RICHARDSONTOL" "$KRYLOVSOLVER" "$KRYLOVPREC" "$NEWTONABS" "$NEWTONREL" \\
         "$VERBOSE" "$FRAMERATE"
 '''.format(c[0])
@@ -178,13 +179,13 @@ RICHSAFE=$6
 RICHTOL=$7
 SOLVER=$8
 PREC=$9
-NEWTONABS=$10
-NEWTONREL=$11
-VERBOSE=$12
-FRAMERATE=$13
+NEWTONABS=${{10}}
+NEWTONREL=${{11}}
+VERBOSE=${{12}}
+FRAMERATE=${{13}}
 
 mpirun -n "$MPI_PROCESS" {}FisherSolver \\
-    "{}"  "{}" "$MESH_NAME" "output" "out" "iterationdata" \\
+    "{}"  "{}" "$MESH_NAME" "simulation-output" "out" "iterationdata" \\
     "{}" "{}" "{}" "{}" "1" \\
     "0.00000001" "$DT_START" "0.1" "$TEND" "$FRAMERATE" \\
     "{}" "{}" "{}" "1"\\
@@ -193,9 +194,13 @@ mpirun -n "$MPI_PROCESS" {}FisherSolver \\
     "$SOLVER" "$PREC" \\
     "0" "{}" "{}" "{}"
 '''.format(fisher_path,
-           runs_path + c[0], mesh_path,
+           c[0], mesh_path,
            initial_condition[0], initial_condition[1], initial_condition[2], initial_condition[3],
            c[1], c[1] / diffusion_fac, c[2],
            translation[0], translation[1], translation[2])
         # write file
         job_bash.write(description + command)
+
+    # set execution permission
+    os.chmod(parent_path + "/" + c[0] + '/job.sh', 0o755)
+
