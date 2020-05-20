@@ -7,12 +7,13 @@ from datetime import date
 import numpy as np
 import stat
 
+
 # https://stackoverflow.com/questions/2440692/formatting-floats-without-trailing-zeros
 def floatToString(inputValue):
     return ('%.15f' % inputValue).rstrip('0').rstrip('.')
 
-# Model arguments
-date = date.today().strftime("%d-%m-%Y")
+
+# Parameter inference
 diffusion_fac = 10  # factor D_w / D_g
 diffusion_min = 0.1  # min D_W
 diffusion_max = 0.6  # max D_W
@@ -20,6 +21,15 @@ diffusion_steps = 1  # discretization steps of parameter range
 rho_min = 0.025  # min rho
 rho_max = 0.25  # max rho
 rho_steps = 1  # discretization steps of parameter range
+radius_min = 1  # min r0
+radius_max = 2  # max r0
+radius_steps = 1  # discretization steps of parameter range
+# Fixed Arguments
+# Runtime arguments
+mpiprocs = 2
+verbosity = 3
+# Model arguments
+date = date.today().strftime("%d-%m-%Y")
 initial_condition = [49, 130, 40, 3]  # x, y, z, radius
 translation = [25, 21, 30]
 # Solver arguments
@@ -54,14 +64,21 @@ rho_range = rho_max - rho_min
 rho_stepsize = rho_range / rho_steps
 rho_pspace = np.arange(rho_min, rho_max + 0.01, rho_stepsize).tolist()
 rho_pspace = ['%.3f' % elem for elem in rho_pspace]
+radius_range = radius_max - radius_min
+radius_stepsize = radius_range / radius_steps
+radius_pspace = np.arange(radius_min, radius_max + 0.01, radius_stepsize).tolist()
+radius_pspace = ['%.3f' % elem for elem in radius_pspace]
+
 print("Parameter spaces : \n"
       "\t D_w : {} \n"
       "\t rho : {}\n"
-      "\t Total cases : {}\n".format(diffusion_pspace, rho_pspace, len(diffusion_pspace) * len(rho_pspace)))
+      "\t radius : {}\n"
+      "\t Total cases : {}\n".format(diffusion_pspace, rho_pspace, radius_pspace,
+                                     len(radius_pspace) * len(diffusion_pspace) * len(rho_pspace)))
 
 # create run directory
-rundir_path = "rundir-{}-minmax-D-{}_{}-rho-{}_{}" \
-    .format(date, diffusion_min, diffusion_max, rho_min, rho_max).replace('.', '')
+rundir_path = "rundir-{}-minmax-D-{}_{}-rho-{}_{}-radius-{}_{}" \
+    .format(date, diffusion_min, diffusion_max, rho_min, rho_max, radius_min, radius_max).replace('.', '')
 parent_path = "runs/" + rundir_path
 try:
     duplicate_counter = 0
@@ -81,26 +98,27 @@ print("parent path {}".format(parent_path))
 # create case directories inside run directory
 case_dirs = []  # relative path to case folder, d, r
 for d in diffusion_pspace:
-    for r in rho_pspace:
-        case_path = "case-D-{}-rho-{}".format(d, r).replace(".", "")
-        try:
-            os.mkdir(parent_path + "/" + case_path)
-            case_dirs.append([case_path, float(d), float(r)])
-        except Exception as e:
-            print("failed creating case directory {}".format(parent_path + case_path))
-            print(e)
-            quit()
+    for rho in rho_pspace:
+        for radius in radius_pspace:
+            case_path = "case-D-{}-rho-{}-radius-{}".format(d, rho, radius).replace(".", "")
+            try:
+                os.mkdir(parent_path + "/" + case_path)
+                case_dirs.append([case_path, float(d), float(rho), float(radius)])
+            except Exception as e:
+                print("failed creating case directory {}".format(parent_path + case_path))
+                print(e)
+                quit()
 print("created {} case directories".format(len(case_dirs)))
 
-# create a submission file to start all cases
-with open(parent_path + '/submit.sh', 'w') as submit_bash:
+# create submission file for all cases
+with open(parent_path + '/submit-all.sh', 'w') as submit_bash:
     command = '''\
 #! /bin/bash
 # automatically generated submission file
 # the defined standart parameters can be overwritten by command line parameters
 
-MPI_PROCESS=1
-VERBOSE=2
+MPI_PROCESS={}
+VERBOSE={}
 FRAMERATE={}
 MESH_NAME={}
 DTSTART={}
@@ -133,18 +151,19 @@ while [[ "$#" -gt 0 ]]; do case $1 in
 esac; shift; done
 
 # automatically added submissions
-'''.format(framerate, mesh_name, dt, T_end, floatToString(rich_safe), floatToString(rich_tol), solver, preconditioner, floatToString(newton_abs),
+'''.format(mpiprocs, verbosity, framerate, mesh_name, dt, T_end, floatToString(rich_safe), floatToString(rich_tol),
+           solver, preconditioner, floatToString(newton_abs),
            floatToString(newton_rel))
     submit_bash.write(command)
-os.chmod(parent_path + '/submit.sh', 0o755)
+os.chmod(parent_path + '/submit-all.sh', 0o755)
 
-# fill the case directories with run files
+# fill the case directories with run files and populate sumbit-all script
 fisher_path = "../../../bin/"
 mesh_path = "../../../mesh"
 runs_path = "output"
 for c in case_dirs:
     # add to submission file
-    with open(parent_path + '/submit.sh', 'a') as submit_bash:
+    with open(parent_path + '/submit-all.sh', 'a') as submit_bash:
         command = '''{}/job.sh "$MESH_NAME" "$MPI_PROCESS" "$TEND" "$DTSTART" "$TIMEADAPTION" \\
         "$RICHARDSONSAFETY" "$RICHARDSONTOL" "$KRYLOVSOLVER" "$KRYLOVPREC" "$NEWTONABS" "$NEWTONREL" \\
         "$VERBOSE" "$FRAMERATE"
@@ -160,12 +179,15 @@ for c in case_dirs:
 #  date = {}
 #  D_w = {}
 #  rho = {}
+#  radius = {}
 #  diffusion_fac = {}  
 #  diffusion_steps = {}  
 #  rho_steps = {}  
+#  radius_steps = {}
 #  initial_condition = {}    
 #
-'''.format(c[0], fisher_path, date, c[1], c[2], diffusion_fac, diffusion_steps, rho_steps, initial_condition)
+'''.format(c[0], fisher_path, date, c[1], c[2], c[3], diffusion_fac, diffusion_steps, rho_steps, radius_steps,
+           initial_condition)
 
         command = '''\
 #! /bin/bash
@@ -195,7 +217,7 @@ mpirun -n "$MPI_PROCESS" {}FisherSolver \\
     "0" "{}" "{}" "{}"
 '''.format(fisher_path,
            c[0], mesh_path,
-           initial_condition[0], initial_condition[1], initial_condition[2], initial_condition[3],
+           initial_condition[0], initial_condition[1], initial_condition[2], c[3],
            c[1], c[1] / diffusion_fac, c[2],
            translation[0], translation[1], translation[2])
         # write file
@@ -203,4 +225,3 @@ mpirun -n "$MPI_PROCESS" {}FisherSolver \\
 
     # set execution permission
     os.chmod(parent_path + "/" + c[0] + '/job.sh', 0o755)
-
