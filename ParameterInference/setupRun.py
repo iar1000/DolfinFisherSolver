@@ -17,13 +17,13 @@ def floatToString(inputValue):
 diffusion_fac = 10  # factor D_w / D_g
 diffusion_min = 0.1  # min D_W
 diffusion_max = 0.6  # max D_W
-diffusion_steps = 1  # discretization steps of parameter range
+diffusion_steps = 2  # discretization steps of parameter range
 rho_min = 0.025  # min rho
 rho_max = 0.25  # max rho
-rho_steps = 1  # discretization steps of parameter range
+rho_steps = 2  # discretization steps of parameter range
 radius_min = 1  # min r0
 radius_max = 2  # max r0
-radius_steps = 1  # discretization steps of parameter range
+radius_steps = 2  # discretization steps of parameter range
 # Fixed Arguments
 # Runtime arguments
 mpiprocs = 2
@@ -48,12 +48,13 @@ print('Generate run-case')
 print("\tArguments: "
       "\n\t\t diffusion factor : {}"
       "\n\t\t D_w range : [{}, {}]"
-      "\n\t\t D_g range : [{}, {}]"
       "\n\t\t rho range : [{}, {}]"
+      "\n\t\t radius range : [{}, {}]"
       "\n\t\t discretization steps : "
       "\n\t\t\t D : {}"
-      "\n\t\t\t rho : {}\n".format(diffusion_fac, diffusion_min, diffusion_max, diffusion_min / diffusion_fac,
-                                   diffusion_max / diffusion_fac, rho_min, rho_max, diffusion_steps, rho_steps))
+      "\n\t\t\t rho : {}"
+      "\n\t\t\t radius : {}".format(diffusion_fac, diffusion_min, diffusion_max, rho_min, rho_max, radius_min,
+                                   radius_max, diffusion_steps, rho_steps, radius_steps))
 
 # create parameter space
 diffusion_range = diffusion_max - diffusion_min
@@ -110,6 +111,11 @@ for d in diffusion_pspace:
                 quit()
 print("created {} case directories".format(len(case_dirs)))
 
+# update parameter spaces to be floats
+diffusion_pspace = [float(i) for i in diffusion_pspace]
+rho_pspace = [float(i) for i in rho_pspace]
+radius_pspace = [float(i) for i in radius_pspace]
+
 # create submission file for all cases
 with open(parent_path + '/submit-all.sh', 'w') as submit_bash:
     command = '''\
@@ -157,18 +163,77 @@ esac; shift; done
     submit_bash.write(command)
 os.chmod(parent_path + '/submit-all.sh', 0o755)
 
+# create submission file for corner cases
+with open(parent_path + '/submit-corner.sh', 'w') as submit_bash:
+    command = '''\
+#! /bin/bash
+# automatically generated submission file
+# the defined standart parameters can be overwritten by command line parameters
+
+MPI_PROCESS={}
+VERBOSE={}
+FRAMERATE={}
+MESH_NAME={}
+DTSTART={}
+TEND={}
+TIMEADAPTION=2
+RICHARDSONSAFETY={}
+RICHARDSONTOL={}
+KRYLOVSOLVER={}
+KRYLOVPREC={}
+NEWTONABS={}
+NEWTONREL={}
+
+while [[ "$#" -gt 0 ]]; do case $1 in
+  -n|--mpiprocess) MPI_PROCESS="$2"; shift;;
+  -v|--verbose) VERBOSE="$2"; shift;;
+  -fr|--framerate) FRAMERATE="$2"; shift;;
+  # overwrite .config
+  -m|--mesh) MESH_NAME="$2"; shift;;
+  -dt|--dtstart) DTSTART="$2"; shift;;
+  -T|--Tend) TEND="$2"; shift;;
+  -type|--dttype) TIMEADAPTION="$2"; shift;;
+  -rs|--richsafe) RICHARDSONSAFETY="$2"; shift;;
+  -rt|--richtol) RICHARDSONTOL="$2"; shift;;
+  -ls|--solver) KRYLOVSOLVER="$2"; shift;;
+  -pc|--preconditioner) KRYLOVPREC="$2"; shift;;  
+  -nr|--newtonrel) NEWTONREL="$2"; shift;;  
+  -na|--newtonabs) NEWTONABS="$2"; shift;;  
+
+  *) echo "Unknown parameter passed: $1"; exit 1;;
+esac; shift; done
+
+# automatically added submissions
+'''.format(mpiprocs, verbosity, framerate, mesh_name, dt, T_end, floatToString(rich_safe), floatToString(rich_tol),
+           solver, preconditioner, floatToString(newton_abs),
+           floatToString(newton_rel))
+    submit_bash.write(command)
+os.chmod(parent_path + '/submit-corner.sh', 0o755)
+
 # fill the case directories with run files and populate sumbit-all script
 fisher_path = "../../../bin/"
 mesh_path = "../../../mesh"
 runs_path = "output"
 for c in case_dirs:
-    # add to submission file
+    # add to submission all file
     with open(parent_path + '/submit-all.sh', 'a') as submit_bash:
         command = '''{}/job.sh "$MESH_NAME" "$MPI_PROCESS" "$TEND" "$DTSTART" "$TIMEADAPTION" \\
         "$RICHARDSONSAFETY" "$RICHARDSONTOL" "$KRYLOVSOLVER" "$KRYLOVPREC" "$NEWTONABS" "$NEWTONREL" \\
         "$VERBOSE" "$FRAMERATE"
 '''.format(c[0])
         submit_bash.write(command)
+
+    # add to submission corner file if corner case
+    if (c[1] == min(diffusion_pspace) or c[1] == max(diffusion_pspace)) and \
+            (c[2] == min(rho_pspace) or c[2] == max(rho_pspace)) and \
+            (c[3] == min(radius_pspace) or c[3] == max(radius_pspace)):
+        print("corner case {}".format(c))
+        with open(parent_path + '/submit-corner.sh', 'a') as submit_bash:
+            command = '''{}/job.sh "$MESH_NAME" "$MPI_PROCESS" "$TEND" "$DTSTART" "$TIMEADAPTION" \\
+                "$RICHARDSONSAFETY" "$RICHARDSONTOL" "$KRYLOVSOLVER" "$KRYLOVPREC" "$NEWTONABS" "$NEWTONREL" \\
+                "$VERBOSE" "$FRAMERATE"
+        '''.format(c[0])
+            submit_bash.write(command)
 
     # write down job description
     with open(parent_path + "/" + c[0] + '/job.sh', 'w') as job_bash:
