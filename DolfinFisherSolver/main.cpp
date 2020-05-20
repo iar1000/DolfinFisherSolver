@@ -108,10 +108,20 @@ int main(int argc, char* argv[]){
 	std::vector<int> translation = {atoi(argv[33]), atoi(argv[34]), atoi(argv[35])};
 	int sliceNumber = 60;
 
+	/* DEBUG INPUT OF BASH SCRIPTS
+	for(int i = 0; i < 36; i++){
+		std::cout << "argument " << i << " : " << argv[i] << std::endl;
+	}
+	return 0;
+	*/
+
 	if(rank == 0 && verbose > 3){ std::cout << "load components..." << std::endl; };
 
 	// in/output handler
 	ReaderWriter putput = ReaderWriter(rank, outputParent, meshParent);
+
+	// status: simulation started
+	if(rank == 0){ putput.updateStatusFile(0, tagFolder, nprocs); }
 
 	// mesh read-in
 	if(rank == 0 && verbose > 3){ std::cout << "	read in mesh..." << std::endl; };
@@ -131,12 +141,16 @@ int main(int argc, char* argv[]){
 			return 0;
 		}
 	}
+
 	// add mesh to components list before returning
 	std::stringstream meshstring;
 	meshstring << "Mesh: " << meshName << " (" << mesh->geometry().dim() << "D)" << std::endl;
 	putput.addComponent(meshstring.str());
 	int dimensions = mesh->geometry().dim();
 	if(rank == 0 && verbose > 3){ std::cout << "	mesh (" << mesh->geometry().dim() << "D) loaded!" << std::endl; };
+
+	// status: mesh loaded
+	if(rank == 0){ putput.updateStatusFile(1, tagFolder, nprocs); }
 
 	// create brain
 	Brain brain(rank, verbose, "../brain-data/brainweb");
@@ -206,7 +220,7 @@ int main(int argc, char* argv[]){
 	// create FisherNewtonContainter
 	FisherNewtonContainer problemContainer = FisherNewtonContainer(rank,
 			mesh, initialCondition, D, rho, theta, dt_init);
-	problemContainer.initializeSolver((verbose > 2 ? 1 : 0), newtontolrel, newtontolabs, newtonmaxiter,
+	problemContainer.initializeSolver((verbose > 3 ? 1 : 0), newtontolrel, newtontolabs, newtonmaxiter,
 				krylovtolrel, krylovtolabs, krylovmaxiter, ls, pc);
 	putput.addComponent(problemContainer.asString());
 	if(rank == 0 && verbose > 3){ std::cout << "	ProblemContainer loaded!" << std::endl; };
@@ -232,7 +246,10 @@ int main(int argc, char* argv[]){
 
 
 	// create pre-simulation info, print added components
-	if(rank == 0){ putput.createRunInfo(tagFolder, tagFile); }
+	if(rank == 0){
+		putput.createRunInfo(tagFolder, tagFile);
+		putput.updateStatusFile(2, tagFolder, nprocs);
+	}
 
 	// run simulation
 	RuntimeTracker tracker3 = timeStepper.run(timeAdaption, verbose,
@@ -240,8 +257,11 @@ int main(int argc, char* argv[]){
 			&problemContainer, T, dt_init, dt_runlength);
 
 	// overwrite INFO file with post-simulation details
-	putput.addComponent(tracker3.asString());
-	putput.createRunInfo(tagFolder, tagFile);
+	if(rank == 0){
+		putput.addComponent(tracker3.asString());
+		putput.createRunInfo(tagFolder, tagFile);
+		putput.updateStatusFile(3, tagFolder, nprocs);
+	}
 
 	// output timings to text file
 	std::ofstream timings;

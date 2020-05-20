@@ -59,6 +59,8 @@ std::pair<bool, std::string> ReaderWriter::getFilePath(std::string subfolder, st
 			}
 			else{
 				if(rank_ == 0){
+					char cwd[PATH_MAX];
+					std::cout << "Current working dir: " << getcwd(cwd, sizeof(cwd)) << std::endl;
 					std::cout << "INFO (getFilePath): failed creating subfolder " << folderPath << std::endl;
 				}
 				return std::pair<bool, std::string>(false, folderPath + "/" + filename + "." + suffix);
@@ -123,6 +125,50 @@ void ReaderWriter::createRunInfo(std::string subfolder, std::string filename){
 		std::cout << "WARNING: no infofile created at " << pathReturn.second << std::endl;
 	}
 }
+
+void ReaderWriter::updateStatusFile(int status, std::string subfolder, int nprocs){
+	std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	std::string time(30, '\0');
+	std::strftime(&time[0], time.size(), "%Y-%m-%d %H:%M:%S", std::localtime(&now));
+	// create path to statusfile
+	auto pathReturn = getFilePath(subfolder, "_STATUS", "txt");
+	if(pathReturn.first){
+		std::string path = pathReturn.second;
+		// check the status and act accordingly
+		if(status == 0){
+			std::ofstream file;
+			file.open(path, std::ios_base::out | std::ios_base::trunc);
+			file << "number processors: " << nprocs << std::endl <<
+					"Simulation started - " << time << std::endl;
+			file.close();
+		}
+		else if(status == 1){
+			std::ofstream file;
+			file.open(path, std::ios_base::app);
+			file << "Mesh loaded - " << time << std::endl;
+			file.close();
+		}
+		else if(status == 2){
+			std::ofstream file;
+			file.open(path, std::ios_base::app);
+			file << "Simulation running - " << time << std::endl;
+			file.close();
+		}
+		else if(status == 3){
+			std::ofstream file;
+			file.open(path, std::ios_base::app);
+			file << "Simulation finnished - " << time << std::endl;
+			file.close();
+		}
+		else{
+			std::cout << "WARNING: no statusfile created, status not known: " << status << std::endl;
+		}
+	}
+	else{
+		std::cout << "WARNING: no statusfile created, path error: " << pathReturn.second << std::endl;
+	}
+}
+
 
 void ReaderWriter::addComponent(std::string details){
 	components_.push_back(details);

@@ -2,6 +2,7 @@
 #define READERWRITER_H
 
 #include <dolfin.h>
+#include <chrono>
 
 // divides string at delimiter and returns the substrings as vector
 std::vector<std::string> splitString(std::string toSplit, char delim);
@@ -31,6 +32,14 @@ public:
 	// thought to be used before a run is started to know what simulation details are
 	// use same subfolder as in getFilePath(), otherwise undefinded behavior
 	void createRunInfo(std::string subfolder, std::string filename);
+
+	// creates or updates status file of simulation to see if it got stuck, is running, or finnished
+	// uses timestamps
+	// status = 0 : create file, simulation preparation
+	// status = 1 : mesh loaded
+	// status = 2 : simulation running
+	// status = 3 : simulation terminated
+	void updateStatusFile(int status, std::string subfolder, int numberProcessors);
 
 	// add string of component details to the list
 	void addComponent(std::string);

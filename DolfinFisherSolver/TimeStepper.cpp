@@ -66,7 +66,7 @@ RuntimeTracker TimeStepper::run(int simulationType, int verbose,
 }
 
 void TimeStepper::constTimestepping(int verbose, double frameDuration, std::shared_ptr<dolfin::File> pvdFile,
-		ProblemSolverContainer* problemContainer, double T, double dt_init)
+ 		ProblemSolverContainer* problemContainer, double T, double dt_init)
 {
 	// set timestepping and helper variables
 	double t = 0;					// current time
@@ -140,8 +140,8 @@ void TimeStepper::adaptiveTimestepping(int verbose, double frameDuration, std::s
 		// update timestep
 		double fac = adaptSafety_ * pow((adaptTol_ / nabla), (1/p));
 		// cap the maximum increase
-		if(fac > 1.1){
-			fac = 1.1;
+		if(fac > 2){
+			fac = 2;
 		}
 		dtNew = fac * dt;
 
