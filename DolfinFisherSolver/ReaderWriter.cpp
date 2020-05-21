@@ -131,7 +131,9 @@ void ReaderWriter::updateStatusFile(int status, std::string subfolder, int nproc
 	std::string time(30, '\0');
 	std::strftime(&time[0], time.size(), "%Y-%m-%d %H:%M:%S", std::localtime(&now));
 	// create path to statusfile
-	auto pathReturn = getFilePath(subfolder, "_STATUS", "txt");
+	std::stringstream ss;
+	ss << "_STATUS-" << nprocs;
+	auto pathReturn = getFilePath(subfolder, ss.str(), "txt");
 	if(pathReturn.first){
 		std::string path = pathReturn.second;
 		// check the status and act accordingly
@@ -139,25 +141,25 @@ void ReaderWriter::updateStatusFile(int status, std::string subfolder, int nproc
 			std::ofstream file;
 			file.open(path, std::ios_base::out | std::ios_base::trunc);
 			file << "number processors: " << nprocs << std::endl <<
-					"Simulation started - " << time << std::endl;
+					"Simulation 1 init - " << time << std::endl;
 			file.close();
 		}
 		else if(status == 1){
 			std::ofstream file;
 			file.open(path, std::ios_base::app);
-			file << "Mesh loaded - " << time << std::endl;
+			file << "Simulation 2 mesh - " << time << std::endl;
 			file.close();
 		}
 		else if(status == 2){
 			std::ofstream file;
 			file.open(path, std::ios_base::app);
-			file << "Simulation running - " << time << std::endl;
+			file << "Simulation 3 run - " << time << std::endl;
 			file.close();
 		}
 		else if(status == 3){
 			std::ofstream file;
 			file.open(path, std::ios_base::app);
-			file << "Simulation finnished - " << time << std::endl;
+			file << "Simulation 4 done - " << time << std::endl;
 			file.close();
 		}
 		else{

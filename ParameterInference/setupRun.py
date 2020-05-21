@@ -98,6 +98,7 @@ print("parent path {}".format(parent_path))
 
 # create case directories inside run directory
 case_dirs = []  # relative path to case folder, d, r
+corner_dirs = []
 for d in diffusion_pspace:
     for rho in rho_pspace:
         for radius in radius_pspace:
@@ -228,6 +229,7 @@ for c in case_dirs:
             (c[2] == min(rho_pspace) or c[2] == max(rho_pspace)) and \
             (c[3] == min(radius_pspace) or c[3] == max(radius_pspace)):
         print("corner case {}".format(c))
+        corner_dirs.append(c)
         with open(parent_path + '/submit-corner.sh', 'a') as submit_bash:
             command = '''{}/job.sh "$MESH_NAME" "$MPI_PROCESS" "$TEND" "$DTSTART" "$TIMEADAPTION" \\
                 "$RICHARDSONSAFETY" "$RICHARDSONTOL" "$KRYLOVSOLVER" "$KRYLOVPREC" "$NEWTONABS" "$NEWTONREL" \\
@@ -290,3 +292,98 @@ mpirun -n "$MPI_PROCESS" {}FisherSolver \\
 
     # set execution permission
     os.chmod(parent_path + "/" + c[0] + '/job.sh', 0o755)
+
+
+###############################################################################
+####################### CHECK AND RERUN #######################################
+###############################################################################
+
+# create check status of corner cases
+corner_dirs_names = [x[0] for x in corner_dirs]
+with open(parent_path + '/check-corner.py', 'w') as submit_bash:
+    command = '''\
+# automatically generated script to check status of corner case submissions
+
+import os
+from tabulate import tabulate
+
+corner_directories = {}
+all_directories = os.listdir()
+
+# collect status infos
+status_infos = []
+for dir in all_directories:
+    if dir in corner_directories:
+        # check if _STATUS file exists
+        path = dir + "/simulation-output/"
+        try:
+            case_directories = os.listdir(path) # @TODO: try catch if directory not exists
+            status_files = [x for x in case_directories if ("_STATUS-" in x)]
+            # print status of each run
+            for sf in status_files:
+                worker = sf.split("-")[1]
+                nprocs = worker.split(".")[0]
+                with open(path + sf) as file:
+                    lines = file.readlines()
+                    if lines:
+                        start_time = " ".join(lines[1].split())[20:]
+                        status = " ".join(lines[-1].split())
+                        status_infos.append([dir, nprocs, start_time, status])
+                    else:
+                        status_infos.append([dir, nprocs, "Not started, yet", "-"])
+        except:
+            status_infos.append([dir, 0, "Not started, yet", "-"])
+            
+# print status infos
+print("Status infos:")
+
+status_infos = sorted(status_infos, key=lambda x: (x[3], x[1]))
+print(tabulate(status_infos, headers=['case directory', 'procs', 'start time', "status"]))
+'''.format(corner_dirs_names)
+    submit_bash.write(command)
+os.chmod(parent_path + '/check-corner.py', 0o755)
+
+# create check status of all cases
+case_dirs_names = [x[0] for x in case_dirs]
+with open(parent_path + '/check-all.py', 'w') as submit_bash:
+    command = '''\
+# automatically generated script to check status of all case submissions
+
+import os
+from tabulate import tabulate
+
+corner_directories = {}
+all_directories = os.listdir()
+
+# collect status infos
+status_infos = []
+for dir in all_directories:
+    if dir in corner_directories:
+        # check if _STATUS file exists
+        path = dir + "/simulation-output/"
+        try:
+            case_directories = os.listdir(path) # @TODO: try catch if directory not exists
+            status_files = [x for x in case_directories if ("_STATUS-" in x)]
+            # print status of each run
+            for sf in status_files:
+                worker = sf.split("-")[1]
+                nprocs = worker.split(".")[0]
+                with open(path + sf) as file:
+                    lines = file.readlines()
+                    if lines:
+                        start_time = " ".join(lines[1].split())[20:]
+                        status = " ".join(lines[-1].split())
+                        status_infos.append([dir, nprocs, start_time, status])
+                    else:
+                        status_infos.append([dir, nprocs, "Not started, yet", "-"])
+        except:
+            status_infos.append([dir, 0, "Not started, yet", "-"])
+
+# print status infos
+print("Status infos:")
+
+status_infos = sorted(status_infos, key=lambda x: (x[3], x[1]))
+print(tabulate(status_infos, headers=['case directory', 'procs', 'start time', "status"]))
+'''.format(case_dirs_names)
+    submit_bash.write(command)
+os.chmod(parent_path + '/check-all.py', 0o755)
