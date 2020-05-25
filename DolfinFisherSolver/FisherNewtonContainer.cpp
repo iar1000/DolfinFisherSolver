@@ -76,7 +76,11 @@ int FisherNewtonContainer::solve(double t, double dt){
 	// solve problem from state u0_ and store in u_
 	*dt_ = dt;
 	if(hasTracker_){ tracker_->startTime(); }
+	// time the solve kernel
+	dolfin::Timer timer("AAA dolfin::NewtonSolver.solve");
 	auto results = newtonSolver_->solve(*problem_, *u_->vector());
+	timer.stop();
+	double wall = std::get<0>(timer.elapsed());	 	// wall time precision around 1 mikro second
 	if(hasTracker_){ tracker_->endTime(); }
 
 	// normalize solution
@@ -91,7 +95,7 @@ int FisherNewtonContainer::solve(double t, double dt){
 	double krylovIterations = static_cast<double>(newtonSolver_->krylov_iterations());
 	double converged = static_cast<double>(results.second);
 	double residual = newtonSolver_->residual();
-	std::vector<double> data = {t, *dt_, residual, newtonIterations, krylovIterations, converged};
+	std::vector<double> data = {t, *dt_, residual, newtonIterations, krylovIterations, converged, wall};
 	if(hasTracker_){ tracker_->addIterationData(data); }
 
 	// finish current iteration
@@ -118,13 +122,19 @@ std::pair<int, double> FisherNewtonContainer::solveAdaptive(double t, double dt,
 
 	// solve problem with low precision
 	*dt_ = dt;
+
+	// time the solve kernel
+	dolfin::Timer timer("AAA dolfin::NewtonSolver.solve");
 	auto results = newtonSolver_->solve(*problem_, *u_->vector());
+	timer.stop();
+	double wall = std::get<0>(timer.elapsed());	 	// wall time precision around 1 mikro second
+
 	// retrieve and save low precision iteration data from solver
 	double newtonIterations = static_cast<double>(results.first);
 	double krylovIterations = static_cast<double>(newtonSolver_->krylov_iterations());
 	double converged = static_cast<double>(results.second);
 	double residual = newtonSolver_->residual();
-	std::vector<double> data = {t, dt, residual, newtonIterations, krylovIterations, converged};
+	std::vector<double> data = {t, dt, residual, newtonIterations, krylovIterations, converged, wall};
 	if(hasTracker_){ tracker_->addIterationData(data); }
 	// save low precision result
 	*u_low_->vector() = *u_->vector();
@@ -174,7 +184,7 @@ std::shared_ptr<FisherProblem> FisherNewtonContainer::getProblem(){
 void FisherNewtonContainer::attachTracker(RuntimeTracker* tracker){
 	tracker_ = tracker;
 	hasTracker_ = true;
-	std::string format = "t, dt, residual, newton iterations, krylov iterations, converged";
+	std::string format = "t, dt, residual, newton iterations, krylov iterations, converged, time solve kernel";
 	tracker_->addIterationFormat(format);
 }
 
