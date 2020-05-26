@@ -123,6 +123,9 @@ int main(int argc, char* argv[]){
 	// status: simulation started
 	if(rank == 0){ putput.updateStatusFile(0, tagFolder, nprocs); }
 
+	// status: before mesh loading
+	if(rank == 0){ putput.updateStatusFile(1, tagFolder, nprocs); }
+
 	// mesh read-in
 	if(rank == 0 && verbose > 3){ std::cout << "	read in mesh..." << std::endl; };
 	std::shared_ptr<dolfin::Mesh> mesh;
@@ -149,8 +152,6 @@ int main(int argc, char* argv[]){
 	int dimensions = mesh->geometry().dim();
 	if(rank == 0 && verbose > 3){ std::cout << "	mesh (" << mesh->geometry().dim() << "D) loaded!" << std::endl; };
 
-	// status: mesh loaded
-	if(rank == 0){ putput.updateStatusFile(1, tagFolder, nprocs); }
 
 	// create brain
 	Brain brain(rank, verbose, "../brain-data/brainweb");
@@ -270,7 +271,7 @@ int main(int argc, char* argv[]){
 	timings << dolfin::timings(dolfin::TimingClear::keep, s).str_latex();
 	timings.close();
 
-	MPI_Finalize();
+	return 0;
 }
 
 
