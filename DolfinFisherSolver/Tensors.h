@@ -105,6 +105,7 @@ public:
 // Expression returning value dependent on the spatial location of the cell
 class TensorSpatial3D : public dolfin::Expression, PrintableComponent
 {
+	bool useBuffer;	// For performance comparison between buffer and non-buffer
 	double dw_;		// Diffusion coefficient for white matter
 	double dg_;		// Diffusion coefficient for grey matter
 	std::vector<int> translation_; // translation size x, y, z which is added to mesh coordinates to fit on brainweb matrices

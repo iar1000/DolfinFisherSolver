@@ -122,6 +122,7 @@ void TensorSpatial2D::eval (dolfin::Array<double> &values, const dolfin::Array<d
 //////////////////////////////
 TensorSpatial3D::TensorSpatial3D(int rank, double dcw, double dcg,
 		std::vector<std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>> cms, std::vector<int> translation){
+	useBuffer = false;				// Opt out buffer for performance comparison
 	dw_ = dcw;						// Diffusion coefficient for white matter
 	dg_ = dcg;						// Diffusion coefficient for grey matter
 	translation_ = translation;		// translation vector
@@ -146,11 +147,41 @@ void TensorSpatial3D::addBufferEntry(HashableCoordinates p, double res){
 }
 
 void TensorSpatial3D::eval (dolfin::Array<double> &values, const dolfin::Array<double> &x, const ufc::cell &cell) const{
-	// check buffer for element
-	HashableCoordinates coords(x.data()[0], x.data()[1], x.data()[2]);
-	auto iterator = interpolationBuffer_.find(coords);
-	// did not find key
-	if(iterator == interpolationBuffer_.end()){
+	if(useBuffer){
+		// check buffer for element
+		HashableCoordinates coords(x.data()[0], x.data()[1], x.data()[2]);
+		auto iterator = interpolationBuffer_.find(coords);
+		// did not find key
+		if(iterator == interpolationBuffer_.end()){
+			double p[3] = {x.data()[0] + translation_.at(0), x.data()[1] + translation_.at(1), x.data()[2] + translation_.at(2)};
+			double p_frac[3] = {p[0] - floor(p[0]), p[1] - floor(p[1]), p[2] - floor(p[2])};
+
+			auto frontW = cmw_.at(floor(p[2]));
+			auto backW = cmw_.at(ceil(p[2]));
+			double vw[8] = { frontW(floor(p[1]), floor(p[0])), frontW(floor(p[1]), ceil(p[0])),
+					frontW(ceil(p[1]), floor(p[0])), frontW(ceil(p[1]), ceil(p[0])),
+					backW(floor(p[1]), floor(p[0])), backW(floor(p[1]), ceil(p[0])),
+					backW(ceil(p[1]), floor(p[0])), backW(ceil(p[1]), ceil(p[0])) };
+			auto frontG = cmg_.at(floor(p[2]));
+			auto backG = cmg_.at(ceil(p[2]));
+			double vg[8] = { frontG(floor(p[1]), floor(p[0])), frontG(floor(p[1]), ceil(p[0])),
+					frontG(ceil(p[1]), floor(p[0])), frontG(ceil(p[1]), ceil(p[0])),
+					backG(floor(p[1]), floor(p[0])), backG(floor(p[1]), ceil(p[0])),
+					backG(ceil(p[1]), floor(p[0])), backG(ceil(p[1]), ceil(p[0])) };
+
+			double pw = trilinear_interpolation_v2(p_frac, vw);
+			double pg = trilinear_interpolation_v2(p_frac, vg);
+
+			double result = pw * dw_ + pg * dg_;
+			values[0] = result;
+			const_cast<TensorSpatial3D*>( this )->addBufferEntry(coords, result);
+		}
+		else{
+			values[0] = (*iterator).second;
+		}
+	}
+	// only for performance comparison
+	else{
 		double p[3] = {x.data()[0] + translation_.at(0), x.data()[1] + translation_.at(1), x.data()[2] + translation_.at(2)};
 		double p_frac[3] = {p[0] - floor(p[0]), p[1] - floor(p[1]), p[2] - floor(p[2])};
 
@@ -172,10 +203,6 @@ void TensorSpatial3D::eval (dolfin::Array<double> &values, const dolfin::Array<d
 
 		double result = pw * dw_ + pg * dg_;
 		values[0] = result;
-	    const_cast<TensorSpatial3D*>( this )->addBufferEntry(coords, result);
-	}
-	else{
-		values[0] = (*iterator).second;
 	}
 };
 
