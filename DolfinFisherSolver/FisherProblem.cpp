@@ -43,7 +43,7 @@ FisherProblem::FisherProblem(int rank, int quad_deg, std::shared_ptr<dolfin::Mes
 		}
 	}
 	else {
-		std::cout << "WARNING: only 3 spatial dimensional meshes allowed (Quadrature degree 4)" << std::endl;
+		std::cout << "WARNING: only quadrature degrees 4 and 6 available" << std::endl;
 	}
 
 	// initialize problem parameters
