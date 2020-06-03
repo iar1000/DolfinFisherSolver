@@ -23,14 +23,14 @@ void runTest(std::string filepath, int rank,
 		std::shared_ptr<dolfin::Mesh> mesh, std::shared_ptr<Brain> brain,
 		std::string ls, std::string pc, double newton_tol,
 		double diffCoef1, double diffCoef2, double reactCoef,
-		bool krylovZeroStart){
+		bool krylovZeroStart, bool buffer){
 	// setup petsc logging
 	PetscLogStage stage1, stage2, stage3, stage4;
 
 	// initialize problem
 	PetscLogStageRegister("Problem initialization", &stage1);
 	PetscLogStagePush(stage1);
-	std::shared_ptr<dolfin::Expression> D = std::make_shared<TensorSpatial3D>(rank, diffCoef1, diffCoef2, brain->getConcentrationMap(-1).first, translation);
+	std::shared_ptr<dolfin::Expression> D = std::make_shared<TensorSpatial3D>(rank, diffCoef1, diffCoef2, brain->getConcentrationMap(-1).first, translation, buffer);
 	//std::shared_ptr<dolfin::Expression> D = std::make_shared<TensorConstant>(rank, diffCoef1);
 	std::shared_ptr<FisherProblem> problem = std::make_shared<FisherProblem>(rank, mesh, D, reactCoef, 0.0000001, 1);
 	std::shared_ptr<dolfin::Expression> initial_condition = std::make_shared<InitializerSphere>(initial_coordinates.at(0), initial_coordinates.at(1), initial_coordinates.at(2), 3, 1);
@@ -76,7 +76,7 @@ void runTest(std::string filepath, int rank,
 	double krylov_iters_nobuff = solver->krylov_iterations();
 
 	if(rank == 0) {
-		std::cout << "	w/o buffer: " << std::get<0>(t1.elapsed()) << "(krylov : " << krylov_iters_nobuff << ", newton: " << r.first  << ") " << std::endl;
+		std::cout << "	w/o buffer: " << std::get<0>(t1.elapsed()) << " (krylov : " << krylov_iters_nobuff << ", newton: " << r.first  << ") " << std::endl;
 	}
 
 	// solve with buffer
@@ -88,7 +88,7 @@ void runTest(std::string filepath, int rank,
 	PetscLogStagePop();
 
 	if(rank == 0) {
-			std::cout << "	w buffer: " << std::get<0>(t.elapsed()) << "(krylov : " << solver->krylov_iterations() << ", newton: " << r.first << ") " << std::endl;
+			std::cout << "	w buffer: " << std::get<0>(t.elapsed()) << " (krylov : " << solver->krylov_iterations() << ", newton: " << r.first << ") " << std::endl;
 	}
 
 	// get residual data
@@ -161,6 +161,8 @@ int main(int argc, char* argv[]){
 	application_parameters.add("diffCoef2", 0.0013);
 	application_parameters.add("reactCoef", 0.025);
 	application_parameters.add("krylovnonzero", false);
+	application_parameters.add("buffer", 1);
+	application_parameters.add("quadrature", 6);
 
 
 	// Update from command line
@@ -178,6 +180,9 @@ int main(int argc, char* argv[]){
 	const double diffCoef2 = application_parameters["diffCoef2"];
 	const double reactCoef = application_parameters["reactCoef"];
 	const bool krylovnonzero = application_parameters["krylovnonzero"];
+	const int useBuffer = application_parameters["buffer"];
+	const int quadratureDegree = application_parameters["quadrature"];
+
 
 	// Set mesh partitioner
 	 dolfin::parameters["mesh_partitioner"] = "SCOTCH";
@@ -237,7 +242,7 @@ int main(int argc, char* argv[]){
 		for(int i = 0; i < combis.size(); i++){
 			runTest(out_dir + iters.str(), rank, mesh, brain,
 					combis.at(i).first, combis.at(i).second, newton_tol,
-					diffCoef1, (diffCoef1/10), reactCoef, krylovnonzero);
+					diffCoef1, (diffCoef1/10), reactCoef, krylovnonzero, useBuffer ? true : false);
 		}
 	}
 	// type 2: test conjugate gradient solver
@@ -258,7 +263,7 @@ int main(int argc, char* argv[]){
 		*/
 		runTest(out_dir + iters.str(), rank, mesh, brain,
 							"cg", "hypre_euclid", newton_tol,
-							diffCoef1, (diffCoef1/10), reactCoef, krylovnonzero);
+							diffCoef1, (diffCoef1/10), reactCoef, krylovnonzero, useBuffer ? true : false);
 	}
 	else{
 		if(rank == 0){ std::cout << "don't know what type to run" << std::endl;}
