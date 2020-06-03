@@ -5,11 +5,12 @@
 #include "Tensors.h"
 #include "VariationalFisherEquation2D.h"
 #include "VariationalFisherEquation3D.h"
-#include "VariationalFisherEquation3D-Q4.h"
+#include "VariationalFisherEquation3DQ4.h"
 
 FisherProblem::FisherProblem(int rank, int quad_deg, std::shared_ptr<dolfin::Mesh> mesh, std::shared_ptr<dolfin::Expression> D, double rho, double dt, double theta)
 {
 	rank_ = rank;
+	quad_deg_ = quad_deg;
 	mesh_ = mesh;
 	// create function space, non-linear function F and it's Jacobian J from variational problem definition
 	// automatically determine dimensionality of the mesh
@@ -33,14 +34,18 @@ FisherProblem::FisherProblem(int rank, int quad_deg, std::shared_ptr<dolfin::Mes
 	}
 	else if(quad_deg == 4){
 		if(mesh->geometry().dim() == 3){
-			V = std::make_shared<VariationalFisherEquation3D-Q4::FunctionSpace>(mesh);
-			F = std::make_shared<VariationalFisherEquation3D-Q4::ResidualForm>(V);
-			J = std::make_shared<VariationalFisherEquation3D-Q4::JacobianForm>(V, V);
+			V = std::make_shared<VariationalFisherEquation3DQ4::FunctionSpace>(mesh);
+			F = std::make_shared<VariationalFisherEquation3DQ4::ResidualForm>(V);
+			J = std::make_shared<VariationalFisherEquation3DQ4::JacobianForm>(V, V);
 		}
 		else{
 			std::cout << "WARNING: only 3 spatial dimensional meshes allowed (Quadrature degree 4)" << std::endl;
 		}
 	}
+	else {
+		std::cout << "WARNING: only 3 spatial dimensional meshes allowed (Quadrature degree 4)" << std::endl;
+	}
+
 	// initialize problem parameters
 	u0_ = std::make_shared<dolfin::Function>(V); 		// function holding concentration values at t=n
 	u_ = std::make_shared<dolfin::Function>(V); 	 	// function holding concentration values at t=n+1
@@ -102,7 +107,8 @@ std::string FisherProblem::asString(){
 					"	D = pass by pointer <Expression>" << std::endl <<
 					"	rho = " << *rho_ << std::endl <<
 					"	dt = " << *dt_ << std::endl <<
-					"	theta = " << *theta_ << std::endl << std::endl;
+					"	theta = " << *theta_ << std::endl << std::endl <<
+					"	quadrature degree = " << quad_deg_ << std::endl;
 	return ss.str();
 }
 

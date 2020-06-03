@@ -1,0 +1,19 @@
+# ufl file describing:
+# the variational formulation of a 2D theta-discretized reaction-diffusion system
+
+cell = tetrahedron
+V = FiniteElement("Lagrange", cell, 2)  # degree of polynomials used
+
+u0 = Coefficient(V)			# function describing concentration at t=n
+u = Coefficient(V)			# function describing concentration at t=n+1
+v = TestFunction(V) 		# test function
+
+dt = Constant(cell)		# size of time-step
+rho = Constant(cell)	# reaction coefficient
+D = Coefficient(V) 		# diffusion tensor
+theta = Constant(cell)	# discretization variable
+
+# Problem formulation and it's Jacobian
+F = ((u - u0) / dt) * v * dx + D * dot(grad(u), grad(v)) * dx - rho * u * (1 - u) * v * dx 
+J = derivative(F, u)
+

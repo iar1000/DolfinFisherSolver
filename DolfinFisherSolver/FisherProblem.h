@@ -8,6 +8,7 @@
 class FisherProblem : public dolfin::NonlinearProblem, PrintableComponent
 {
 	 int rank_;
+	 int quad_deg_;								// degree of quadrature
 	 std::shared_ptr<dolfin::Mesh> mesh_;		// storing the mesh the function spaces where created from
 	 std::shared_ptr<dolfin::FunctionSpace> V_;	// Function space of problem
 	 std::shared_ptr<const dolfin::Form> F_;
