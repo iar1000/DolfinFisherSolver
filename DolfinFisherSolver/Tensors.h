@@ -116,7 +116,7 @@ public:
 	std::string asString(); 	// @override PrintableComponent
 	TensorSpatial3D(int rank, double dcw, double dcg,
 			std::vector<std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>> cms,
-			std::vector<int> translation);
+			std::vector<int> translation, bool useBuffer);
 	void eval (dolfin::Array<double> &values, const dolfin::Array<double> &x, const ufc::cell &cell) const override;
 	void addBufferEntry(HashableCoordinates p, double res);
 };

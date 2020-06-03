@@ -121,8 +121,9 @@ void TensorSpatial2D::eval (dolfin::Array<double> &values, const dolfin::Array<d
 // class TensorSpatial3D
 //////////////////////////////
 TensorSpatial3D::TensorSpatial3D(int rank, double dcw, double dcg,
-		std::vector<std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>> cms, std::vector<int> translation){
-	useBuffer = false;				// Opt out buffer for performance comparison
+		std::vector<std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>> cms, std::vector<int> translation,
+		bool buffer){
+	useBuffer = buffer;				// Opt out buffer for performance comparison
 	dw_ = dcw;						// Diffusion coefficient for white matter
 	dg_ = dcg;						// Diffusion coefficient for grey matter
 	translation_ = translation;		// translation vector

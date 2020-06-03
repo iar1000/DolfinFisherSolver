@@ -198,7 +198,7 @@ int main(int argc, char* argv[]){
 	// create diffusion tensor
 	std::shared_ptr<dolfin::Expression> D;
 	if(dimensions == 2){ D = std::make_shared<TensorSpatial2D>(rank, Dw, Dg, get_10on10_test_cm());	}			// @ No value map yet
-	else if(dimensions == 3){ D = std::make_shared<TensorSpatial3D>(rank, Dw, Dg, brainwebConcentrationMap.first, translation); }
+	else if(dimensions == 3){ D = std::make_shared<TensorSpatial3D>(rank, Dw, Dg, brainwebConcentrationMap.first, translation, true); }
 	else{ return 0;	}
 	std::stringstream ss2;
 	ss2 << "Diffusion Tensor: D_white= " << Dw << ", D_grey= " << Dg << std::endl
