@@ -75,6 +75,10 @@ void runTest(std::string filepath, int rank,
 	PetscLogStagePop();
 	double krylov_iters_nobuff = solver->krylov_iterations();
 
+	if(rank == 0) {
+		std::cout << "	w/o buffer: " << std::get<0>(t1.elapsed()) << "(krylov : " << krylov_iters_nobuff << ", newton: " << r.first  << ") " << std::endl;
+	}
+
 	// solve with buffer
 	PetscLogStageRegister("Solve w buffer", &stage4);
 	PetscLogStagePush(stage4);
@@ -84,8 +88,7 @@ void runTest(std::string filepath, int rank,
 	PetscLogStagePop();
 
 	if(rank == 0) {
-		std::cout << "	w/o buffer: " << std::get<0>(t1.elapsed()) << "(krylov : " << krylov_iters_nobuff << ", newton: " << r.first  << ") " << std::endl <<
-				"	w buffer: " << std::get<0>(t.elapsed()) << "(krylov : " << solver->krylov_iterations() << ", newton: " << r.first << ") " << std::endl;
+			std::cout << "	w buffer: " << std::get<0>(t.elapsed()) << "(krylov : " << solver->krylov_iterations() << ", newton: " << r.first << ") " << std::endl;
 	}
 
 	// get residual data
