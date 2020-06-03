@@ -22,7 +22,7 @@ class FisherProblem : public dolfin::NonlinearProblem, PrintableComponent
 	 std::shared_ptr<dolfin::Constant> theta_;	// theta value for time discretization
 
 public:
-	 FisherProblem(int rank, std::shared_ptr<dolfin::Mesh> mesh, std::shared_ptr<dolfin::Expression> D, double rho, double dt, double theta);
+	 FisherProblem(int rank, int quad_deg, std::shared_ptr<dolfin::Mesh> mesh, std::shared_ptr<dolfin::Expression> D, double rho, double dt, double theta);
 	// user defined residual vector
 	void F(dolfin::GenericVector& b, const dolfin::GenericVector& x);
 	// user defined assamble of Jacobian

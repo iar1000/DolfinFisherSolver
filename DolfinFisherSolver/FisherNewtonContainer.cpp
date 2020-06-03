@@ -8,7 +8,7 @@ FisherNewtonContainer::FisherNewtonContainer(int rank,
 		std::shared_ptr<dolfin::Expression> D, double rho, double theta, double dt)
 {
 	rank_ = rank;
-	problem_ = std::make_shared<FisherProblem>(rank, mesh, D, rho, dt, theta);
+	problem_ = std::make_shared<FisherProblem>(rank, 6, mesh, D, rho, dt, theta); // @TODO: quadrature degree fixed on 6
 	mesh_ = mesh;
 	initializer_ = initialCondition;
 

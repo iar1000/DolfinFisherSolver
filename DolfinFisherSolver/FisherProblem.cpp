@@ -5,8 +5,9 @@
 #include "Tensors.h"
 #include "VariationalFisherEquation2D.h"
 #include "VariationalFisherEquation3D.h"
+#include "VariationalFisherEquation3D-Q4.h"
 
-FisherProblem::FisherProblem(int rank, std::shared_ptr<dolfin::Mesh> mesh, std::shared_ptr<dolfin::Expression> D, double rho, double dt, double theta)
+FisherProblem::FisherProblem(int rank, int quad_deg, std::shared_ptr<dolfin::Mesh> mesh, std::shared_ptr<dolfin::Expression> D, double rho, double dt, double theta)
 {
 	rank_ = rank;
 	mesh_ = mesh;
@@ -14,18 +15,31 @@ FisherProblem::FisherProblem(int rank, std::shared_ptr<dolfin::Mesh> mesh, std::
 	// automatically determine dimensionality of the mesh
 	std::shared_ptr<dolfin::FunctionSpace> V;
 	std::shared_ptr<dolfin::Form> F, J;
-	if(mesh->geometry().dim() == 2){
-		V = std::make_shared<VariationalFisherEquation2D::FunctionSpace>(mesh);
-		F = std::make_shared<VariationalFisherEquation2D::ResidualForm>(V);
-		J = std::make_shared<VariationalFisherEquation2D::JacobianForm>(V, V);
+	// Automatically generated forms with quadrature degree 6
+	if(quad_deg == 6){
+		if(mesh->geometry().dim() == 2){
+			V = std::make_shared<VariationalFisherEquation2D::FunctionSpace>(mesh);
+			F = std::make_shared<VariationalFisherEquation2D::ResidualForm>(V);
+			J = std::make_shared<VariationalFisherEquation2D::JacobianForm>(V, V);
+		}
+		else if(mesh->geometry().dim() == 3){
+			V = std::make_shared<VariationalFisherEquation3D::FunctionSpace>(mesh);
+			F = std::make_shared<VariationalFisherEquation3D::ResidualForm>(V);
+			J = std::make_shared<VariationalFisherEquation3D::JacobianForm>(V, V);
+		}
+		else{
+			std::cout << "WARNING: only 2 or 3 spatial dimensional meshes allowed (Quadrature degree 6)" << std::endl;
+		}
 	}
-	else if(mesh->geometry().dim() == 3){
-		V = std::make_shared<VariationalFisherEquation3D::FunctionSpace>(mesh);
-		F = std::make_shared<VariationalFisherEquation3D::ResidualForm>(V);
-		J = std::make_shared<VariationalFisherEquation3D::JacobianForm>(V, V);
-	}
-	else{
-		std::cout << "WARNING: only 2 or 3 spatial dimensional meshes allowed" << std::endl;
+	else if(quad_deg == 4){
+		if(mesh->geometry().dim() == 3){
+			V = std::make_shared<VariationalFisherEquation3D-Q4::FunctionSpace>(mesh);
+			F = std::make_shared<VariationalFisherEquation3D-Q4::ResidualForm>(V);
+			J = std::make_shared<VariationalFisherEquation3D-Q4::JacobianForm>(V, V);
+		}
+		else{
+			std::cout << "WARNING: only 3 spatial dimensional meshes allowed (Quadrature degree 4)" << std::endl;
+		}
 	}
 	// initialize problem parameters
 	u0_ = std::make_shared<dolfin::Function>(V); 		// function holding concentration values at t=n
