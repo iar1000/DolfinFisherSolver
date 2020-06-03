@@ -12,7 +12,7 @@
 
 
 // static variables
-static std::string output_format = "ls, pc, dw, dg, rho, newton iterations, krylov iterations, time for solve(), newton relative residual, newton abs residual, residuals \n";
+static std::string output_format = "ls, pc, dw, dg, rho, newton iterations, krylov iterations, time for solve() (w / w/o), newton relative residual, newton abs residual, residuals \n";
 static const std::vector<int> translation = {20, 23, 33};
 static const std::vector<int> initial_coordinates = {20, 90, 65};
 static const std::string out_dir = "../output/";
@@ -24,7 +24,12 @@ void runTest(std::string filepath, int rank,
 		std::string ls, std::string pc, double newton_tol,
 		double diffCoef1, double diffCoef2, double reactCoef,
 		bool krylovZeroStart){
+	// setup petsc logging
+	PetscLogStage stage1, stage2, stage3, stage4;
+
 	// initialize problem
+	PetscLogStageRegister("Problem initialization", &stage1);
+	PetscLogStagePush(stage1);
 	std::shared_ptr<dolfin::Expression> D = std::make_shared<TensorSpatial3D>(rank, diffCoef1, diffCoef2, brain->getConcentrationMap(-1).first, translation);
 	//std::shared_ptr<dolfin::Expression> D = std::make_shared<TensorConstant>(rank, diffCoef1);
 	std::shared_ptr<FisherProblem> problem = std::make_shared<FisherProblem>(rank, mesh, D, reactCoef, 0.0000001, 1);
@@ -34,14 +39,18 @@ void runTest(std::string filepath, int rank,
 	std::shared_ptr<dolfin::Function> u = us.at(1);
 	*u0 = *initial_condition;
 	*u = *initial_condition;
+	PetscLogStagePop();
 
 	if(rank==0){ std::cout << "Solve " << ls << " + " << pc <<  " -" << diffCoef1 << "-" << diffCoef2 << "-" << reactCoef << std::endl;}
 
 	// instantiate solver
+	PetscLogStageRegister("Solver initialization", &stage2);
+	PetscLogStagePush(stage2);
 	std::shared_ptr<dolfin::PETScKrylovSolver> krylov = std::make_shared<dolfin::PETScKrylovSolver>(ls, pc);
 	std::shared_ptr<dolfin::NewtonSolver> solver = std::make_shared<dolfin::NewtonSolver>(
 			problem->getMesh()->mpi_comm(), krylov, dolfin::PETScFactory::instance());
 	if(krylovZeroStart){ KSPSetInitialGuessNonzero(krylov->ksp(),PETSC_TRUE); }
+	PetscLogStagePop();
 
 	// set solver parameters
 	krylov->set_from_options();
@@ -56,19 +65,27 @@ void runTest(std::string filepath, int rank,
 	PetscCalloc1(size, &a);
 	KSPSetResidualHistory(krylov->ksp(), a, 1000, PETSC_FALSE);
 
-	// solve
+	// solve without buffer
+	PetscLogStageRegister("Solve w/o buffer", &stage3);
+	PetscLogStagePush(stage3);
 	dolfin::Timer t1("AAA solve " + ls + " + " + pc + " w/o buffer");
 	auto r = solver->solve(*problem, *u->vector());
 	*u0->vector() = *u->vector();
 	t1.stop();
-	// solve
+	PetscLogStagePop();
+	double krylov_iters_nobuff = solver->krylov_iterations();
+
+	// solve with buffer
+	PetscLogStageRegister("Solve w buffer", &stage4);
+	PetscLogStagePush(stage4);
 	dolfin::Timer t("AAA solve " + ls + " + " + pc + " w buffer");
 	r = solver->solve(*problem, *u->vector());
 	t.stop();
+	PetscLogStagePop();
 
 	if(rank == 0) {
-		std::cout << "	w/o buffer: " << std::get<0>(t1.elapsed()) << std::endl <<
-				"	w buffer: " << std::get<0>(t.elapsed()) << std::endl;
+		std::cout << "	w/o buffer: " << std::get<0>(t1.elapsed()) << "(krylov : " << krylov_iters_nobuff << ", newton: " << r.first  << ") " << std::endl <<
+				"	w buffer: " << std::get<0>(t.elapsed()) << "(krylov : " << solver->krylov_iterations() << ", newton: " << r.first << ") " << std::endl;
 	}
 
 	// get residual data
@@ -86,7 +103,7 @@ void runTest(std::string filepath, int rank,
 		diffCoef1 << "," << diffCoef2 << "," << reactCoef << "," <<
 		r.first << "," <<
 		solver->krylov_iterations() << "," <<
-		std::get<0>(t.elapsed()) << "," <<
+		std::get<0>(t.elapsed()) << " / " << std::get<0>(t1.elapsed()) << "," <<
 		solver->relative_residual() << "," <<
 		solver->residual();
 		for(int i = 0; i < used; i++){
@@ -98,6 +115,9 @@ void runTest(std::string filepath, int rank,
 }
 
 
+static std::vector<std::pair<std::string, std::string>> combis_cg{
+	{"cg", "petsc_amg"}, {"cg", "hypre_amg"}, {"cg", "hypre_euclid"}, {"cg", "jacobi"}
+};
 static std::vector<std::pair<std::string, std::string>> combis_exc_euclid{
 	{"gmres", "petsc_amg"}, {"gmres", "hypre_amg"}, {"gmres", "jacobi"},
 	{"cg", "petsc_amg"}, {"cg", "hypre_amg"}, {"cg", "jacobi"},
@@ -122,6 +142,7 @@ int main(int argc, char* argv[]){
 	// Parse command line options (will intialise PETSc if any PETSc
 	// options are present, e.g. --petsc.pc_type=jacobi)
 	dolfin::parameters.parse(argc, argv);
+
 	dolfin::SubSystemsManager::init_petsc();
 
 	// Default parameters
@@ -155,7 +176,7 @@ int main(int argc, char* argv[]){
 	const double reactCoef = application_parameters["reactCoef"];
 	const bool krylovnonzero = application_parameters["krylovnonzero"];
 
-	 // Set mesh partitioner
+	// Set mesh partitioner
 	 dolfin::parameters["mesh_partitioner"] = "SCOTCH";
 
 	 int nprocs = dolfin::MPI::size(MPI_COMM_WORLD);;
@@ -216,6 +237,26 @@ int main(int argc, char* argv[]){
 					diffCoef1, (diffCoef1/10), reactCoef, krylovnonzero);
 		}
 	}
+	// type 2: test conjugate gradient solver
+	else if(type == 2){
+		std::stringstream iters;
+		iters << name << "-type-2-tol-" << newton_tol << "-nprocs-" << nprocs << "-dofpr-" << (ndofs / nprocs) << ".csv";
+		std::ofstream iterfile(out_dir + iters.str(), std::ios_base::app);
+		iterfile << output_format;
+		iterfile.close();
+
+		// run test on all combinations
+		/*
+		for(int i = 0; i < combis_cg.size(); i++){
+			runTest(out_dir + iters.str(), rank, mesh, brain,
+					combis_cg.at(i).first, combis_cg.at(i).second, newton_tol,
+					diffCoef1, (diffCoef1/10), reactCoef, krylovnonzero);
+		}
+		*/
+		runTest(out_dir + iters.str(), rank, mesh, brain,
+							"cg", "hypre_euclid", newton_tol,
+							diffCoef1, (diffCoef1/10), reactCoef, krylovnonzero);
+	}
 	else{
 		if(rank == 0){ std::cout << "don't know what type to run" << std::endl;}
 	}
@@ -235,5 +276,5 @@ int main(int argc, char* argv[]){
 		 dolfin::dump_timings_to_xml(sss.str(), dolfin::TimingClear::keep);
 	 }
 
-	MPI_Finalize();
+	return 0;
 }

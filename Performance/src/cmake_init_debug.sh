@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# source $HOME/usr/source_env.sh first before running this 
+
+rm -rf build
+mkdir -p build
+cd build && \
+    cmake -DCMAKE_C_COMPILER=mpicc -DCMAKE_CXX_COMPILER=mpic++ -DCMAKE_CXX_FLAGS_DEBUG=-pg -DCMAKE_EXE_LINKER_FLAGS_DEBUG=-pg -DCMAKE_SHARED_LINKER_FLAGS_DEBUG=-pg -DCMAKE_BUILD_TYPE=DEBUG ..
