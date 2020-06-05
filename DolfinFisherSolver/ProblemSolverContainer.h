@@ -34,6 +34,9 @@ public:
 	// output the current problem state u0_ to the given file
 	// @param: t
 	virtual void output(double t, std::shared_ptr<dolfin::File> pvdFile) = 0;
+	// output the current function u0 to the file "path+counter.h5"
+	virtual void outputFunction(double counter, std::string path) = 0;
+
 };
 
 #endif

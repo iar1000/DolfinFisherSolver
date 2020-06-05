@@ -39,6 +39,22 @@ RuntimeTracker TimeStepper::run(int simulationType, int verbose,
 	ss << csvPath << "-" << rank_;
 	if(rank_ == 0){	tracker = RuntimeTracker(verbose, true, ss.str()); }
 	else { tracker = RuntimeTracker(0, false, ss.str());	}
+
+	// create base function file path from csv-path
+	// can easily create a bug at some point
+	std::string s = ss.str();
+	std::string delim = "/";
+	auto pos = s.find(delim);
+	auto pre_pos = s.find(delim);
+	while (pos != std::string::npos)
+	{
+		pre_pos = pos;
+		pos = s.find(delim, pos + 1);
+	}
+	std::stringstream functionPath;
+	functionPath << s.substr(0, pre_pos) << "/function";
+
+
 	// attach tracker to problem container, which handles the rest
 	problemContainer->attachTracker(&tracker);
 
@@ -48,14 +64,15 @@ RuntimeTracker TimeStepper::run(int simulationType, int verbose,
 		"	simulation type: " << simulationType << std::endl <<
 		"	T = " << T << std::endl <<
 		"	dt init = " << dt_init << std::endl <<
-		"	csv path = " << csvPath << std::endl;}
+		"	csv path = " << csvPath << std::endl <<
+		"	function output path = " << functionPath.str() << std::endl;}
 
 	// start tracking simulation
 	tracker.startTracking();
 
 	// run correct simulation type
-	if(simulationType == 1){ constTimestepping(verbose, frameDuration, pvdFile, problemContainer, T, dt_init); }
-	else if(simulationType == 2){ adaptiveTimestepping(verbose, frameDuration, pvdFile, problemContainer, T, dt_init, dt_runlength); }
+	if(simulationType == 1){ constTimestepping(verbose, frameDuration, pvdFile, functionPath.str(), problemContainer, T, dt_init); }
+	else if(simulationType == 2){ adaptiveTimestepping(verbose, frameDuration, pvdFile, functionPath.str(), problemContainer, T, dt_init, dt_runlength); }
 	else{ if(rank_ == 0){ std::cout << "WARNING (Timestepper): unknown simulation type, no run!" << std::endl; }}
 
 	// stop tracking simulation
@@ -65,7 +82,7 @@ RuntimeTracker TimeStepper::run(int simulationType, int verbose,
 	return tracker;
 }
 
-void TimeStepper::constTimestepping(int verbose, double frameDuration, std::shared_ptr<dolfin::File> pvdFile,
+void TimeStepper::constTimestepping(int verbose, double frameDuration, std::shared_ptr<dolfin::File> pvdFile, std::string functionOutPath,
  		ProblemSolverContainer* problemContainer, double T, double dt_init)
 {
 	// set timestepping and helper variables
@@ -107,12 +124,13 @@ void TimeStepper::constTimestepping(int verbose, double frameDuration, std::shar
 	}
 	// always save last state
 	problemContainer->output(t, pvdFile);
+	problemContainer->outputFunction(0, functionOutPath);
 
 	// print termination of timestepping
 	if(rank_ == 0){ std::cout << "finished temporal constant timestepping!" << std::endl << std::endl; }
 }
 
-void TimeStepper::adaptiveTimestepping(int verbose, double frameDuration, std::shared_ptr<dolfin::File> pvdFile,
+void TimeStepper::adaptiveTimestepping(int verbose, double frameDuration, std::shared_ptr<dolfin::File> pvdFile, std::string functionOutPath,
 		ProblemSolverContainer* problemContainer, double T, double dt_init, int dt_runlength)
 {
 	// set timestepping and helper variables
@@ -186,6 +204,7 @@ void TimeStepper::adaptiveTimestepping(int verbose, double frameDuration, std::s
 	}
 	// always save last state
 	problemContainer->output(t, pvdFile);
+	problemContainer->outputFunction(0, functionOutPath);
 
 	// print termination of timestepping
 	if(rank_ == 0){ std::cout << "finished temporal adaptive timestepping!" << std::endl << std::endl; }

@@ -47,6 +47,7 @@ public:
 	double getP();
 	void attachTracker(RuntimeTracker* tracker);
 	void output(double t, std::shared_ptr<dolfin::File> pvdFile);
+	void outputFunction(double counter, std::string path);
 	// @override virtuals from PrintableComponent
 	std::string asString();
 };

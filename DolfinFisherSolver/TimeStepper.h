@@ -38,12 +38,12 @@ public:
 private:
 	// perform timestepping with constant dt
 	// return if convergence failes or duration T is reached
-	void constTimestepping(int verbose, double frameDuration, std::shared_ptr<dolfin::File> pvdFile,
+	void constTimestepping(int verbose, double frameDuration, std::shared_ptr<dolfin::File> pvdFile, std::string functionOutPath,
 			ProblemSolverContainer* problemContainer, double T, double dt_init);
 	// perform timestepping with adaptive dt
 	// return if T is reached or convergence with dt_min_ still failes
 	// dt_runlength: recalculate new timestep every "dt_runlength" iterations
-	void adaptiveTimestepping(int verbose, double frameDuration, std::shared_ptr<dolfin::File> pvdFile,
+	void adaptiveTimestepping(int verbose, double frameDuration, std::shared_ptr<dolfin::File> pvdFile, std::string functionOutPath,
 			ProblemSolverContainer* problemContainer, double T, double dt_init, int dt_runlength);
 };
 

@@ -192,6 +192,13 @@ void FisherNewtonContainer::output(double t, std::shared_ptr<dolfin::File> pvdFi
 	*pvdFile << std::pair<const dolfin::Function*, double>( u0_.get() , t);
 }
 
+void FisherNewtonContainer::outputFunction(double counter, std::string path){
+	std::stringstream ss;
+	ss << path << counter << ".h5";
+	auto hdf5 = dolfin::HDF5File(MPI_COMM_WORLD, ss.str(), std::string("w"));
+	hdf5.write(*u0_, "/u", false);
+}
+
 std::string FisherNewtonContainer::asString(){
 	std::stringstream ss3;
 	ss3 << "FisherNewtonContainer: Solver= " << ls_ << ", Preconditioner= " << pc_ << std::endl <<
