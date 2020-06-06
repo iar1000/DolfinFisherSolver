@@ -1,5 +1,8 @@
 
 #include "TimeStepper.h"
+#include <sys/stat.h>
+#include <fstream>
+
 
 // class TimeStepper
 ////////////////////////////
@@ -51,8 +54,16 @@ RuntimeTracker TimeStepper::run(int simulationType, int verbose,
 		pre_pos = pos;
 		pos = s.find(delim, pos + 1);
 	}
+	std::stringstream folderPath;
+	folderPath << s.substr(0, pre_pos) << "/functions";
+	if(mkdir(folderPath.str().c_str(), 0777) == 0){
+		if(rank_ == 0){
+			std::cout << "INFO (getFilePath): created subfolder " << folderPath.str() << std::endl;
+		}
+	}
+
 	std::stringstream functionPath;
-	functionPath << s.substr(0, pre_pos) << "/function";
+	functionPath << s.substr(0, pre_pos) << "/functions/function";
 
 
 	// attach tracker to problem container, which handles the rest
