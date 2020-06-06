@@ -100,6 +100,7 @@ void TimeStepper::constTimestepping(int verbose, double frameDuration, std::shar
 	double t = 0;					// current time
 	double dt = dt_init;			// current timestep size
 	int frameNumber = 0;			// counter for outputed frames
+	int functionNumber = 0;			// counter for outputed functions
 	int progress = 0;				// progress in %
 	double onePercent = T/100; 	// duration of one % of the whole progress
 
@@ -122,9 +123,16 @@ void TimeStepper::constTimestepping(int verbose, double frameDuration, std::shar
 		// write frame
 		if(t >= frameNumber * frameDuration){
 			// print verbose level 3
-			if(rank_ == 0 && verbose > 2){ std::cout << "writing system state to output..." << std::endl << std::endl; }
+			if(rank_ == 0 && verbose > 2){ std::cout << "writing system state to pvd..." << std::endl << std::endl; }
 			problemContainer->output(t, pvdFile);
 			frameNumber++;
+		}
+
+		// write function
+		if(t >= functionNumber){
+			if(rank_ == 0 && verbose > 2){ std::cout << "writing system state to function..." << std::endl << std::endl; }
+			problemContainer->outputFunction(functionNumber, functionOutPath);
+			functionNumber++;
 		}
 
 		// print progress verbose level 2
@@ -149,6 +157,7 @@ void TimeStepper::adaptiveTimestepping(int verbose, double frameDuration, std::s
 	double dt = dt_init;				// current timestep size
 	double dtNew = dt_init;				// adapted timestep size
 	int frameNumber = 0;				// counter for outputed frames
+	int functionNumber = 0;				// counter for outputed functions
 	int progress = 0;					// progress in %
 	double onePercent = T/100;			// duration of one % of the whole progress
 	double p = problemContainer->getP();// get theta dependend p for timestep adaption
@@ -188,9 +197,16 @@ void TimeStepper::adaptiveTimestepping(int verbose, double frameDuration, std::s
 			// write frame
 			if(t >= frameNumber * frameDuration){
 				// print verbose level 3
-				if(rank_ == 0 && verbose > 2){ std::cout << "writing system state to output..." << std::endl << std::endl; }
+				if(rank_ == 0 && verbose > 2){ std::cout << "writing system state to pvd..." << std::endl << std::endl; }
 				problemContainer->output(t, pvdFile);
 				frameNumber++;
+			}
+
+			// write function
+			if(t >= functionNumber){
+				if(rank_ == 0 && verbose > 2){ std::cout << "writing system state to function..." << std::endl << std::endl; }
+				problemContainer->outputFunction(functionNumber, functionOutPath);
+				functionNumber++;
 			}
 
 			// print progress verbose level 2
