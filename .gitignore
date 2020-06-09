@@ -7,6 +7,12 @@ bin/FisherSolver
 scaling-tests/
 test/
 ParameterInterference/runs
+mesh/
+!mesh/simple_mesh_creator.py
+!mesh/xml-to-h5.py
+brain-data
+!braindata/brainweb/plot_brain.py
+Performance/bin/Performance-FisherSolver
 
 # OS generated files #
 ######################
@@ -17,6 +23,9 @@ ParameterInterference/runs
 .Trashes
 ehthumbs.db
 Thumbs.d
+*.idea/
+*.project/
+*.vscode/
 
 # Logs and databases #
 ######################
