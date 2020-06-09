@@ -25,6 +25,10 @@ parser.add_argument("--Radiusmin", type=float, help="minimum initial radius", de
 parser.add_argument("--Radiusmax", type=float, help="maximum initial radius", default=1)
 parser.add_argument("--Radiussteps", type=float, help="discretization steps between Radiusmin and Radiusmax", default=1)
 
+parser.add_argument("--procs", type=float, help="number mpi processors (must be multiple of 24/36)", default=24)
+parser.add_argument("--runtime", type=str, help="lsf time limit", default="04:00")
+parser.add_argument("--mesh", type=str, help="name of the mesh", default="lh-plial-hull-flood-0-1-merge-4-dof-5500k.h5")
+
 args = parser.parse_args()
 
 # Parameter inference
@@ -41,16 +45,16 @@ radius_steps = args.Radiussteps     # discretization steps of parameter range
 
 # Fixed Arguments
 # Runtime arguments
-mpiprocs = 24
-lsftime = "04:00"
+mpiprocs = args.procs
+lsftime = args.runtime
 verbosity = 3
 # Model arguments
 date = date.today().strftime("%d-%m-%Y")
 initial_condition = [49, 130, 40, 3]  # x, y, z, radius
 translation = [25, 21, 30]
 # Solver arguments
-mesh_name = "lh-white-hull-flood-0-1-merge-5-dof-80k.h5"
-T_end = 0.1
+mesh_name = args.mesh
+T_end = args.Tend
 dt = 0.0001
 solver = "cg"
 preconditioner = "hypre_euclid"
