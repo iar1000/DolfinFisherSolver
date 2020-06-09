@@ -13,7 +13,7 @@ template_filename = "speed-type-1-tol-1e-08-nprocs-1-dofpr-600905.csv"
 output_files = [f for f in listdir("../output") if isfile(join("../output", f))]
 data = pd.DataFrame()
 print(output_files)
-for procs in [1, 4, 16, 24, 36, 48, 96, 120, 168, 240, 360, 480]:
+for procs in [36, 48, 96, 120, 180, 240, 360, 480, 540]:
     reg = re.compile("speed-type-1-tol-.+-nprocs-{}-dofpr-.+.csv".format(procs))
     filename = [fn for fn in output_files if bool(re.match(reg, fn))]
     if filename:
