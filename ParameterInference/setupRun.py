@@ -333,7 +333,7 @@ MPI_PROCESS=$2
 TIME=${{14}}
 
 
-mpirun -n "$MPI_PROCESS" {}FisherSolver \\
+bsub -N -W "$TIME" -n "$MPI_PROCESS" -o {}/lsf.out -e {}/lsf.err -R fullnode mpirun -n "$MPI_PROCESS" {}FisherSolver \\
     "{}"  "{}" "$MESH_NAME" "simulation-output" "out" "iterationdata" \\
     "{}" "{}" "{}" "{}" "1" \\
     "0.00000001" "$DT_START" "0.1" "$TEND" "$FRAMERATE" \\
@@ -342,15 +342,13 @@ mpirun -n "$MPI_PROCESS" {}FisherSolver \\
     "$NEWTONABS" "$NEWTONREL" "-1" "-1" \\
     "$SOLVER" "$PREC" \\
     "0" "{}" "{}" "{}"
-'''.format(fisher_path,
+'''.format(fisher_path, c[0], c[0],
            c[0], mesh_path,
            initial_condition[0], initial_condition[1], initial_condition[2], c[3],
            c[1], c[1] / diffusion_fac, c[2],
            translation[0], translation[1], translation[2])
         # write file
         job_bash.write(description + command)
-
-        #@TODO: bsub -N -W "$TIME" -n "$MPI_PROCESS" -o lsf.out -e lsf.err -R fullnode
 
     # set execution permission
     os.chmod(parent_path + "/" + c[0] + '/job.sh', 0o755)
