@@ -152,7 +152,7 @@ int main(int argc, char* argv[]){
 	// Default parameters
 	dolfin::Parameters application_parameters("application_parameters");
 	application_parameters.add("dolflog", 30);
-	application_parameters.add("meshname", "lh-white-hull-flood-0-1-merge-5-dof-unknown.xml");
+        application_parameters.add("meshname", "lh-white-hull-flood-0-1-merge-5-dof-80k.h5");
 	application_parameters.add("type", 1);
 	application_parameters.add("name", "no-name");
 	application_parameters.add("newton_tol", 0.00000001);
