@@ -26,7 +26,7 @@ radius_max = 2  # max r0
 radius_steps = 2  # discretization steps of parameter range
 # Fixed Arguments
 # Runtime arguments
-mpiprocs = 2
+mpiprocs = 24
 lsftime = "04:00"
 verbosity = 3
 # Model arguments
@@ -35,7 +35,7 @@ initial_condition = [49, 130, 40, 3]  # x, y, z, radius
 translation = [25, 21, 30]
 # Solver arguments
 mesh_name = "lh-white-hull-flood-0-1-merge-5-dof-80k.h5"
-T_end = 0.001
+T_end = 0.1
 dt = 0.0001
 solver = "cg"
 preconditioner = "hypre_euclid"
