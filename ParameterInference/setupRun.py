@@ -361,7 +361,7 @@ bsub -N -W "$TIME" -n "$MPI_PROCESS" -o {}/lsf.out -e {}/lsf.err -R fullnode mpi
     "$NEWTONABS" "$NEWTONREL" "-1" "-1" \\
     "$SOLVER" "$PREC" \\
     "0" "{}" "{}" "{}"
-'''.format(fisher_path, c[0], c[0],
+'''.format(c[0], c[0], fisher_path,
            c[0], mesh_path,
            initial_condition[0], initial_condition[1], initial_condition[2], c[3],
            c[1], c[1] / diffusion_fac, c[2],
