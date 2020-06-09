@@ -6,24 +6,39 @@ import os
 from datetime import date
 import numpy as np
 import stat
+import argparse
 
 
 # https://stackoverflow.com/questions/2440692/formatting-floats-without-trailing-zeros
 def floatToString(inputValue):
     return ('%.15f' % inputValue).rstrip('0').rstrip('.')
 
+parser = argparse.ArgumentParser()
+parser.add_argument("--Tend", type=float, help="T_end of the simulations", default=10)
+parser.add_argument("--Dmin", type=float, help="minimum diffusion coefficient", default=0.1)
+parser.add_argument("--Dmax", type=float, help="maximum diffusion coefficient", default=0.6)
+parser.add_argument("--Dsteps", type=float, help="discretization steps between Dmin and Dmax", default=10)
+parser.add_argument("--Rhomin", type=float, help="minimum diffusion coefficient", default=0.025)
+parser.add_argument("--Rhomax", type=float, help="maximum diffusion coefficient", default=0.25)
+parser.add_argument("--Rhosteps", type=float, help="discretization steps between Rhomin and Rhomax", default=10)
+parser.add_argument("--Radiusmin", type=float, help="minimum initial radius", default=1)
+parser.add_argument("--Radiusmax", type=float, help="maximum initial radius", default=1)
+parser.add_argument("--Radiussteps", type=float, help="discretization steps between Radiusmin and Radiusmax", default=1)
+
+args = parser.parse_args()
 
 # Parameter inference
 diffusion_fac = 10  # factor D_w / D_g
-diffusion_min = 0.1  # min D_W
-diffusion_max = 0.6  # max D_W
-diffusion_steps = 2  # discretization steps of parameter range
-rho_min = 0.025  # min rho
-rho_max = 0.25  # max rho
-rho_steps = 2  # discretization steps of parameter range
-radius_min = 1  # min r0
-radius_max = 2  # max r0
-radius_steps = 2  # discretization steps of parameter range
+diffusion_min = args.Dmin           # min D_W
+diffusion_max = args.Dmax           # max D_W
+diffusion_steps = args.Dsteps       # discretization steps of parameter range
+rho_min = args.Rhomin               # min rho
+rho_max = args.Rhomax               # max rho
+rho_steps = args.Rhosteps           # discretization steps of parameter range
+radius_min = args.Radiusmin         # min r0
+radius_max = args.Radiusmax         # max r0
+radius_steps = args.Radiussteps     # discretization steps of parameter range
+
 # Fixed Arguments
 # Runtime arguments
 mpiprocs = 24
@@ -67,7 +82,7 @@ rho_stepsize = rho_range / rho_steps
 rho_pspace = np.arange(rho_min, rho_max + 0.01, rho_stepsize).tolist()
 rho_pspace = ['%.3f' % elem for elem in rho_pspace]
 radius_range = radius_max - radius_min
-radius_stepsize = radius_range / radius_steps
+radius_stepsize = (1 if radius_range == 0 else radius_range / radius_steps)
 radius_pspace = np.arange(radius_min, radius_max + 0.01, radius_stepsize).tolist()
 radius_pspace = ['%.3f' % elem for elem in radius_pspace]
 
