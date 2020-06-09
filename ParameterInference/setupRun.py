@@ -367,7 +367,6 @@ with open(parent_path + '/check-corner.py', 'w') as submit_bash:
 # automatically generated script to check status of corner case submissions
 
 import os
-from tabulate import tabulate
 from datetime import datetime
 
 corner_directories = {}
@@ -462,29 +461,51 @@ print("\\tDone cases : {{}}\\n"
                                     len(timedout_cases), len(stuck_cases), len(pending_cases)))
 # stuck cases
 print("\\nStuck cases:")
+print('%-35s %-6s %-6s' % ("case directory", "procs", "tries"))
+print("--------------------------------------------------------")
 stuck_cases = sorted(stuck_cases, key=lambda x: x)
-print(tabulate(stuck_cases, headers=['case directory', 'nprocs', "tries"]))
+for i in range(len(stuck_cases)):
+    print('%-35s %-5i %-5i' % (stuck_cases[i][0], int(stuck_cases[i][1]), int(stuck_cases[i][2])))
+
 # timed out cases
 print("\\nTimed-out cases:")
+print('%-35s %-6s %-6s' % ("case directory", "procs", "tries"))
+print("--------------------------------------------------------")
 timedout_cases = sorted(timedout_cases, key=lambda x: (x[0], x[1]))
-print(tabulate(timedout_cases, headers=['case directory', 'procs', "tries"]))
+for i in range(len(timedout_cases)):
+    print('%-35s %-5i %-5i' % (timedout_cases[i][0], int(timedout_cases[i][1]), int(timedout_cases[i][2])))
+
 # init cases
 print("\\nInit cases:")
+print('%-35s %-6s %-6s' % ("case directory", "procs", "tries"))
+print("--------------------------------------------------------")
 init_cases = sorted(init_cases, key=lambda x: (x[0], x[1]))
-print(tabulate(init_cases, headers=['case directory', 'procs', "tries"]))
+for i in range(len(init_cases)):
+    print('%-35s %-5i %-5i' % (init_cases[i][0], int(init_cases[i][1]), int(init_cases[i][2])))
+
 # running cases
 print("\\nRunning cases:")
+print('%-35s %-6s %-6s' % ("case directory", "procs", "tries"))
+print("--------------------------------------------------------")
 midrun_cases = sorted(midrun_cases, key=lambda x: (x[0], x[1]))
-print(tabulate(midrun_cases, headers=['case directory', 'procs', "tries"]))
+for i in range(len(midrun_cases)):
+    print('%-35s %-5i %-5i' % (midrun_cases[i][0], int(midrun_cases[i][1]), int(midrun_cases[i][2])))
+
 # pending cases
 print("\\nPending cases:")
+print('%-35s' % ("case directory"))
+print("--------------------------------------------------------")
 pending_cases = sorted(pending_cases, key=lambda x: x)
-print(tabulate(pending_cases, headers=['case directory']))
+for i in range(len(pending_cases)):
+    print('%-35s' % (pending_cases[i][0]))
+
 # done cases
 print("\\nDone cases:")
+print('%-35s %-6s %-10s %-6s' % ("case directory", "procs", "runtime", "tries"))
+print("--------------------------------------------------------")
 done_cases = sorted(done_cases, key=lambda x: (x[0], x[1]))
-print(tabulate(done_cases, headers=['case directory', "procs", "runtime", "tries"]))
-
+for i in range(len(done_cases)):
+    print('%-35s %-5i %-10s %-5i' % (done_cases[i][0], int(done_cases[i][1]), done_cases[i][2], int(done_cases[i][3])))
 '''.format(corner_dirs_names)
     submit_bash.write(command)
 os.chmod(parent_path + '/check-corner.py', 0o755)
@@ -496,7 +517,6 @@ with open(parent_path + '/check-all.py', 'w') as submit_bash:
 # automatically generated script to check status of all case submissions
 
 import os
-from tabulate import tabulate
 from datetime import datetime
 
 corner_directories = {}
@@ -591,29 +611,51 @@ print("\\tDone cases : {{}}\\n"
                                     len(timedout_cases), len(stuck_cases), len(pending_cases)))
 # stuck cases
 print("\\nStuck cases:")
+print('%-35s %-6s %-6s' % ("case directory", "procs", "tries"))
+print("--------------------------------------------------------")
 stuck_cases = sorted(stuck_cases, key=lambda x: x)
-print(tabulate(stuck_cases, headers=['case directory', 'nprocs', "tries"]))
+for i in range(len(stuck_cases)):
+    print('%-35s %-5i %-5i' % (stuck_cases[i][0], int(stuck_cases[i][1]), int(stuck_cases[i][2])))
+
 # timed out cases
 print("\\nTimed-out cases:")
+print('%-35s %-6s %-6s' % ("case directory", "procs", "tries"))
+print("--------------------------------------------------------")
 timedout_cases = sorted(timedout_cases, key=lambda x: (x[0], x[1]))
-print(tabulate(timedout_cases, headers=['case directory', 'procs', "tries"]))
+for i in range(len(timedout_cases)):
+    print('%-35s %-5i %-5i' % (timedout_cases[i][0], int(timedout_cases[i][1]), int(timedout_cases[i][2])))
+
 # init cases
 print("\\nInit cases:")
+print('%-35s %-6s %-6s' % ("case directory", "procs", "tries"))
+print("--------------------------------------------------------")
 init_cases = sorted(init_cases, key=lambda x: (x[0], x[1]))
-print(tabulate(init_cases, headers=['case directory', 'procs', "tries"]))
+for i in range(len(init_cases)):
+    print('%-35s %-5i %-5i' % (init_cases[i][0], int(init_cases[i][1]), int(init_cases[i][2])))
+
 # running cases
 print("\\nRunning cases:")
+print('%-35s %-6s %-6s' % ("case directory", "procs", "tries"))
+print("--------------------------------------------------------")
 midrun_cases = sorted(midrun_cases, key=lambda x: (x[0], x[1]))
-print(tabulate(midrun_cases, headers=['case directory', 'procs', "tries"]))
+for i in range(len(midrun_cases)):
+    print('%-35s %-5i %-5i' % (midrun_cases[i][0], int(midrun_cases[i][1]), int(midrun_cases[i][2])))
+
 # pending cases
 print("\\nPending cases:")
+print('%-35s' % ("case directory"))
+print("--------------------------------------------------------")
 pending_cases = sorted(pending_cases, key=lambda x: x)
-print(tabulate(pending_cases, headers=['case directory']))
+for i in range(len(pending_cases)):
+    print('%-35s' % (pending_cases[i][0]))
+
 # done cases
 print("\\nDone cases:")
+print('%-35s %-6s %-10s %-6s' % ("case directory", "procs", "runtime", "tries"))
+print("--------------------------------------------------------")
 done_cases = sorted(done_cases, key=lambda x: (x[0], x[1]))
-print(tabulate(done_cases, headers=['case directory', "procs", "runtime", "tries"]))
-
+for i in range(len(done_cases)):
+    print('%-35s %-5i %-10s %-5i' % (done_cases[i][0], int(done_cases[i][1]), done_cases[i][2], int(done_cases[i][3])))
 '''.format(case_dirs_names)
     submit_bash.write(command)
 os.chmod(parent_path + '/check-all.py', 0o755)
@@ -627,7 +669,6 @@ with open(parent_path + '/setup-submit-stuck.py', 'w') as submit_bash:
 # deletes the lsf output
 
 import os
-from tabulate import tabulate
 from datetime import datetime
 
 corner_directories = {}
