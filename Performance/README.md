@@ -3,10 +3,8 @@
 This subpart of the simulation is testing different linear solver/ preconditioner pairs for the Newton solver. It is currently adapted to work on Euler.
 
 ### Build PerformanceTester
-All the requirements from building FisherSolver must be fullfiled to build the PerformanceTester. If this is the case do the following:
-1. build missing folders from within /Performance folder: 
- `mkdir src/build && mkdir output`  
-2. Setup and compile normal mode
+All the requirements from building FisherSolver must be fullfiled to build the PerformanceTester. If this is the case do the following in the Performance/ folder:
+1. Setup and compile normal mode
 `cd src && ./cmake_init.sh && cd build && make` or  
 Setup and compile debug mode with gprof output
 `cd src && ./cmake_init_debug.sh && cd build && make`  

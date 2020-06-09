@@ -1,8 +1,6 @@
 # Parameter Inference
 ## Setup
-1. create missing folders  
-   `mkdir runs`
-2. generate a run directory and run scripty with `setupRun.py`.  
+Generate a run directory and run scripty with `setupRun.py`.  
 Take a look at the script to see the parameters you can set.  
 
 The following are generated inside the run directory:
