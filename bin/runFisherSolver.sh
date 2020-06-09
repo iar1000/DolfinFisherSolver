@@ -24,6 +24,9 @@ FILE_NAME="out"
 #		datatype of iteration data is always .csv
 CSV_NAME="iterationdata"
 # --framerate: number of frames saved to file per 1 time unit (TEND=10, FRAMERATE=30 => 300 FRAMES SAVED)
+#      > 0: number of frames saved to file per time unit
+#      = 0: no frames saved as file
+#      < 0: all frames saved to file
 FRAMERATE=30
 
 OUTPUT_PARENTFOLDER="../output" 		# path to output parent folder
