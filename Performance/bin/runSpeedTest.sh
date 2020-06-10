@@ -3,7 +3,7 @@
 #script to run speed test with plial meshes mid- and big-sized
 
 # type 1: all combinations of ls and pc
-TYPE=2
+TYPE=3
 TOL=0.00000001
 KRYLNONZERO=0
 MESHSIZE=5500
