@@ -107,7 +107,7 @@ void runTest(std::string filepath, int rank,
 		diffCoef1 << "," << diffCoef2 << "," << reactCoef << "," <<
 		r.first << "," <<
 		solver->krylov_iterations() << "," <<
-		std::get<0>(t.elapsed()) << " / " << std::get<0>(t1.elapsed()) << "," <<
+		std::get<0>(t.elapsed()) << "," <<
 		solver->relative_residual() << "," <<
 		solver->residual();
 		for(int i = 0; i < used; i++){
@@ -246,7 +246,7 @@ int main(int argc, char* argv[]){
 					diffCoef1, (diffCoef1/10), reactCoef, krylovnonzero, useBuffer ? true : false, quadratureDegree);
 		}
 	}
-	// type 2: test conjugate gradient solver
+	// type 2: test conjugate gradient solver with hypre euclid preconditioner
 	else if(type == 2){
 		std::stringstream iters;
 		iters << name << "-type-2-tol-" << newton_tol << "-nprocs-" << nprocs << "-dofpr-" << (ndofs / nprocs) << ".csv";
@@ -254,17 +254,24 @@ int main(int argc, char* argv[]){
 		iterfile << output_format;
 		iterfile.close();
 
-		// run test on all combinations
-		/*
-		for(int i = 0; i < combis_cg.size(); i++){
-			runTest(out_dir + iters.str(), rank, mesh, brain,
-					combis_cg.at(i).first, combis_cg.at(i).second, newton_tol,
-					diffCoef1, (diffCoef1/10), reactCoef, krylovnonzero);
-		}
-		*/
 		runTest(out_dir + iters.str(), rank, mesh, brain,
 							"cg", "hypre_euclid", newton_tol,
 							diffCoef1, (diffCoef1/10), reactCoef, krylovnonzero, useBuffer ? true : false, quadratureDegree);
+	}
+	// type 3: test conjugate gradient solver
+	else if(type == 3){
+		std::stringstream iters;
+		iters << name << "-type-3-tol-" << newton_tol << "-nprocs-" << nprocs << "-dofpr-" << (ndofs / nprocs) << ".csv";
+		std::ofstream iterfile(out_dir + iters.str(), std::ios_base::app);
+		iterfile << output_format;
+		iterfile.close();
+
+		// run test on all combinations
+		for(int i = 0; i < combis_cg.size(); i++){
+			runTest(out_dir + iters.str(), rank, mesh, brain,
+					combis_cg.at(i).first, combis_cg.at(i).second, newton_tol,
+					diffCoef1, (diffCoef1/10), reactCoef, krylovnonzero, useBuffer ? true : false, quadratureDegree);
+		}
 	}
 	else{
 		if(rank == 0){ std::cout << "don't know what type to run" << std::endl;}

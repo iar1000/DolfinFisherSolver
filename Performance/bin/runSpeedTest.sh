@@ -1,12 +1,12 @@
 #!/bin/bash
 
-#script to run speed test
+#script to run speed test with plial meshes mid- and big-sized
 
 # type 1: all combinations of ls and pc
-TYPE=1
+TYPE=2
 TOL=0.00000001
 KRYLNONZERO=0
-MESHSIZE=600
+MESHSIZE=5500
 # overwrite default by command line arguments
 while [[ "$#" -gt 0 ]]; do case $1 in
   -tol|--tolerance) TOL="$2"; shift;;
@@ -17,18 +17,12 @@ while [[ "$#" -gt 0 ]]; do case $1 in
 esac; shift; done
 
 # run speed test with variety of cores for different mesh sizes
-if [ "$MESHSIZE" -eq 600 ]
+if [ "$MESHSIZE" -eq 5500 ]
 then
-	cores=(1 4 16)
 	fncores=(24 36 48 96 120 180 240 360)
-elif [ "$MESHSIZE" -eq 4700 ]
+elif [ "$MESHSIZE" -eq 40000 ]
 then
-	cores=()
-	fncores=(36 48 96 120 180 240 360 480 540 600)
-elif [ "$MESHSIZE" -eq 37000 ]
-then
-	cores=()
-	fncores=(360 480 540 600 720 840 960)
+	fncores=(120 180 240 360 480 540 600)
 fi
 
 echo "${cores[*]}"
@@ -36,10 +30,10 @@ echo "${fncores[*]}"
 
 for c in "${cores[@]}"; do
 	echo "submit $c core job"
-	bsub -o "speed-${MESHSIZE}-$c" -n "$c"  mpirun ./Performance-FisherSolver --meshname "lh-white-hull-flood-0-1-merge-5-dof-${MESHSIZE}k.h5" --name "speed${MESHSIZE}" --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
+	bsub -o "speed-${MESHSIZE}-$c" -n "$c" -W 08:00  mpirun ./Performance-FisherSolver --meshname "lh-plial-dof-${MESHSIZE}k.h5" --name "speed${MESHSIZE}" --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
 done
 
 for c in "${fncores[@]}"; do
 	echo "submit $c core job fullnode"
-	bsub -o "speed-${MESHSIZE}-$c" -n "$c" -R fullnode mpirun ./Performance-FisherSolver --meshname "lh-white-hull-flood-0-1-merge-5-dof-${MESHSIZE}k.h5" --name "speed" --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
+	bsub -o "speed-${MESHSIZE}-$c" -n "$c" -W 08:00 -R fullnode mpirun ./Performance-FisherSolver --meshname "lh-plial-dof-${MESHSIZE}k.h5" --name "speed${MESHSIZE}" --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
 done
