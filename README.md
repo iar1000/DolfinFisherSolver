@@ -20,7 +20,7 @@ Follow these instructions to build FisherSolver executable:
     `module load gcc/6.3.0 cmake/3.15.3 openmpi/3.0.1 fenics/2019.1.0`
   * **local:** See the installation requirements
 3. in DolfinFisherSolver parent folder, create missing directories:  
-  `mkdir DolfinFisherSolver/build && mkdir output && mkdir Performance/src/build && mkdir Performance/output && ParameterInference/runs` 
+  `mkdir DolfinFisherSolver/build && mkdir output && mkdir Performance/src/build && mkdir Performance/output && mkdir ParameterInference/runs` 
 4. Compile executable:
   * **Euler**: `cd DolfinFisherSolver && ./cmake_init.sh && cd build && make`
   * **local**: `cd DolfinFisherSolver/build && cmake .. && make`  
