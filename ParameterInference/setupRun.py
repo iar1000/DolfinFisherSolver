@@ -352,7 +352,7 @@ MPI_PROCESS=$2
 TIME=${{14}}
 
 
-bsub -N -W "$TIME" -n "$MPI_PROCESS" -o {}/lsf.out -e {}/lsf.err -R fullnode mpirun -n "$MPI_PROCESS" {}FisherSolver \\
+ bsub -N -W "$TIME" -n "$MPI_PROCESS" -o {}/lsf.out -e {}/lsf.err -R fullnode mpirun -n "$MPI_PROCESS" {}FisherSolver \\
     "{}"  "{}" "$MESH_NAME" "simulation-output" "out" "iterationdata" \\
     "{}" "{}" "{}" "{}" "1" \\
     "0.00000001" "$DT_START" "0.1" "$TEND" "$FRAMERATE" \\
@@ -371,7 +371,7 @@ bsub -N -W "$TIME" -n "$MPI_PROCESS" -o {}/lsf.out -e {}/lsf.err -R fullnode mpi
 
     # set execution permission
     os.chmod(parent_path + "/" + c[0] + '/job.sh', 0o755)
-
+    #
 
 ###############################################################################
 ####################### CHECK AND RERUN #######################################
@@ -396,6 +396,7 @@ midrun_cases = []  # cases that are mid-simulation
 init_cases = []  # case that are currently initalizing the simulation (mesh read in)
 timedout_cases = []  # cases that are lsf timed out
 stuck_cases = []  # cases that got stuck in mesh read-in
+failed_cases = [] # cases that got submitted but failed without starting the simulation
 # check all cases
 for dir in all_directories:
     if dir in corner_directories:
@@ -409,9 +410,15 @@ for dir in all_directories:
         # get all files in this folder
         try:
             case_directories = os.listdir(path)
+            lsf_directory = os.listdir(dir)
         except:
             case_directories = []
-            pending_cases.append([dir])
+            # check if it wasn't submitted or simply failed
+            lsfoutput = [x for x in lsf_directory if ("lsf.out" in x)]
+            if lsfoutput:
+                failed_cases.append([dir])
+            else:
+                pending_cases.append([dir])
             has_started = False
 
         # catch pending cases with no submissions yet
@@ -447,8 +454,14 @@ for dir in all_directories:
 
         # at this point all pending or sucessefull finnished cases should be handled and in the corresponding folders
         # check if the simulation for this directory is currently running or failed
-        lsfoutput = [x for x in case_directories if ("lsf.out" in x)]
+        lsfoutput = [x for x in lsf_directory if ("lsf.out" in x)]
         case_statuses = sorted(case_statuses, reverse=True, key=lambda x: x[3])
+        
+        # failed becasue not case status is available but there is a simulation-output folder
+        if not case_statuses:
+            failed_cases.append([dir])
+            continue
+            
         # lsf output in directory means case has failed
         if lsfoutput:
             if "Simulation 3 run" in case_statuses[0][2]:
@@ -470,12 +483,22 @@ for dir in all_directories:
 # print status infos
 print("Status infos:")
 print("\\tDone cases : {{}}\\n"
+      "\\tFailed cases: {{}}\\n"
       "\\tInit cases : {{}}\\n"
       "\\tRunning cases : {{}}\\n"
       "\\tTimed-out cases : {{}}\\n"
       "\\tStuck cases : {{}}\\n"
-      "\\tPending cases : {{}}".format(len(done_cases), len(init_cases), len(midrun_cases),
+      "\\tPending cases : {{}}".format(len(done_cases), len(failed_cases), len(init_cases), len(midrun_cases),
                                     len(timedout_cases), len(stuck_cases), len(pending_cases)))
+
+# failed cases
+print("\\nFailed cases:")
+print('%-35s' % ("case directory"))
+print("--------------------------------------------------------")
+failed_cases = sorted(failed_cases, key=lambda x: x)
+for i in range(len(failed_cases)):
+    print('%-35s' % (failed_cases[i][0]))
+
 # stuck cases
 print("\\nStuck cases:")
 print('%-35s %-6s %-6s' % ("case directory", "procs", "tries"))
@@ -546,6 +569,7 @@ midrun_cases = []  # cases that are mid-simulation
 init_cases = []  # case that are currently initalizing the simulation (mesh read in)
 timedout_cases = []  # cases that are lsf timed out
 stuck_cases = []  # cases that got stuck in mesh read-in
+failed_cases = [] # cases that got submitted but failed without starting the simulation
 # check all cases
 for dir in all_directories:
     if dir in corner_directories:
@@ -559,9 +583,14 @@ for dir in all_directories:
         # get all files in this folder
         try:
             case_directories = os.listdir(path)
+            lsf_directory = os.listdir(dir)
         except:
-            case_directories = []
-            pending_cases.append([dir])
+           # check if it wasn't submitted or simply failed
+            lsfoutput = [x for x in lsf_directory if ("lsf.out" in x)]
+            if lsfoutput:
+                failed_cases.append([dir])
+            else:
+                pending_cases.append([dir])
             has_started = False
 
         # catch pending cases with no submissions yet
@@ -597,8 +626,14 @@ for dir in all_directories:
 
         # at this point all pending or sucessefull finnished cases should be handled and in the corresponding folders
         # check if the simulation for this directory is currently running or failed
-        lsfoutput = [x for x in case_directories if ("lsf.out" in x)]
+        lsfoutput = [x for x in lsf_directory if ("lsf.out" in x)]
         case_statuses = sorted(case_statuses, reverse=True, key=lambda x: x[3])
+        
+        # failed becasue not case status is available but there is a simulation-output folder
+        if not case_statuses:
+            failed_cases.append([dir])
+            continue
+            
         # lsf output in directory means case has failed
         if lsfoutput:
             if "Simulation 3 run" in case_statuses[0][2]:
@@ -620,12 +655,21 @@ for dir in all_directories:
 # print status infos
 print("Status infos:")
 print("\\tDone cases : {{}}\\n"
+      "\\tFailed cases: {{}}\\n"
       "\\tInit cases : {{}}\\n"
       "\\tRunning cases : {{}}\\n"
       "\\tTimed-out cases : {{}}\\n"
       "\\tStuck cases : {{}}\\n"
-      "\\tPending cases : {{}}".format(len(done_cases), len(init_cases), len(midrun_cases),
+      "\\tPending cases : {{}}".format(len(done_cases), len(failed_cases), len(init_cases), len(midrun_cases),
                                     len(timedout_cases), len(stuck_cases), len(pending_cases)))
+# failed cases
+print("\\nFailed cases:")
+print('%-35s' % ("case directory"))
+print("--------------------------------------------------------")
+failed_cases = sorted(failed_cases, key=lambda x: x)
+for i in range(len(failed_cases)):
+    print('%-35s' % (failed_cases[i][0]))
+
 # stuck cases
 print("\\nStuck cases:")
 print('%-35s %-6s %-6s' % ("case directory", "procs", "tries"))
@@ -698,6 +742,7 @@ midrun_cases = []  # cases that are mid-simulation
 init_cases = []  # case that are currently initalizing the simulation (mesh read in)
 timedout_cases = []  # cases that are lsf timed out
 stuck_cases = []  # cases that got stuck in mesh read-in
+failed_cases = [] # cases that got submitted but failed without starting the simulation
 # check all cases
 for dir in all_directories:
     if dir in corner_directories:
@@ -711,9 +756,14 @@ for dir in all_directories:
         # get all files in this folder
         try:
             case_directories = os.listdir(path)
+            lsf_directory = os.listdir(dir)
         except:
-            case_directories = []
-            pending_cases.append([dir])
+            # check if it wasn't submitted or simply failed
+            lsfoutput = [x for x in lsf_directory if ("lsf.out" in x)]
+            if lsfoutput:
+                failed_cases.append([dir])
+            else:
+                pending_cases.append([dir])
             has_started = False
 
         # catch pending cases with no submissions yet
@@ -749,8 +799,14 @@ for dir in all_directories:
 
         # at this point all pending or sucessefull finnished cases should be handled and in the corresponding folders
         # check if the simulation for this directory is currently running or failed
-        lsfoutput = [x for x in case_directories if ("lsf.out" in x)]
+        lsfoutput = [x for x in lsf_directory if ("lsf.out" in x)]
         case_statuses = sorted(case_statuses, reverse=True, key=lambda x: x[3])
+        
+        # failed becasue not case status is available but there is a simulation-output folder
+        if not case_statuses:
+            failed_cases.append([dir])
+            continue
+            
         # lsf output in directory means case has failed
         if lsfoutput:
             if "Simulation 3 run" in case_statuses[0][2]:
