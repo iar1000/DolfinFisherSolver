@@ -21,13 +21,13 @@ parser.add_argument("--Dsteps", type=float, help="discretization steps between D
 parser.add_argument("--Rhomin", type=float, help="minimum diffusion coefficient", default=0.025)
 parser.add_argument("--Rhomax", type=float, help="maximum diffusion coefficient", default=0.25)
 parser.add_argument("--Rhosteps", type=float, help="discretization steps between Rhomin and Rhomax", default=10)
-parser.add_argument("--Radiusmin", type=float, help="minimum initial radius", default=1)
-parser.add_argument("--Radiusmax", type=float, help="maximum initial radius", default=1)
+parser.add_argument("--Radiusmin", type=float, help="minimum initial radius", default=2)
+parser.add_argument("--Radiusmax", type=float, help="maximum initial radius", default=2)
 parser.add_argument("--Radiussteps", type=float, help="discretization steps between Radiusmin and Radiusmax", default=1)
 
 parser.add_argument("--procs", type=float, help="number mpi processors (must be multiple of 24/36)", default=24)
 parser.add_argument("--runtime", type=str, help="lsf time limit", default="04:00")
-parser.add_argument("--mesh", type=str, help="name of the mesh", default="lh-plial-hull-flood-0-1-merge-4-dof-5500k.h5")
+parser.add_argument("--mesh", type=str, help="name of the mesh", default="lh-plial-dof-5500k.h5")
 
 args = parser.parse_args()
 
@@ -50,8 +50,8 @@ lsftime = args.runtime
 verbosity = 3
 # Model arguments
 date = date.today().strftime("%d-%m-%Y")
-initial_condition = [49, 130, 40, 3]  # x, y, z, radius
-translation = [25, 21, 30]
+initial_condition = [47, 120, 61, 3]  # x, y, z, radius
+translation = [17, 21, 30]
 # Solver arguments
 mesh_name = args.mesh
 T_end = args.Tend
@@ -62,7 +62,7 @@ rich_tol = 0.000001
 rich_safe = 0.95
 newton_abs = 0.00000001
 newton_rel = 0.00000001
-framerate = 1
+framerate = 0
 
 print('Generate run-case')
 print("\tArguments: "
