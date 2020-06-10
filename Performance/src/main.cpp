@@ -40,7 +40,7 @@ void runTest(std::string filepath, int rank,
 	std::shared_ptr<dolfin::Function> u = us.at(1);
 	*u0 = *initial_condition;
 	*u = *initial_condition;
-	PetscLogStagePop();
+
 
 	if(rank==0){ std::cout << "Solve " << ls << " + " << pc <<  " -" << diffCoef1 << "-" << diffCoef2 << "-" << reactCoef << std::endl;}
 
@@ -152,18 +152,18 @@ int main(int argc, char* argv[]){
 	// Default parameters
 	dolfin::Parameters application_parameters("application_parameters");
 	application_parameters.add("dolflog", 30);
-        application_parameters.add("meshname", "lh-white-hull-flood-0-1-merge-5-dof-80k.h5");
-	application_parameters.add("type", 1);
+    application_parameters.add("meshname", "lh-plial-dof-5500k.h5");
+	application_parameters.add("type", 2);
 	application_parameters.add("name", "no-name");
 	application_parameters.add("newton_tol", 0.00000001);
 	application_parameters.add("ls", "cg");
-	application_parameters.add("pc", "jacobi");
+	application_parameters.add("pc", "hypre_euclid");
 	application_parameters.add("diffCoef1", 0.013);
 	application_parameters.add("diffCoef2", 0.0013);
 	application_parameters.add("reactCoef", 0.025);
 	application_parameters.add("krylovnonzero", false);
 	application_parameters.add("buffer", 1);
-	application_parameters.add("quadrature", 6);
+	application_parameters.add("quadrature", 4);
 
 
 	// Update from command line
