@@ -178,8 +178,8 @@ void TimeStepper::adaptiveTimestepping(int verbose, double frameDuration, std::s
 		// update timestep
 		double fac = adaptSafety_ * pow((adaptTol_ / nabla), (1/p));
 		// cap the maximum increase
-		if(fac > 1.2){
-			fac = 1.2;
+		if(fac > 1.1){
+			fac = 1.1;
 		}
 		dtNew = fac * dt;
 
