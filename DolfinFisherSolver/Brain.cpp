@@ -214,7 +214,7 @@ void Brain::fitMesh(){
 	paths.push_back("../brain-data/mesh/lh-white-hull-flood-0-1-merge-5-dof-100k.xml");
 	paths.push_back("../brain-data/mesh/rh-white-hull-flood-0-1-merge-5-dof-100k.xml");
 
-	int eps = 15;
+	int eps = 10;
 	for(int i = 0; i < paths.size(); i++){
 		std::shared_ptr<dolfin::Mesh> mesh = std::make_shared<dolfin::Mesh>(paths.at(i));
 		if(rank_ == 0 && verbose_ > 2){	std::cout << "greedy fit mesh " << paths.at(i) << std::endl; }

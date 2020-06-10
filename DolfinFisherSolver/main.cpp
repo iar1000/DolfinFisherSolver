@@ -162,7 +162,7 @@ int main(int argc, char* argv[]){
 					"\n\nSimulation stopped, change number processors to 1 to proceed";
 			return 0;
 		}
-		auto optTransReturn = brain.greedyOptimalTranslation(mesh, 15, true, splitString(meshName, '.').at(0));
+		auto optTransReturn = brain.greedyOptimalTranslation(mesh, 10, true, splitString(meshName, '.').at(0));
 		translation = {optTransReturn.at(2), optTransReturn.at(3), optTransReturn.at(4)};
 
 		std::stringstream ss4;
@@ -220,7 +220,7 @@ int main(int argc, char* argv[]){
 
 	// create FisherNewtonContainter
 	FisherNewtonContainer problemContainer = FisherNewtonContainer(rank,
-			mesh, initialCondition, D, rho, theta, dt_init);
+			mesh, initialCondition, D, rho, theta, dt_init); // first D = initialCondition
 	problemContainer.initializeSolver((verbose > 3 ? 1 : 0), newtontolrel, newtontolabs, newtonmaxiter,
 				krylovtolrel, krylovtolabs, krylovmaxiter, ls, pc);
 	putput.addComponent(problemContainer.asString());
