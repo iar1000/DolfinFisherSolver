@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#script to run weak scaling
+#script to run weak scaling for lh-white meshes
 
 # type 1: all combinations of ls and pc
 TYPE=1
