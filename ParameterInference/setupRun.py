@@ -408,6 +408,7 @@ for dir in all_directories:
         path = dir + "/simulation-output/"
         # check if simulation output folder exists, created by FisherSolver
         # get all files in this folder
+        lsf_directory = []
         try:
             case_directories = os.listdir(path)
             lsf_directory = os.listdir(dir)
@@ -581,6 +582,7 @@ for dir in all_directories:
         path = dir + "/simulation-output/"
         # check if simulation output folder exists, created by FisherSolver
         # get all files in this folder
+        lsf_directory = []
         try:
             case_directories = os.listdir(path)
             lsf_directory = os.listdir(dir)
@@ -754,6 +756,7 @@ for dir in all_directories:
         path = dir + "/simulation-output/"
         # check if simulation output folder exists, created by FisherSolver
         # get all files in this folder
+        lsf_directory = []
         try:
             case_directories = os.listdir(path)
             lsf_directory = os.listdir(dir)
