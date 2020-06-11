@@ -236,10 +236,10 @@ esac; shift; done
 os.chmod(parent_path + '/submit-corner.sh', 0o755)
 
 # create submission file for corner cases
-with open(parent_path + '/submit-stuck.sh', 'w') as submit_bash:
+with open(parent_path + '/submit-failed.sh', 'w') as submit_bash:
     command = '''\
 #! /bin/bash
-# automatically generated submission file for stuck cases
+# automatically generated submission file for failed cases
 # change the number of processors
 # the defined standart parameters can be overwritten by command line parameters
 
@@ -284,7 +284,7 @@ esac; shift; done
            solver, preconditioner, floatToString(newton_abs),
            floatToString(newton_rel), lsftime)
     submit_bash.write(command)
-os.chmod(parent_path + '/submit-stuck.sh', 0o755)
+os.chmod(parent_path + '/submit-failed.sh', 0o755)
 
 
 # fill the case directories with run files and populate sumbit-all script
@@ -726,52 +726,47 @@ os.chmod(parent_path + '/check-all.py', 0o755)
 # script to set up submit-stuck.sh submission script for stuck cases
 # create check status of all cases
 case_dirs_names = [x[0] for x in case_dirs]
-with open(parent_path + '/setup-submit-stuck.py', 'w') as submit_bash:
+with open(parent_path + '/clean-failed.py', 'w') as submit_bash:
     command = '''\
-# automatically generated script to setup the submit-stuck.sh script with job submissions of stuck cases
+# automatically generated script to setup the submit-failed.sh script with job submissions of failed cases
 # deletes the lsf output
+# deletes simulation-output files (_STATUS-* files are kept for information about past runs)
 
 import os
 from datetime import datetime
+import shutil
 
 corner_directories = {}
-all_directories = os.listdir()
 
 # collect status infos
-pending_cases = []  # cases no submission has been made, yet
+pending_cases = []  # cases that are waiting to be submitted or runnning
 done_cases = []  # cases at least one sucessfull simulation has been run
-midrun_cases = []  # cases that are mid-simulation
-init_cases = []  # case that are currently initalizing the simulation (mesh read in)
-timedout_cases = []  # cases that are lsf timed out
-stuck_cases = []  # cases that got stuck in mesh read-in
-failed_cases = [] # cases that got submitted but failed without starting the simulation
+failed_cases = []  # cases that have not sucessfully finished the simulation in the given time or failed
+
 # check all cases
-for dir in all_directories:
+for dir in corner_directories:
     if dir in corner_directories:
 
         has_done = False  # indicator if at least one run has been completed
         has_started = True  # indicator if at least one run has started
         case_statuses = []  # collect data of all runs of this case
 
-        path = dir + "/simulation-output/"
         # check if simulation output folder exists, created by FisherSolver
-        # get all files in this folder
+        path = dir + "/simulation-output/"
         lsf_directory = []
         try:
             case_directories = os.listdir(path)
-            lsf_directory = os.listdir(dir)
         except:
+            lsf_directory = os.listdir(dir)
             # check if it wasn't submitted or simply failed
             lsfoutput = [x for x in lsf_directory if ("lsf.out" in x)]
             if lsfoutput:
-                failed_cases.append([dir])
+                failed_cases.append([dir])          # FAILED
             else:
-                pending_cases.append([dir])
-            has_started = False
-
-        # catch pending cases with no submissions yet
-        if not has_started:
+                pending_cases.append([dir])         # PENDING 1. SUBMIT
             continue
+
+        # HAS SIMULATION-OUTPUT FOLDER
 
         # collect status of different processor runs
         case_status_files = [x for x in case_directories if ("_STATUS-" in x)]
@@ -789,7 +784,7 @@ for dir in all_directories:
                                                     '%Y-%m-%d %H:%M:%S')
                     case_statuses.append([nprocs, start_time, status_name, status_time])
                 else:
-                    has_started = False #@TODO
+                    has_started = False
 
         # check if at least one simulation was sucessfull
         for run_status in case_statuses:
@@ -800,71 +795,70 @@ for dir in all_directories:
         if has_done:
             continue
 
-        # at this point all pending or sucessefull finnished cases should be handled and in the corresponding folders
+        # ALL CASES THAT DID NOT FINISHED AT LEAST ONE SIMULATION SUCESSFULLY
+
         # check if the simulation for this directory is currently running or failed
         lsfoutput = [x for x in lsf_directory if ("lsf.out" in x)]
-        case_statuses = sorted(case_statuses, reverse=True, key=lambda x: x[3])
-        
-        # failed becasue not case status is available but there is a simulation-output folder
-        if not case_statuses:
-            failed_cases.append([dir])
-            continue
-            
-        # lsf output in directory means case has failed
+        # case was either stuck, run out of time or failed
         if lsfoutput:
-            if "Simulation 3 run" in case_statuses[0][2]:
-                timedout_cases.append([dir, case_statuses[0][0], len(case_statuses)])
-            elif "Simulation 2 mesh" in case_statuses[0][2]:
-                stuck_cases.append([dir, case_statuses[0][0], len(case_statuses)])
-            else:
-                print("what happend here? ", case_statuses[0][2])
+            failed_cases.append([dir])
+        # case is pending
         else:
-            if "Simulation 3 run" in case_statuses[0][2]:
-                midrun_cases.append([dir, case_statuses[0][0], len(case_statuses)])
-            elif "Simulation 2 mesh" in case_statuses[0][2]:
-                init_cases.append([dir, case_statuses[0][0], len(case_statuses)])
-            else:
-                print("what happend here? ", case_statuses[0][2])
-
-
+            pending_cases.append([dir])  # PENDING NOT 1. SUBMIT (Has simulation-out folder but didn't finish)
 
 # print status infos
-print("Setup re-run of stuck cases:")
-print("\\tStuck cases : {{}}  ".format(len(stuck_cases)))
+print("Setup re-run of failed cases:")
+print("\\tFailed cases : {{}}  ".format(len(failed_cases)))
+print("\\tPending cases : {{}}  ".format(len(pending_cases)))
+print("\\tDone cases : {{}}  ".format(len(done_cases)))
+
 
 # remove old simulation data
-for case in stuck_cases:
+for case in failed_cases:
     try:
         path = case[0] + "/simulation-output/"
+        os.listdir(path)
     except:
-        pass
+        print("WARNING: should not be here, all simulations w/o simulation-output folder should be in Pending")
+        continue
+    # Remove old pvd files
     try:
         shutil.rmtree(path + "pvd")
     except:
-        pass
+        print("ERROR: failed removing /pvd of ", case[0])
+    # remove old function files
+    try:
+        shutil.rmtree(path + "functions")
+    except:
+        print("ERROR: failed removing /functions of ", case[0])
+    # remove INFO file
     try:
         os.remove(path + "_INFO-out.txt")
     except:
-        pass
+        print("ERROR: failed removing _INFO of ", case[0])
+    # remove iteration
     try:
         os.remove(path + "iterationdata.csv-0")
     except:
-        pass
+        print("ERROR: failed removing iteration.csv of ", case[0])
+    # remove timings
     try:
         os.remove(path + "timings-latex.txt")
     except:
-        pass
+        print("ERROR: failed removing timings of ", case[0])
+    # remove lsf.out
     try:
         os.remove(path + "lsf.out")
     except:
-        pass
+        print("ERROR: failed removing lsf.out of ", case[0])
+    # remove lsf.err
     try:
         os.remove(path + "lsf.err")
     except:
-        pass
+        print("ERROR: failed removing lsf.err of ", case[0])
 
 # add cases to submit script
-with open('submit-stuck.sh', 'r+') as submit_bash:
+with open('submit-failed.sh', 'r+') as submit_bash:
     # read in old content of the file and clear afterwards
     old_file = submit_bash.read()
     submit_bash.seek(0)
@@ -874,13 +868,13 @@ with open('submit-stuck.sh', 'r+') as submit_bash:
     preface = old_file.split(sep)[0] + sep + "\\n"
     submit_bash.write(preface)
     # append stuck submission jobs
-    for case in stuck_cases:
+    for case in failed_cases:
         command = \'\'\'
-{{}}/job.sh "$MESH_NAME" "$MPI_PROCESS" "$TEND" "$DTSTART" "$TIMEADAPTION" \\\\
-       "$RICHARDSONSAFETY" "$RICHARDSONTOL" "$KRYLOVSOLVER" "$KRYLOVPREC" "$NEWTONABS" "$NEWTONREL" \\\\
+{{}}/job.sh "$MESH_NAME" "$MPI_PROCESS" "$TEND" "$DTSTART" "$TIMEADAPTION" \\
+       "$RICHARDSONSAFETY" "$RICHARDSONTOL" "$KRYLOVSOLVER" "$KRYLOVPREC" "$NEWTONABS" "$NEWTONREL" \\
         "$VERBOSE" "$FRAMERATE" "$TIME"
         \'\'\'.format(case[0])
         submit_bash.write(command)
 '''.format(case_dirs_names)
     submit_bash.write(command)
-os.chmod(parent_path + '/setup-submit-stuck.py', 0o755)
+os.chmod(parent_path + '/clean-failed.py', 0o755)
