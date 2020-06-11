@@ -62,7 +62,7 @@ rich_tol = 0.000001
 rich_safe = 0.95
 newton_abs = 0.00000001
 newton_rel = 0.00000001
-framerate = 0
+framerate = 1
 
 print('Generate run-case')
 print("\tArguments: "
