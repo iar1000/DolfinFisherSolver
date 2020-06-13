@@ -21,8 +21,8 @@ parser.add_argument("--Dsteps", type=int, help="discretization steps between Dmi
 parser.add_argument("--Rhomin", type=float, help="minimum diffusion coefficient", default=0.025)
 parser.add_argument("--Rhomax", type=float, help="maximum diffusion coefficient", default=0.25)
 parser.add_argument("--Rhosteps", type=int, help="discretization steps between Rhomin and Rhomax", default=10)
-parser.add_argument("--Radiusmin", type=float, help="minimum initial radius", default=2)
-parser.add_argument("--Radiusmax", type=float, help="maximum initial radius", default=2)
+parser.add_argument("--Radiusmin", type=float, help="minimum initial radius", default=3)
+parser.add_argument("--Radiusmax", type=float, help="maximum initial radius", default=3)
 parser.add_argument("--Radiussteps", type=int, help="discretization steps between Radiusmin and Radiusmax", default=1)
 
 parser.add_argument("--procs", type=int, help="number mpi processors (must be multiple of 24/36)", default=24)
@@ -50,7 +50,7 @@ lsftime = args.runtime
 verbosity = 3
 # Model arguments
 date = date.today().strftime("%d-%m-%Y")
-initial_condition = [47, 120, 61, 3]  # x, y, z, radius
+initial_condition = [46, 132, 67, 3]  # x, y, z, radius
 translation = [17, 21, 30]
 # Solver arguments
 mesh_name = args.mesh
