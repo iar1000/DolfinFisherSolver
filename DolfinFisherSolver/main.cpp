@@ -210,10 +210,10 @@ int main(int argc, char* argv[]){
 	// create initial condition
 	std::shared_ptr<dolfin::Expression> initialCondition;
 	if(dimensions == 2){ initialCondition = std::make_shared<InitializerCircle>(cx, cy, radius, value);	}
-	else if(dimensions == 3){ initialCondition = std::make_shared<InitializerSphere>(cx, cy, cz, radius, value); }
+	else if(dimensions == 3){ initialCondition = std::make_shared<InitializerGaussianSphere>(cx, cy, cz, radius, value); }
 	else{ return 0; }
 	std::stringstream ss;
-	ss << "InitialCondition: " << (dimensions == 2 ? "Circle" : "Sphere") << " at (" << cx << ", " << cy << ", " << cz << "), r= " << radius << ", v= " << value << std::endl;
+	ss << "InitialCondition: " << (dimensions == 2 ? "Circle" : "GaussianSphere") << " at (" << cx << ", " << cy << ", " << cz << "), r= " << radius << ", v= " << value << std::endl;
 	putput.addComponent(ss.str());
 	if(rank == 0 && verbose > 3){ std::cout << "	initial condition loaded!" << std::endl; };
 

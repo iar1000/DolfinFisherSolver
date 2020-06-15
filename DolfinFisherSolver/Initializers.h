@@ -35,4 +35,19 @@ public:
 	void eval (dolfin::Array<double> &values, const dolfin::Array<double> &x) const override;
 };
 
+// Initializer used for 3D meshes
+// Sets value around initial point in normal distributed manner
+class InitializerGaussianSphere : public dolfin::Expression, PrintableComponent
+{
+	double x0_; // x-coordinate
+	double y0_;	// y-coordinate
+	double z0_;	// z-coordinate
+	double r0_; // radius
+	double v0_; // initializer value
+public:
+	std::string asString();	//@override PrintableCOmponent
+	InitializerGaussianSphere(double x, double y, double z, double r, double v);
+	void eval (dolfin::Array<double> &values, const dolfin::Array<double> &x) const override;
+};
+
 #endif
