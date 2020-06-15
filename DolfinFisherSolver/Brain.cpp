@@ -23,6 +23,14 @@ Brain::Brain(int rank, int verbose, std::string dataParentPath){
 	readBrainweb();
 }
 
+std::string Brain::asString(){
+	std::stringstream ss3;
+	ss3 << "Virtual Brain: " << std::endl << "\t Concentration Map size= " << dim_[0] << "x" << dim_[1] << "x" << dim_[2] << std::endl <<
+				"\t Read-in border points of CM= " << max_cm_[0] << ", " << max_cm_[1] << ", " <<  max_cm_[2] << " (max x,y,z), " <<
+				 min_cm_[0] << ", " << min_cm_[1] << ", " <<  min_cm_[2] << " (min x,y,z)" << std::endl;
+	return ss3.str();
+}
+
 
 
 void Brain::readBrainweb(){

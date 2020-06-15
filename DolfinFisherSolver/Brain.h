@@ -6,7 +6,10 @@
 #include <Eigen/Dense>
 #include <dolfin.h>
 
-class Brain{
+#include "PrintableComponent.h"
+
+
+class Brain : public PrintableComponent{
 
 	int rank_;							// rank of caller
 	int verbose_;						// verbosity
@@ -50,6 +53,8 @@ public:
 	// else: return all slices
 	std::pair<std::vector<std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>>>, int*>
 		getConcentrationMap(int slice);
+	// @override virtuals from PrintableComponent
+	std::string asString();
 };
 
 #endif

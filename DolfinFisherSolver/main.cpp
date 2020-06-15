@@ -190,10 +190,7 @@ int main(int argc, char* argv[]){
 		}
 		else{ if(rank == 0){ std::cout << "desired slice is not in bounds of brainweb atlas!" << std::endl; }}
 	}
-	std::stringstream ss3;
-	ss3 << "Virtual Brain: Concentration Map size= " << brainwebConcentrationMap.second[0] << "x" << brainwebConcentrationMap.second[1] << "x" << brainwebConcentrationMap.second[2] << std::endl <<
-			"Translation Coordinates for mesh= " << translation.at(0) << ", " << translation.at(1) << ", " << translation.at(2) << std::endl;
-	putput.addComponent(ss3.str());
+	putput.addComponent(brain.asString());
 
 	// create diffusion tensor
 	std::shared_ptr<dolfin::Expression> D;
@@ -220,7 +217,7 @@ int main(int argc, char* argv[]){
 
 	// create FisherNewtonContainter
 	FisherNewtonContainer problemContainer = FisherNewtonContainer(rank,
-			mesh, D, D, rho, theta, dt_init); // first D = initialCondition
+			mesh, initialCondition, D, rho, theta, dt_init); // first D = initialCondition
 	problemContainer.initializeSolver((verbose > 3 ? 1 : 0), newtontolrel, newtontolabs, newtonmaxiter,
 				krylovtolrel, krylovtolabs, krylovmaxiter, ls, pc);
 	putput.addComponent(problemContainer.asString());

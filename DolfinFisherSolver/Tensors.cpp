@@ -137,6 +137,7 @@ std::string TensorSpatial3D::asString(){
 			"	D_w = " << dw_ << std::endl <<
 			"	D_g = " << dg_ << std::endl <<
 			"	coefficient map = vector<Eigen::Matrix>" << std::endl <<
+			"	translation vector = [" << translation_.at(0) << ", " << translation_.at(1) << ", " << translation_.at(2) << "]" << std::endl <<
 			"	buffer size = " << interpolationBuffer_.size() << std::endl;
 	return ss.str();
 }
