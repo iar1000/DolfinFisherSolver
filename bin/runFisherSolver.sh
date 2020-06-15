@@ -27,7 +27,7 @@ CSV_NAME="iterationdata"
 #      > 0: number of frames saved to file per time unit
 #      = 0: no frames saved as file
 #      < 0: all frames saved to file
-FRAMERATE=30
+FRAMERATE=1
 
 OUTPUT_PARENTFOLDER="../output" 		# path to output parent folder
 MESH_PARENTFOLDER="../mesh" 	# path to mesh parent folder
