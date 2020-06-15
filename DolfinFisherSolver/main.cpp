@@ -220,7 +220,7 @@ int main(int argc, char* argv[]){
 
 	// create FisherNewtonContainter
 	FisherNewtonContainer problemContainer = FisherNewtonContainer(rank,
-			mesh, initialCondition, D, rho, theta, dt_init); // first D = initialCondition
+			mesh, D, D, rho, theta, dt_init); // first D = initialCondition
 	problemContainer.initializeSolver((verbose > 3 ? 1 : 0), newtontolrel, newtontolabs, newtonmaxiter,
 				krylovtolrel, krylovtolabs, krylovmaxiter, ls, pc);
 	putput.addComponent(problemContainer.asString());
