@@ -290,7 +290,7 @@ os.chmod(parent_path + '/submit-failed.sh', 0o755)
 # fill the case directories with run files and populate sumbit-all script
 fisher_path = "../../../bin/"
 mesh_path = "../../../mesh"
-brainweb_path="../../brain-data/brainweb"
+brainweb_path="../../../brain-data/brainweb"
 lsf_output_name = "lsf-output"
 for c in case_dirs:
     # add to submission all file
