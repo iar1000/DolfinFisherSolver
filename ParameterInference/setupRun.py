@@ -47,7 +47,7 @@ radius_steps = args.Radiussteps     # discretization steps of parameter range
 # Runtime arguments
 mpiprocs = args.procs
 lsftime = args.runtime
-verbosity = 3
+verbosity = 4
 # Model arguments
 date = date.today().strftime("%d-%m-%Y")
 initial_condition = [46, 132, 67, 3]  # x, y, z, radius
@@ -801,6 +801,7 @@ for dir in corner_directories:
         # ALL CASES THAT DID NOT FINISHED AT LEAST ONE SIMULATION SUCESSFULLY
 
         # check if the simulation for this directory is currently running or failed
+        lsf_directory = os.listdir(dir)
         lsfoutput = [x for x in lsf_directory if ("lsf.out" in x)]
         # case was either stuck, run out of time or failed
         if lsfoutput:
