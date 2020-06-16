@@ -74,6 +74,8 @@ void InitializerGaussianSphere::eval (dolfin::Array<double> &values, const dolfi
 {
 	double dist = (x[0] - x0_) * (x[0] - x0_) + (x[1] - y0_) * (x[1] - y0_) + (x[2] - z0_) * (x[2] - z0_);
 	double value_raw = exp(-dist / r0_);
-	values[0] = v0_ * value_raw;
+	double value = v0_ * value_raw;
+	if(value < 0.001){ values[0] = 0; }
+	else{ values[0] = value; }
 };
 
