@@ -290,6 +290,7 @@ os.chmod(parent_path + '/submit-failed.sh', 0o755)
 # fill the case directories with run files and populate sumbit-all script
 fisher_path = "../../../bin/"
 mesh_path = "../../../mesh"
+brainweb_path="../../brain-data/brainweb"
 lsf_output_name = "lsf-output"
 for c in case_dirs:
     # add to submission all file
@@ -360,12 +361,14 @@ TIME=${{14}}
     "$VERBOSE" "$RUNTYPE" "$RICHTOL" "$RICHSAFE" "1"\\
     "$NEWTONABS" "$NEWTONREL" "-1" "-1" \\
     "$SOLVER" "$PREC" \\
-    "0" "{}" "{}" "{}"
+    "0" "{}" "{}" "{}" \\
+    "{}"
 '''.format(c[0], c[0], fisher_path,
            c[0], mesh_path,
            initial_condition[0], initial_condition[1], initial_condition[2], c[3],
            c[1], c[1] / diffusion_fac, c[2],
-           translation[0], translation[1], translation[2])
+           translation[0], translation[1], translation[2],
+           brainweb_path)
         # write file
         job_bash.write(description + command)
 
