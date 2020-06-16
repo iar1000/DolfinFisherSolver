@@ -29,8 +29,9 @@ CSV_NAME="iterationdata"
 #      < 0: all frames saved to file
 FRAMERATE=1
 
-OUTPUT_PARENTFOLDER="../output" 		# path to output parent folder
-MESH_PARENTFOLDER="../mesh" 	# path to mesh parent folder
+OUTPUT_PARENTFOLDER="../output" 				# path to output parent folder
+MESH_PARENTFOLDER="../mesh" 					# path to mesh parent folder
+BRAINWEB_PARENTFOLDER="../brain-data/brainweb"	# path to brainweb data
 
 # overwrite default by command line arguments
 while [[ "$#" -gt 0 ]]; do case $1 in
@@ -75,6 +76,7 @@ echo "  TIMESTEPPING: to T=$TEND with dt=$DTSTART"
 echo "  TIMEADAPTION: $TIMEADAPTION (tol= $RICHARDSONTOL, safety= $RICHARDSONSAFETY)"
 echo "  RUNLENGTH: $RUNLENGTH"
 echo "  LINEAR SOLVER: $KRYLOVSOLVER, PRECONDITIONER: $KRYLOVPREC"
+echo "	TRANSLATION: $TRANSX, $TRANSY, $TRANSZ
 
 mpirun -n "$MPI_PROCESS" ./FisherSolver \
 				"$OUTPUT_PARENTFOLDER" 	 "$MESH_PARENTFOLDER" "$MESH_NAME" "$FOLDER_NAME" "$FILE_NAME" "$CSV_NAME" \
@@ -85,5 +87,6 @@ mpirun -n "$MPI_PROCESS" ./FisherSolver \
 				"$NEWTONRESIDUALTOLREL" "$NEWTONRESIDUALTOLABS" "$KRYLOVRESIDUALTOLREL" "$KRYLOVRESIDUALTOLABS" \
 				"$KRYLOVSOLVER" "$KRYLOVPREC" \
 				"$CALCTRANS" "$TRANSX" "$TRANSY" "$TRANSZ"
+				"$BRAINWEB_PARENTFOLDER"
 				
 				

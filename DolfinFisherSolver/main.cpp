@@ -107,6 +107,7 @@ int main(int argc, char* argv[]){
 	int calcTrans = atoi(argv[32]);
 	std::vector<int> translation = {atoi(argv[33]), atoi(argv[34]), atoi(argv[35])};
 	int sliceNumber = 60;
+	std::string brainweb_path = argv[36];
 
 	/* DEBUG INPUT OF BASH SCRIPTS
 	for(int i = 0; i < 36; i++){
@@ -154,7 +155,8 @@ int main(int argc, char* argv[]){
 
 
 	// create brain
-	Brain brain(rank, verbose, "../brain-data/brainweb");
+	if(rank == 0 && verbose > 3){ std::cout << "	read in brain from " << brainweb_path << std::endl; };
+	Brain brain(rank, verbose, brainweb_path);
 	// calculate translation and return
 	if(dimensions == 3 && calcTrans){
 		if(nprocs > 1 && rank == 0){
