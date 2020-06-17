@@ -132,7 +132,7 @@ int main(int argc, char* argv[]){
 	std::shared_ptr<dolfin::Mesh> mesh;
 	std::pair<std::string, std::string> meshInfo = putput.loadMesh(meshName);
 	if(meshInfo.first == "h5"){
-		mesh = std::make_shared<dolfin::Mesh>();
+		mesh = std::make_shared<dolfin::Mesh>(MPI_COMM_WORLD);
 		auto hdf5 = dolfin::HDF5File(MPI_COMM_WORLD, meshInfo.second, std::string("r"));
 		hdf5.read(*mesh, "/mesh", false);
 	}
