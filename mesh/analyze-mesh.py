@@ -38,7 +38,7 @@ for dof in dof_coords:
     pairs = zip(worker_dofs, worker_dist)
     pairs = sorted(pairs, key=lambda x: x[1], reverse=False)
     min_dist = min(min_dist, np.min(worker_dist))
-    print("{} for pairs:\n\t{}\n\t{}\n\t{}\n\t{}".format(min_dist, pairs[0], pairs[10], pairs[100], pairs[1000]))
+    print("{} for pairs of {}:\n\t{}\n\t{}\n\t{}\n\t{}".format(min_dist, dof, pairs[0], pairs[10], pairs[100], pairs[1000]))
 
 print("Mesh Statistics of {}".format(mesh_name))
 print("\tDofs: ", max_counter)
