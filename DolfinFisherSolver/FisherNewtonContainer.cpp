@@ -49,9 +49,9 @@ void FisherNewtonContainer::initializeSolver(bool verbose, double newtontolrel, 
 		double krylovtolrel, double krylovtolabs, int krylovmaxiter, std::string ls, std::string pc){
 	// instanciate krylov solver
 	krylovSolver_ = std::make_shared<dolfin::PETScKrylovSolver>(ls, pc);
-	newtonSolver_ = std::make_shared<dolfin::NewtonSolver>();
-	krylovSolver_->parameters["error_on_nonconvergence"] = false;
+	newtonSolver_ = std::make_shared<dolfin::NewtonSolver>(mesh_->mpi_comm(), krylovSolver_, dolfin::PETScFactory::instance());
 	newtonSolver_->parameters["error_on_nonconvergence"] = false; // make sure no error is thrown when not converged
+	newtonSolver_->parameters("krylov_solver")["error_on_nonconvergence"] = false; // make sure no error is thrown when not converged
 	newtonSolver_->parameters["convergence_criterion"] = "residual";
 	newtonSolver_->parameters["maximum_iterations"] = newtonmaxiter;
 	newtonSolver_->parameters["relative_tolerance"] = newtontolrel;
