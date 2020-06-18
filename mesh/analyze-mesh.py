@@ -31,13 +31,11 @@ max_dist = -99999
 counter = 1
 max_counter = len(dof_coords)
 for dof in dof_coords:
-    print("{} ({}%)".format(min_dist, counter/max_counter * 100))
     counter = counter + 1
-    worker_dist = [np.linalg.norm(x - dof) for x in worker_dofs if np.linalg.norm(x - dof) != 0]
-    pairs = zip(worker_dofs, worker_dist)
-    pairs = sorted(pairs, key=lambda x: x[1], reverse=False)
+    worker_dist = [np.linalg.norm(x - dof) for x in dof_coords if np.linalg.norm(x - dof) != 0]
     min_dist = min(min_dist, np.min(worker_dist))
-    print("{} for pairs of {}:\n\t{}\n\t{}\n\t{}\n\t{}".format(min_dist, dof, pairs[0], pairs[10], pairs[100], pairs[1000]))
+    print("{} ({}%)".format(min_dist, counter/max_counter * 100))
+    print("\t{} for pairs of {}".format(dof, np.min(worker_dist)))
 
 print("Mesh Statistics of {}".format(mesh_name))
 print("\tDofs: ", max_counter)
