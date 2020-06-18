@@ -36,7 +36,7 @@ for dof in dof_coords:
     worker_dofs = np.array([x for x in dof_coords if x is not dof]).astype(np.longdouble)
     worker_dist = [np.linalg.norm(x - dof) for x in worker_dofs]
     pairs = zip(worker_dofs, worker_dist)
-    pairs = sorted(pairs, lambda x: x[1], reverse=False)
+    pairs = sorted(pairs, key=lambda x: x[1], reverse=False)
     min_dist = min(min_dist, np.min(worker_dist))
     print("{} for pairs:\n\t{}\n\t{}\n\t{}\n\t{}".format(min_dist, pairs[0], pairs[10], pairs[100], pairs[1000]))
 
