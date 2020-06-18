@@ -32,8 +32,11 @@ counter = 1
 max_counter = len(dof_coords)
 for dof in dof_coords:
     print("{} ({}%)".format(min_dist, counter/max_counter * 100))
+    counter = counter + 1
     worker_dofs = np.array([x for x in dof_coords if x is not dof]).astype(np.longdouble)
+    print(worker_dofs)
     worker_dist = [np.linalg.norm(x - dof) for x in worker_dofs]
+    print(worker_dist)
     min_dist = min(min_dist, np.min(worker_dist))
 
 print("Mesh Statistics of {}".format(mesh_name))
