@@ -31,9 +31,10 @@ max_dist = -99999
 counter = 1
 max_counter = len(dof_coords)
 for dof in dof_coords:
-    print("{} ({}%)".format(min_dist, counter/max_counter * 100), end=" ")
+    print("{} ({}%)".format(min_dist, counter/max_counter * 100))
     worker_dofs = [x for x in dof_coords if x is not dof]
-    min_dist = min(min_dist, np.min(np.linalg.norm(dof_coords - np.array(dof))))
+    worker_dist = [np.linalg.norm(x - dof) for x in worker_dofs]
+    min_dist = min(min_dist, np.min(worker_dist))
 
 print("Mesh Statistics of {}".format(mesh_name))
 print("\tDofs: ", max_counter)
