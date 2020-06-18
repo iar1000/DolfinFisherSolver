@@ -50,6 +50,7 @@ void FisherNewtonContainer::initializeSolver(bool verbose, double newtontolrel, 
 	// instanciate krylov solver
 	krylovSolver_ = std::make_shared<dolfin::PETScKrylovSolver>(ls, pc);
 	newtonSolver_ = std::make_shared<dolfin::NewtonSolver>();
+	krylovSolver_->parameters["error_on_nonconvergence"] = false;
 	newtonSolver_->parameters["error_on_nonconvergence"] = false; // make sure no error is thrown when not converged
 	newtonSolver_->parameters["convergence_criterion"] = "residual";
 	newtonSolver_->parameters["maximum_iterations"] = newtonmaxiter;
@@ -136,41 +137,57 @@ std::pair<int, double> FisherNewtonContainer::solveAdaptive(double t, double dt,
 	double residual = newtonSolver_->residual();
 	std::vector<double> data = {t, dt, residual, newtonIterations, krylovIterations, converged, wall};
 	if(hasTracker_){ tracker_->addIterationData(data); }
-	// save low precision result
-	*u_low_->vector() = *u_->vector();
 
-	// solve problem with high precision in two half steps
-	*dt_ = dt/2;
-	results = newtonSolver_->solve(*problem_, *u_->vector());
-	*u0_->vector() = *u_->vector();
-	results = newtonSolver_->solve(*problem_, *u_->vector());
+	// sovler converged on the big step, can continue with the small steps
+	if(converged){
+		// save low precision result
+		*u_low_->vector() = *u_->vector();
 
-	// stop time
-	if(hasTracker_){ tracker_->endTime(); }
+		// solve problem with high precision in two half steps
+		*dt_ = dt/2;
+		results = newtonSolver_->solve(*problem_, *u_->vector());
+		*u0_->vector() = *u_->vector();
+		results = newtonSolver_->solve(*problem_, *u_->vector());
 
-	// calculate discretization error nabla
-	double errorSqr = dolfin::assemble(Ms_.at(MIndex_));
-	double nabla = sqrt(errorSqr) / (pow(2.0,p_) - 1);
+		// stop time
+		if(hasTracker_){ tracker_->endTime(); }
 
-	// normalize solution
-	/*
-	double max_u = u_->vector()->max();   				// get the local max
-	max_u = dolfin::MPI::max(MPI_COMM_WORLD, max_u);  	// get the global max
-	*u_->vector() /= max_u;
-	*/
+		// calculate discretization error nabla
+		double errorSqr = dolfin::assemble(Ms_.at(MIndex_));
+		double nabla = sqrt(errorSqr) / (pow(2.0,p_) - 1);
 
-	// update state if discretization error tolerance is met
-	if(nabla <= tol){ *u0_->vector() = *u_->vector(); }
-	// reset state if otherwise
-	else{ *u0_->vector() = *u_unchanged_->vector(); }
+		// update state if discretization error tolerance is met
+		if(nabla <= tol){ *u0_->vector() = *u_->vector(); }
+		// reset state if otherwise
+		else{ *u0_->vector() = *u_unchanged_->vector(); }
 
-	// end iteration
-	if(hasTracker_){ tracker_->endIteration(); }
+		// end iteration
+		if(hasTracker_){ tracker_->endIteration(); }
 
-	// return discretization criteria decision and nabla
-	std::pair<int, double> r;
-	r = std::make_pair((nabla <= tol), nabla);
-	return r;
+		// return discretization criteria decision and nabla
+		std::pair<int, double> r;
+		r = std::make_pair((nabla <= tol ? 1 : 0), nabla);
+		return r;
+	}
+	// big step didn't converge
+	else{
+		// stop time
+		if(hasTracker_){ tracker_->endTime(); }
+
+		// set nabla such that time step is reduced to 0.5 in timestepper
+		double nabla = 2*tol;
+
+		// reset the state
+		*u0_->vector() = *u_unchanged_->vector();
+
+		// end iteration
+		if(hasTracker_){ tracker_->endIteration(); }
+
+		// return discretization criteria decision and nabla
+		std::pair<int, double> r;
+		r = std::make_pair(2, nabla);
+		return r;
+	}
 }
 
 double FisherNewtonContainer::getP(){

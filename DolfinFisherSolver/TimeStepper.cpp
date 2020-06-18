@@ -7,7 +7,7 @@
 // class TimeStepper
 ////////////////////////////
 TimeStepper::TimeStepper(int rank, double dt_min, double dt_max, double rTol, double rSafe){
-	rank_ = rank;				// MPI rank of instantiating processor
+	rank_ = rank;			// MPI rank of instantiating processor
 	dt_min_ = dt_min;		// minimum timestep (not used currently)
 	dt_max_ = dt_max;		// maximum timestep	(not used currently)
 	adaptTol_ = rTol;		// tolerance for timestep adaption via richardson extrapolation
@@ -114,7 +114,7 @@ void TimeStepper::constTimestepping(int verbose, double frameDuration, std::shar
 		int converged = problemContainer->solve(t, dt);
 		if(!converged){
 			if(rank_ == 0){ std::cout << std::endl << "iteration failed to converge at t = " << t << std::endl; }
-			break;
+			continue;
 		}
 
 		// update t
@@ -172,7 +172,7 @@ void TimeStepper::adaptiveTimestepping(int verbose, double frameDuration, std::s
 
 		// run iteration
 		auto results = problemContainer->solveAdaptive(t, dt, adaptTol_);
-		bool criteriumMet = results.first;
+		int criteriumMet = results.first;
 		double nabla = results.second;
 
 		// update timestep
@@ -187,7 +187,7 @@ void TimeStepper::adaptiveTimestepping(int verbose, double frameDuration, std::s
 
 		// finish iteration if discretization error tolerance is met
 		// state in ProblemSolverContainer should be updated
-		if(criteriumMet){
+		if(criteriumMet == 1){
 			// print discretation tolerance met, verbose level 3
 			if(rank_ == 0 && verbose > 2){
 				std::cout << "time discretiation error criterium met\n	increase dt to "<< dtNew << "  (" << fac << ")" << std::endl << std::endl;
@@ -221,9 +221,14 @@ void TimeStepper::adaptiveTimestepping(int verbose, double frameDuration, std::s
 		// problemContainer didn't update internal state, so next run will solve same system with adapted dt
 		else{
 			// print discretization tolerance not met and details, verbose level 3
-			if(rank_ == 0 && verbose > 2){
+			if(criteriumMet == 0 && rank_ == 0 && verbose > 2){
 				std::cout << "time discretiation error tolerance not met: " << std::endl <<
 						"	discretization error (nabla) = " << nabla << " ( > " << adaptTol_ << ")" << std::endl <<
+						"	decrease of dt: " << dt << " -> " << dtNew << " (" << (1.0/fac) << ")" << std::endl << std::endl;
+			}
+			// print solver not converged and details, verbose level 3
+			else if(criteriumMet == 2 && rank_ == 0 && verbose > 2){
+				std::cout << "solver not converged: " << std::endl <<
 						"	decrease of dt: " << dt << " -> " << dtNew << " (" << (1.0/fac) << ")" << std::endl << std::endl;
 			}
 		}
