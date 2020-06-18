@@ -131,7 +131,11 @@ int main(int argc, char* argv[]){
 	if(rank == 0 && verbose > 3){ std::cout << "	read in mesh..." << std::endl; };
 	std::shared_ptr<dolfin::Mesh> mesh;
 	std::pair<std::string, std::string> meshInfo = putput.loadMesh(meshName);
-	if(meshInfo.first == "h5"){
+	if(meshInfo.first == "xdmf"){
+		mesh = std::make_shared<dolfin::Mesh>(MPI_COMM_WORLD);
+		dolfin::XDMFFile(MPI_COMM_WORLD, meshInfo.second).read(*mesh);
+	}
+	else if(meshInfo.first == "h5"){
 		mesh = std::make_shared<dolfin::Mesh>(MPI_COMM_WORLD);
 		auto hdf5 = dolfin::HDF5File(MPI_COMM_WORLD, meshInfo.second, std::string("r"));
 		hdf5.read(*mesh, "/mesh", false);
