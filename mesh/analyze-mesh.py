@@ -25,14 +25,14 @@ except Exception as e:
 print("Analyze mesh...")
 V = FunctionSpace(mesh, "Lagrange", 2)
 
-dof_coords = V.tabulate_dof_coordinates()
+dof_coords = V.tabulate_dof_coordinates().astype("Float64")
 min_dist = 99999
 max_dist = -99999
 counter = 1
 max_counter = len(dof_coords)
 for dof in dof_coords:
     print("{} ({}%)".format(min_dist, counter/max_counter * 100))
-    worker_dofs = [x for x in dof_coords if x is not dof]
+    worker_dofs = np.array([x for x in dof_coords if x is not dof]).astype("Float46")
     worker_dist = [np.linalg.norm(x - dof) for x in worker_dofs]
     min_dist = min(min_dist, np.min(worker_dist))
 
