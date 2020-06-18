@@ -34,10 +34,11 @@ for dof in dof_coords:
     print("{} ({}%)".format(min_dist, counter/max_counter * 100))
     counter = counter + 1
     worker_dofs = np.array([x for x in dof_coords if x is not dof]).astype(np.longdouble)
-    print(worker_dofs)
     worker_dist = [np.linalg.norm(x - dof) for x in worker_dofs]
-    print(worker_dist)
+    pairs = zip(worker_dofs, worker_dist)
+    pairs = sorted(pairs, lambda x: x[1], reverse=False)
     min_dist = min(min_dist, np.min(worker_dist))
+    print("{} for pairs:\n\t{}\n\t{}\n\t{}\n\t{}".format(min_dist, pairs[0], pairs[10], pairs[100], pairs[1000]))
 
 print("Mesh Statistics of {}".format(mesh_name))
 print("\tDofs: ", max_counter)
