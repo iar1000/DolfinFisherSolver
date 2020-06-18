@@ -32,8 +32,9 @@ counter = 1
 max_counter = len(dof_coords)
 for dof in dof_coords:
     counter = counter + 1
-    worker_dist = [np.linalg.norm(x - dof) for x in dof_coords if np.linalg.norm(x - dof) != 0]
-    min_dist = min(min_dist, np.min(worker_dist))
+    norms = np.linalg.norm(dof_coords - np.array(dof))
+    norms = [x for x in dof_coords if x != 0]
+    min_dist = min(min_dist, np.min(norms))
     print("{} ({}%)".format(min_dist, counter/max_counter * 100))
     print("\t{} for pairs of {}".format(dof, np.min(worker_dist)))
 
