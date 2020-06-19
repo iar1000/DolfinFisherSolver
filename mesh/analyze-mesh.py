@@ -36,7 +36,7 @@ print("\tTotal nodes {}".format(len(dof_coords)))
 unchecked_coords = [x for x in unchecked_coords if sqrt((x[0]-46)**2 + (x[1]-132)**2 + (x[2]-67)**2) < 9]
 print("\tCompare {} nodes...".format(len(unchecked_coords)))
 # compare each dof to all others but itself (very slow) to find closest dofs
-for dof in dof_coords:
+for dof in unchecked_coords:
     unchecked_coords = [x for x in unchecked_coords if (x[0] != dof[0] or x[1] != dof[1] or x[2] != dof[2])]
     counter = counter + 1
     worker = np.min(np.linalg.norm(unchecked_coords - np.array(dof), axis=1))
