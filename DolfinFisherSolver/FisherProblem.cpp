@@ -95,6 +95,11 @@ double FisherProblem::getTheta(){
 	return *theta_;
 }
 
+std::shared_ptr<dolfin::FunctionSpace> FisherProblem::getV(){
+	return V_;
+}
+
+
 std::string FisherProblem::asString(){
 	std::stringstream ss;
 	ss << "FisherProblem:" << std::endl <<

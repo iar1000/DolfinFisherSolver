@@ -35,6 +35,8 @@ public:
 	std::shared_ptr<dolfin::Constant> getDt();
 	// returns theta used for time discretization of problem
 	double getTheta();
+	// return pointer to fucntion space
+	std::shared_ptr<dolfin::FunctionSpace> getV();
 	// returns pointer to the mesh used creating function spaces
 	std::shared_ptr<dolfin::Mesh> getMesh();
 	// @override PrintableComponent
