@@ -249,7 +249,7 @@ int main(int argc, char* argv[]){
 		std::stringstream iters;
 		iters << name << "-type-1-tol-" << newton_tol << "-nprocs-" << nprocs << "-dofpr-" << (ndofs / nprocs) << ".csv";
 		std::ofstream iterfile(out_dir + iters.str(), std::ios_base::app);
-		iterfile << output_format;
+		if(rank == 0){ iterfile << output_format; }
 		iterfile.close();
 
 		// run test on all combinations
@@ -264,7 +264,7 @@ int main(int argc, char* argv[]){
 		std::stringstream iters;
 		iters << name << "-type-2-tol-" << newton_tol << "-nprocs-" << nprocs << "-dofpr-" << (ndofs / nprocs) << ".csv";
 		std::ofstream iterfile(out_dir + iters.str(), std::ios_base::app);
-		iterfile << output_format;
+		if(rank == 0){ iterfile << output_format; }
 		iterfile.close();
 
 		runTest(out_dir + iters.str(), rank, mesh, brain,
@@ -276,7 +276,7 @@ int main(int argc, char* argv[]){
 		std::stringstream iters;
 		iters << name << "-type-3-tol-" << newton_tol << "-nprocs-" << nprocs << "-dofpr-" << (ndofs / nprocs) << ".csv";
 		std::ofstream iterfile(out_dir + iters.str(), std::ios_base::app);
-		iterfile << output_format;
+		if(rank == 0){ iterfile << output_format; }
 		iterfile.close();
 
 		// run test on all combinations
@@ -291,7 +291,7 @@ int main(int argc, char* argv[]){
 		std::stringstream iters;
 		iters << name << "-type-4-tol-" << newton_tol << "-nprocs-" << nprocs << "-dofpr-" << (ndofs / nprocs) << ".csv";
 		std::ofstream iterfile(out_dir + iters.str(), std::ios_base::app);
-		iterfile << output_format;
+		if(rank == 0){ iterfile << output_format; }
 		iterfile.close();
 
 		runTest(out_dir + iters.str(), rank, mesh, brain,
