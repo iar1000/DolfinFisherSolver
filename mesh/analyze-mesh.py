@@ -31,6 +31,11 @@ min_dist = 99999
 max_dist = -99999
 counter = 1
 max_counter = len(dof_coords)
+print("\tTotal nodes {}".format(len(dof_coords)))
+# remove all nodes which are not in the high resolution part of the mesh
+unchecked_coords = [x for x in unchecked_coords if sqrt((x[0]-46)**2 + (x[1]-132)**2 + (x[2]-67)**2) < 10]
+print("\tCompare {} nodes...".format(len(unchecked_coords)))
+# compare each dof to all others but itself (very slow) to find closest dofs
 for dof in dof_coords:
     unchecked_coords = [x for x in unchecked_coords if (x[0] != dof[0] or x[1] != dof[1] or x[2] != dof[2])]
     counter = counter + 1
@@ -43,3 +48,4 @@ print("Mesh Statistics of {}".format(mesh_name))
 print("\tDofs: ", max_counter)
 print("\tMax vertex distance: ", mesh.hmax())
 print("\tMin vertex distance: ", mesh.hmin())
+print("\tMin node distance: ", min_dist)
