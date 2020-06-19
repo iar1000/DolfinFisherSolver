@@ -112,6 +112,7 @@ class TensorSpatial3D : public dolfin::Expression, PrintableComponent
 	std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> cmw_;	// Vector of concentration matrix of white matter
 	std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> cmg_;	// Vector of concentration matrix of grey matter
 	std::unordered_map<HashableCoordinates, double, CoordinateHasher> interpolationBuffer_; // stores already interpolated values
+	int missCount_;
 public:
 	std::string asString(); 	// @override PrintableComponent
 	TensorSpatial3D(int rank, double dcw, double dcg,
@@ -119,6 +120,7 @@ public:
 			std::vector<int> translation, bool useBuffer);
 	void eval (dolfin::Array<double> &values, const dolfin::Array<double> &x, const ufc::cell &cell) const override;
 	void addBufferEntry(HashableCoordinates p, double res);
+	int getMissCount();
 };
 
 

@@ -148,6 +148,12 @@ void TensorSpatial3D::addBufferEntry(HashableCoordinates p, double res){
 	interpolationBuffer_.insert(entry);
 }
 
+int TensorSpatial3D::getMissCount(){
+	auto temp = missCount_;
+	missCount_ = 0;
+	return temp;
+}
+
 void TensorSpatial3D::eval (dolfin::Array<double> &values, const dolfin::Array<double> &x, const ufc::cell &cell) const{
 	if(useBuffer){
 		// check buffer for element
@@ -177,6 +183,7 @@ void TensorSpatial3D::eval (dolfin::Array<double> &values, const dolfin::Array<d
 			double result = pw * dw_ + pg * dg_;
 			values[0] = result;
 			const_cast<TensorSpatial3D*>( this )->addBufferEntry(coords, result);
+			const_cast<TensorSpatial3D*>( this )->missCount_++;
 		}
 		else{
 			values[0] = (*iterator).second;
