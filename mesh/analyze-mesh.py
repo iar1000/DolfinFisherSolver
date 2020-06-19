@@ -33,7 +33,7 @@ counter = 1
 max_counter = len(dof_coords)
 print("\tTotal nodes {}".format(len(dof_coords)))
 # remove all nodes which are not in the high resolution part of the mesh
-unchecked_coords = [x for x in unchecked_coords if sqrt((x[0]-46)**2 + (x[1]-132)**2 + (x[2]-67)**2) < 10]
+unchecked_coords = [x for x in unchecked_coords if sqrt((x[0]-46)**2 + (x[1]-132)**2 + (x[2]-67)**2) < 9]
 print("\tCompare {} nodes...".format(len(unchecked_coords)))
 # compare each dof to all others but itself (very slow) to find closest dofs
 for dof in dof_coords:
