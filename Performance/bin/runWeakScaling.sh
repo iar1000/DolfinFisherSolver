@@ -19,7 +19,7 @@ esac; shift; done
 # 150k elements per core
 bsub -o "weak-150-1" -n 1 mpirun ./Performance-FisherSolver --name "weakscaling-150k" --meshname "lh-plial-015mio.xdmf" --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
 bsub -o "weak-150-2" -n 2 mpirun ./Performance-FisherSolver --name "weakscaling-150k" --meshname "lh-plial-03mio.xdmf" --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
-bsub -o "weak-150-6" -n 6 mpirun ./Performance-FisherSolver --name "weakscaling-150k" --meshname "lh-plial-09mio.xdmf" --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
-bsub -o "weak-150-20" -n 20 mpirun ./Performance-FisherSolver --name "weakscaling-150k" --meshname "lh-plial-3mio.xdmf" --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
-bsub -o "weak-150-40" -n 40 mpirun ./Performance-FisherSolver --name "weakscaling-150k" --meshname "lh-plial-6mio.xdmf" --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
+bsub -o "weak-150-6" -n 6 -R "rusage[scratch=5000, mem=3000]" mpirun ./Performance-FisherSolver --name "weakscaling-150k" --meshname "lh-plial-09mio.xdmf" --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
+bsub -o "weak-150-20" -n 20 -R "rusage[scratch=5000, mem=3000]" -W 24:00 mpirun ./Performance-FisherSolver --name "weakscaling-150k" --meshname "lh-plial-3mio.xdmf" --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
+bsub -o "weak-150-40" -n 40 -R "rusage[scratch=5000, mem=3000]" -W 24:00 mpirun ./Performance-FisherSolver --name "weakscaling-150k" --meshname "lh-plial-6mio.xdmf" --type "$TYPE" --newton_tol "$TOL" --krylovnonzero "$KRYLNONZERO"
 
