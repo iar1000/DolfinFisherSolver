@@ -44,6 +44,7 @@ for subdofs in subarea_dofs:
     print(len(subdofs))
 quit()
 
+for subarea in subareas:
     counter = 1
     max_counter = len(sub)
     # compare each dof to all others but itself (very slow) to find closest dofs
