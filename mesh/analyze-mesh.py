@@ -34,7 +34,8 @@ print("\tTotal nodes {}".format(len(dof_coords)))
 unchecked_coords_high = [x for x in unchecked_coords if sqrt((x[0]-46)**2 + (x[1]-132)**2 + (x[2]-67)**2) < 9]
 print("\tCompare {} nodes...".format(len(unchecked_coords)))
 subs = 1
-for subarea in [[46, 132, 67], [37, 130, 67], [51, 135, 67], [46, 132, 72], [46, 128, 60]]:
+subareas = [[46, 132, 67], [40, 132, 67], [52, 132, 67], [46, 138, 67], [46, 126, 67], [46, 132, 61], [46, 132, 73]]
+for subarea in subareas:
     sub = [x for x in unchecked_coords_high if sqrt((x[0] - subarea[0]) ** 2 + (x[1] - subarea[1]) ** 2 + (x[2] - subarea[2]) ** 2) < 3]
     counter = 1
     max_counter = len(sub)
@@ -45,7 +46,7 @@ for subarea in [[46, 132, 67], [37, 130, 67], [51, 135, 67], [46, 132, 72], [46,
         worker = np.min(np.linalg.norm(sub - np.array(dof), axis=1))
         min_dist = min(min_dist, worker)
         print("{} @ ({}%)".format(min_dist, counter/max_counter * 100))
-        print("\tcurrently round {}/{}, point {} @ {}".format(subs, len(subarea), dof, worker))
+        print("\tcurrently round {}/{}, point {} @ {}".format(subs, len(subareas), dof, worker))
     subs = subs + 1
 
 print("Mesh Statistics of {}".format(mesh_name))
