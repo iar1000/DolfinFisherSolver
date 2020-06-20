@@ -42,7 +42,7 @@ for subdofs in subarea_dofs:
     print("\t", subdofs[0], len(subdofs[1]))
 
 for subarea in subarea_dofs:
-    worker_dofs = subarea_dofs[1]
+    worker_dofs = subarea[1]
     counter = 1
     max_counter = len(worker_dofs)
     # compare each dof to all others but itself (very slow) to find closest dofs
