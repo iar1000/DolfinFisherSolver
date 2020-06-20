@@ -49,7 +49,7 @@ for subarea in subarea_dofs:
     for dof in worker_dofs:
         worker_dofs = [x for x in worker_dofs if (x[0] != dof[0] or x[1] != dof[1] or x[2] != dof[2])]
         counter = counter + 1
-        worker = np.min(np.linalg.norm(sub - np.array(dof), axis=1))
+        worker = np.min(np.linalg.norm(worker_dofs - np.array(dof), axis=1))
         min_dist = min(min_dist, worker)
         print("{} @ ({}%)".format(min_dist, counter/max_counter * 100))
         print("\tcurrently round {}/{}, point {} @ {}".format(subs, len(subareas), dof, worker))
