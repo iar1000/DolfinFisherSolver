@@ -26,30 +26,28 @@ print("Analyze mesh...")
 V = FunctionSpace(mesh, "Lagrange", 2)
 
 dof_coords = V.tabulate_dof_coordinates()
-unchecked_coords = V.tabulate_dof_coordinates()
 min_dist = 99999
 max_dist = -99999
 print("\tTotal nodes {}".format(len(dof_coords)))
-# remove all nodes which are not in the high resolution part of the mesh
-unchecked_coords_high = [x for x in unchecked_coords if sqrt((x[0]-46)**2 + (x[1]-132)**2 + (x[2]-67)**2) < 9]
-print("\tCompare {} nodes...".format(len(unchecked_coords)))
+
 subs = 1
 subareas = [[46, 132, 67], [40, 132, 67], [52, 132, 67], [46, 138, 67], [46, 126, 67], [46, 132, 61], [46, 132, 73]]
-subarea_dofs = []
+subarea_dofs = {}
 # fill in dofs
 for subarea in subareas:
-    subarea_dofs.append([x for x in unchecked_coords if sqrt((x[0] - subarea[0]) ** 2 + (x[1] - subarea[1]) ** 2 + (x[2] - subarea[2]) ** 2) < 3])
+    subarea_dofs[subarea] = [x for x in dof_coords if sqrt((x[0] - subarea[0]) ** 2 + (x[1] - subarea[1]) ** 2 + (x[2] - subarea[2]) ** 2) < 3]
 # check
+print("Subarea sizes : ")
 for subdofs in subarea_dofs:
-    print(len(subdofs))
-quit()
+    print("\t", subdofs, len(subarea_dofs[sobdofs]))
 
-for subarea in subareas:
+for subarea in subarea_dofs:
+    worker_dofs = subarea_dofs[subarea]
     counter = 1
-    max_counter = len(sub)
+    max_counter = len(worker_dofs)
     # compare each dof to all others but itself (very slow) to find closest dofs
-    for dof in sub:
-        sub = [x for x in sub if (x[0] != dof[0] or x[1] != dof[1] or x[2] != dof[2])]
+    for dof in worker_dofs:
+        worker_dofs = [x for x in worker_dofs if (x[0] != dof[0] or x[1] != dof[1] or x[2] != dof[2])]
         counter = counter + 1
         worker = np.min(np.linalg.norm(sub - np.array(dof), axis=1))
         min_dist = min(min_dist, worker)
