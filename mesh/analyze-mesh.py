@@ -38,7 +38,7 @@ subareas = [[46, 132, 67], [40, 132, 67], [52, 132, 67], [46, 138, 67], [46, 126
 subarea_dofs = []
 # fill in dofs
 for subarea in subareas:
-    subarea_dofs.append([[x for x in unchecked_coords if sqrt((x[0] - subarea[0]) ** 2 + (x[1] - subarea[1]) ** 2 + (x[2] - subarea[2]) ** 2) < 3]])
+    subarea_dofs.append([x for x in unchecked_coords if sqrt((x[0] - subarea[0]) ** 2 + (x[1] - subarea[1]) ** 2 + (x[2] - subarea[2]) ** 2) < 3])
 # check
 for subdofs in subarea_dofs:
     print(len(subdofs))
