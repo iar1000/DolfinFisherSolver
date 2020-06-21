@@ -1,5 +1,5 @@
 # ufl file describing:
-# the variational formulation of a 2D theta-discretized reaction-diffusion system
+# the variational formulation of a 3D reaction-diffusion system
 
 cell = tetrahedron
 V = FiniteElement("Lagrange", cell, 2)  # degree of polynomials used
