@@ -213,6 +213,7 @@ int main(int argc, char* argv[]){
 		 hdf5.read(*mesh, "/mesh", false);
 	 }
 	 else if(tokens.at(1) == "xdmf"){
+		 if(rank == 0){ std::cout << "\treading in xdmf mesh.." << std::endl; }
 		 mesh = std::make_shared<dolfin::Mesh>(MPI_COMM_WORLD);
 		 dolfin::XDMFFile(MPI_COMM_WORLD, mesh_path+meshname).read(*mesh);
 	 }
