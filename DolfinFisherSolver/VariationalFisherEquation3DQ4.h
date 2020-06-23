@@ -7656,7 +7656,7 @@ return enabled;
                        int cell_orientation) const final override
   {
 	// track time spend in function
-	std::chrono::time_point<std::chrono::system_clock> startTime = std::chrono::system_clock::now();
+	auto startTime = std::chrono::high_resolution_clock::now();
 
 
     // This function was generated using 'uflacs' representation
@@ -7971,13 +7971,11 @@ return enabled;
             A[10 * DM2[i] + DM2[j]] += BF9[i][j];
 
     // step tracking time spend in function
-     std::chrono::time_point<std::chrono::system_clock> endTime = std::chrono::system_clock::now();
-     std::chrono::duration<double> duration = endTime - startTime;
-     std::chrono::milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
+     auto endTime = std::chrono::high_resolution_clock::now();
      // output file
      std::ofstream outfile;
      outfile.open("tabulate-tensor-timings.csv", std::ios_base::app);
-     outfile << ms.count() << std::endl;
+     outfile << std::chrono::duration_cast<std::chrono::nanoseconds>(finish-start).count() << std::endl;
      outfile.close();
   }
 };
