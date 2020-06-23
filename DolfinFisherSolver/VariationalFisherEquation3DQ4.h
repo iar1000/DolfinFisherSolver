@@ -7975,7 +7975,7 @@ return enabled;
      // output file
      std::ofstream outfile;
      outfile.open("tabulate-tensor-timings.csv", std::ios_base::app);
-     outfile << std::chrono::duration_cast<std::chrono::nanoseconds>(finish-start).count() << std::endl;
+     outfile << std::chrono::duration_cast<std::chrono::nanoseconds>(endTime-startTime).count() << std::endl;
      outfile.close();
   }
 };
