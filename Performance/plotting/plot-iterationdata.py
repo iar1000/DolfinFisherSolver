@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-import numpy as np
 
+# plot the iteration data csv file of a simulation
 
 data = pd.DataFrame()
 data = pd.read_csv("iterationdata.csv-0", sep=",")
