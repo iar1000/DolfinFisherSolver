@@ -849,15 +849,16 @@ for case in failed_cases:
     try:
         os.remove(path + "timings-latex.txt")
     except:
-        print("ERROR: failed removing timings of ", case[0])
+        print("WARNING: failed removing timings of ", case[0])
+        print("\\tcould be that no timings was created")
     # remove lsf.out
     try:
-        os.remove(path + "lsf.out")
+        os.remove(path + "../lsf.out")
     except:
         print("ERROR: failed removing lsf.out of ", case[0])
     # remove lsf.err
     try:
-        os.remove(path + "lsf.err")
+        os.remove(path + "../lsf.err")
     except:
         print("ERROR: failed removing lsf.err of ", case[0])
 
