@@ -13,7 +13,7 @@ FisherNewtonContainer::FisherNewtonContainer(int rank,
 	initializer_ = initialCondition;
 
 	// stop solver from logging each iteration on it's own
-	dolfin::set_log_level(30); //16 for trace
+	dolfin::set_log_level(40); //16 for trace
 	// get pointers to problem variables
 	auto us = problem_->getUs();
 	u0_ = us.at(0);				// is going to hold initial fundtion for solver
