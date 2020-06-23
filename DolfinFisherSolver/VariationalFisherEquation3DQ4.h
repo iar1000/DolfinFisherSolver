@@ -35,6 +35,8 @@
 #include <iostream>
 #include <stdexcept>
 #include <ufc.h>
+#include <chrono>
+#include <fstream>
 
 class variationalfisherequation3dq4_finite_element_0: public ufc::finite_element
 {
@@ -7653,6 +7655,10 @@ return enabled;
                        const double * coordinate_dofs,
                        int cell_orientation) const final override
   {
+	// track time spend in function
+	std::chrono::time_point<std::chrono::system_clock> startTime = std::chrono::system_clock::now();
+
+
     // This function was generated using 'uflacs' representation
     // with the following integrals metadata:
     // 
@@ -7963,8 +7969,17 @@ return enabled;
     for (int i = 0; i < 7; ++i)
         for (int j = 0; j < 7; ++j)
             A[10 * DM2[i] + DM2[j]] += BF9[i][j];
-  }
 
+    // step tracking time spend in function
+     std::chrono::time_point<std::chrono::system_clock> endTime = std::chrono::system_clock::now();
+     std::chrono::duration<double> duration = endTime - startTime;
+     std::chrono::milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
+     // output file
+     std::ofstream outfile;
+     outfile.open("tabulate-tensor-timings.csv", std::ios_base::app);
+     outfile << ms.count() << std::endl;
+     outfile.close();
+  }
 };
 
 
