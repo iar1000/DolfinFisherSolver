@@ -133,9 +133,10 @@ std::pair<int, double> FisherNewtonContainer::solveAdaptive(double t, double dt,
 	// retrieve and save low precision iteration data from solver
 	double newtonIterations = static_cast<double>(results.first);
 	double krylovIterations = static_cast<double>(newtonSolver_->krylov_iterations());
-	double converged = static_cast<double>(results.second);
+	double converged_double = static_cast<double>(results.second);
+	bool converged = results.second;
 	double residual = newtonSolver_->residual();
-	std::vector<double> data = {t, dt, residual, newtonIterations, krylovIterations, converged, wall};
+	std::vector<double> data = {t, dt, residual, newtonIterations, krylovIterations, converged_double, wall};
 	if(hasTracker_){ tracker_->addIterationData(data); }
 
 	// sovler converged on the big step, can continue with the small steps
@@ -152,22 +153,40 @@ std::pair<int, double> FisherNewtonContainer::solveAdaptive(double t, double dt,
 		// stop time
 		if(hasTracker_){ tracker_->endTime(); }
 
-		// calculate discretization error nabla
-		double errorSqr = dolfin::assemble(Ms_.at(MIndex_));
-		double nabla = sqrt(errorSqr) / (pow(2.0,p_) - 1);
+		// check convergence
+		if(results.second){
+			// calculate discretization error nabla
+			double errorSqr = dolfin::assemble(Ms_.at(MIndex_));
+			double nabla = sqrt(errorSqr) / (pow(2.0,p_) - 1);
 
-		// update state if discretization error tolerance is met
-		if(nabla <= tol){ *u0_->vector() = *u_->vector(); }
-		// reset state if otherwise
-		else{ *u0_->vector() = *u_unchanged_->vector(); }
+			// update state if discretization error tolerance is met
+			if(nabla <= tol){ *u0_->vector() = *u_->vector(); }
+			// reset state if otherwise
+			else{ *u0_->vector() = *u_unchanged_->vector(); }
 
-		// end iteration
-		if(hasTracker_){ tracker_->endIteration(); }
+			// end iteration
+			if(hasTracker_){ tracker_->endIteration(); }
 
-		// return discretization criteria decision and nabla
-		std::pair<int, double> r;
-		r = std::make_pair((nabla <= tol ? 1 : 0), nabla);
-		return r;
+			// return discretization criteria decision and nabla
+			std::pair<int, double> r;
+			r = std::make_pair((nabla <= tol ? 1 : 0), nabla);
+			return r;
+		}
+		else{
+			// set nabla such that time step is reduced to 0.5 in timestepper
+			double nabla = 2*tol;
+
+			// reset the state
+			*u0_->vector() = *u_unchanged_->vector();
+
+			// end iteration
+			if(hasTracker_){ tracker_->endIteration(); }
+
+			// return discretization criteria decision and nabla
+			std::pair<int, double> r;
+			r = std::make_pair(2, nabla);
+			return r;
+		}
 	}
 	// big step didn't converge
 	else{
