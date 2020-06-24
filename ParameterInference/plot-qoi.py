@@ -70,23 +70,41 @@ for mesh_name in mesh_names:
     mesh_dist_cases[mesh_name] = dist_case_frames
 print()
 
-# setup plot
-fig, ax = plt.subplots()
-ax.set_xlabel("t [$days$]", fontsize=12)
-ax.set_ylabel("Volume [$mm^3$]", fontsize=12)
-
-# plot qoi's
+# setup colors to use
 thesis_case_to_color = {"0.13-0.025": "green", "0.13-0.25": "royalblue", "0.6-0.025": "orange",
                         "0.6-0.25": "crimson"}
 thesis_mesh_to_alpha = {"test": 1, "test1": 0.5}
+
+# plot volume over time
+fig, ax = plt.subplots()
+ax.set_xlabel("t [$days$]", fontsize=12)
+ax.set_ylabel("Volume [$mm^3$]", fontsize=12)
 for mesh_name in mesh_dist_cases:
-    print("Plot data for mesh ", mesh_name)
+    print("Plot Volume data for mesh ", mesh_name)
     cases = mesh_dist_cases[mesh_name]
     for case in cases:
-        print(case)
+        print("\tPlot case", case)
         D = case.split("-")[0]
         rho = case.split("-")[1]
         cases[case]["volume"].plot(title="Tumor volume over time",
+                                   label="D\_white={}, $\\rho$={}, on {}".format(D, rho, mesh_name), style="x-",
+                                   color=list(
+                                       colors.to_rgba(thesis_case_to_color[case], alpha=thesis_mesh_to_alpha[mesh_name])),
+                                   legend=True)
+plt.show()
+
+# plot total concentration over time
+fig, ax = plt.subplots()
+ax.set_xlabel("t [$days$]", fontsize=12)
+ax.set_ylabel("Total concentration", fontsize=12)
+for mesh_name in mesh_dist_cases:
+    print("Plot total concentration data for mesh ", mesh_name)
+    cases = mesh_dist_cases[mesh_name]
+    for case in cases:
+        print("\tPlot case", case)
+        D = case.split("-")[0]
+        rho = case.split("-")[1]
+        cases[case]["total concentration"].plot(title="Total tumor concentration over time",
                                    label="D\_white={}, $\\rho$={}, on {}".format(D, rho, mesh_name), style="x-",
                                    color=list(
                                        colors.to_rgba(thesis_case_to_color[case], alpha=thesis_mesh_to_alpha[mesh_name])),
