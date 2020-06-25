@@ -1,9 +1,15 @@
 import numpy as np
 from paraview.vtk.numpy_interface import dataset_adapter as dsa
-
+ 
 # Script to get total volume and total concentration over all timesteps
 # Pipeline: Input -> Threshold -> GroupTimeSteps -> PointToCellData -> ProgrammableFilter with this script
-# Output: Outputs the #cells, the total volume, and total concentration of these cells (average of point values) per time-step
+# Output: Outputs the #cells, the total volume, and total concentration of these cells (average of point values) per time-step to csv file
+
+output_path_from_paraview_bin = "../../../Projects/DolfinFisherSolver Version 2/ParameterInference/"
+output_meshname = "lh-plial-3mio"
+output_D = 0.13
+output_rho = 0.025
+output_filename = "paraview-volume-concentration-" + output_meshname + "-" + str(output_D) + "-" + str(output_rho)
 
 input = inputs[0]
 print("Found input with point keys ", dsa.WrapDataObject(input).PointData.keys())
@@ -30,7 +36,7 @@ if input.IsA("vtkCompositeDataSet"):
             p3 = block.GetPoint( cell.GetPointId(2) )
             p4 = block.GetPoint( cell.GetPointId(3) )
             volumeArray[j] = abs(vtk.vtkTetra.ComputeVolume(p1 ,p2 ,p3 , p4))
-        
+         
         # total volume
         totalVolume = 0
         for v in volumeArray:
@@ -43,7 +49,11 @@ if input.IsA("vtkCompositeDataSet"):
         print("\tNumber cells = ", len(volumeArray))
         print("\tTotal volume = ", totalVolume)
         print("\tTotal concentration = ", totalConcentration) 
+        
+        print("Writing to csv")
+        with open(output_path_from_paraview_bin + output_filename + ".csv", 'a') as csvfile:
+           csvfile.write("{},{},{},{},{},{}\n".format(i,output_meshname,output_D, output_rho,totalVolume,totalConcentration))
 
-    print("finished")
+    print("finnished")
 else:
     print("not vtkCompositDataSet")
